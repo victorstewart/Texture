@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# Script uses clang-format to format all of the source files in a
+# default format.
+#
+
+# The absolute path of the directory containing this script.
+DIR="$( cd "$( dirname "$0" )" && pwd)"
+# Define top level project directory
+PROJECT_DIR="${DIR}"
+
+# Paths to format
+MONITOR=()
+MONITOR+=( "${PROJECT_DIR}/Source" )
+
+# Format all files
+for FILE in $(find ${MONITOR[*]} -type f \( -iname "*.mm" -o -iname "*.m" -o -iname "*.h" \))
+do
+    clang-format -style=file "$FILE" > tempfile && mv tempfile "$FILE"
+done
