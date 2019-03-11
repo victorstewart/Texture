@@ -23,9 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  @abstract Sends action messages for the given control events.
- @param controlEvents A bitmask whose set flags specify the control events for which action messages are sent. See "Control Events" in ASControlNode.h for bitmask constants.
+ @param controlEvents A bitmask whose set flags specify the control events for which action messages are sent. See
+ "Control Events" in ASControlNode.h for bitmask constants.
  @param touchEvent An event object encapsulating the information specific to the user event.
- @discussion ASControlNode implements this method to send all action messages associated with controlEvents. The list of targets is constructed from prior invocations of addTarget:action:forControlEvents:.
+ @discussion ASControlNode implements this method to send all action messages associated with controlEvents. The list of
+ targets is constructed from prior invocations of addTarget:action:forControlEvents:.
  */
 - (void)sendActionsForControlEvents:(ASControlNodeEvent)controlEvents withEvent:(nullable UIEvent *)touchEvent;
 
@@ -47,7 +49,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  @abstract Sent to the control when tracking should be cancelled.
- @param touchEvent An event object encapsulating the information specific to the user event. This parameter may be nil, indicating that the cancelation was caused by something other than an event, such as the display node being removed from its supernode.
+ @param touchEvent An event object encapsulating the information specific to the user event. This parameter may be nil,
+ indicating that the cancelation was caused by something other than an event, such as the display node being removed
+ from its supernode.
  */
 - (void)cancelTrackingWithEvent:(nullable UIEvent *)touchEvent;
 
@@ -61,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  @abstract Settable version of highlighted property.
  */
-@property (getter=isHighlighted) BOOL highlighted;
+@property(getter=isHighlighted) BOOL highlighted;
 
 @end
 

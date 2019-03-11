@@ -10,8 +10,8 @@
 #import <AsyncDisplayKit/ASBlockTypes.h>
 #import <AsyncDisplayKit/ASDisplayNode.h>
 #import <AsyncDisplayKit/ASRangeControllerUpdateRangeProtocol+Beta.h>
-#import <AsyncDisplayKit/ASTableView.h>
 #import <AsyncDisplayKit/ASRangeManagingNode.h>
+#import <AsyncDisplayKit/ASTableView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,44 +25,46 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface ASTableNode : ASDisplayNode <ASRangeControllerUpdateRangeProtocol, ASRangeManagingNode>
 
-- (instancetype)init; // UITableViewStylePlain
+- (instancetype)init;  // UITableViewStylePlain
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_DESIGNATED_INITIALIZER;
 
-@property (readonly) ASTableView *view;
+@property(readonly) ASTableView *view;
 
 // These properties can be set without triggering the view to be created, so it's fine to set them in -init.
-@property (nonatomic, weak) id <ASTableDelegate>   delegate;
-@property (nonatomic, weak) id <ASTableDataSource> dataSource;
+@property(nonatomic, weak) id<ASTableDelegate> delegate;
+@property(nonatomic, weak) id<ASTableDataSource> dataSource;
 
 /**
  * The number of screens left to scroll before the delegate -tableNode:beginBatchFetchingWithContext: is called.
  *
  * Defaults to two screenfuls.
  */
-@property (nonatomic) CGFloat leadingScreensForBatching;
+@property(nonatomic) CGFloat leadingScreensForBatching;
 
 /*
  * A Boolean value that determines whether the table will be flipped.
- * If the value of this property is YES, the first cell node will be at the bottom of the table (as opposed to the top by default). This is useful for chat/messaging apps. The default value is NO.
+ * If the value of this property is YES, the first cell node will be at the bottom of the table (as opposed to the top
+ * by default). This is useful for chat/messaging apps. The default value is NO.
  */
-@property (nonatomic) BOOL inverted;
+@property(nonatomic) BOOL inverted;
 
 /**
  * The distance that the content view is inset from the table node edges. Defaults to UIEdgeInsetsZero.
  */
-@property (nonatomic) UIEdgeInsets contentInset;
+@property(nonatomic) UIEdgeInsets contentInset;
 
 /**
  * The offset of the content view's origin from the table node's origin. Defaults to CGPointZero.
  */
-@property (nonatomic) CGPoint contentOffset;
+@property(nonatomic) CGPoint contentOffset;
 
 /**
  * Sets the offset from the content node’s origin to the table node’s origin.
  *
  * @param contentOffset The offset
  *
- * @param animated YES to animate to this new offset at a constant velocity, NO to not aniamte and immediately make the transition.
+ * @param animated YES to animate to this new offset at a constant velocity, NO to not aniamte and immediately make the
+ * transition.
  */
 - (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated;
 
@@ -75,28 +77,36 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * default is NO.
  */
-@property (nonatomic) BOOL automaticallyAdjustsContentOffset;
+@property(nonatomic) BOOL automaticallyAdjustsContentOffset;
 
 /*
  * A Boolean value that determines whether users can select a row.
- * If the value of this property is YES (the default), users can select rows. If you set it to NO, they cannot select rows. Setting this property affects cell selection only when the table view is not in editing mode. If you want to restrict selection of cells in editing mode, use `allowsSelectionDuringEditing`.
+ * If the value of this property is YES (the default), users can select rows. If you set it to NO, they cannot select
+ * rows. Setting this property affects cell selection only when the table view is not in editing mode. If you want to
+ * restrict selection of cells in editing mode, use `allowsSelectionDuringEditing`.
  */
-@property (nonatomic) BOOL allowsSelection;
+@property(nonatomic) BOOL allowsSelection;
 /*
  * A Boolean value that determines whether users can select cells while the table view is in editing mode.
- * If the value of this property is YES, users can select rows during editing. The default value is NO. If you want to restrict selection of cells regardless of mode, use allowsSelection.
+ * If the value of this property is YES, users can select rows during editing. The default value is NO. If you want to
+ * restrict selection of cells regardless of mode, use allowsSelection.
  */
-@property (nonatomic) BOOL allowsSelectionDuringEditing;
+@property(nonatomic) BOOL allowsSelectionDuringEditing;
 /*
  * A Boolean value that determines whether users can select more than one row outside of editing mode.
- * This property controls whether multiple rows can be selected simultaneously outside of editing mode. When the value of this property is YES, each row that is tapped acquires a selected appearance. Tapping the row again removes the selected appearance. If you access indexPathsForSelectedRows, you can get the index paths that identify the selected rows.
+ * This property controls whether multiple rows can be selected simultaneously outside of editing mode. When the value
+ * of this property is YES, each row that is tapped acquires a selected appearance. Tapping the row again removes the
+ * selected appearance. If you access indexPathsForSelectedRows, you can get the index paths that identify the selected
+ * rows.
  */
-@property (nonatomic) BOOL allowsMultipleSelection;
+@property(nonatomic) BOOL allowsMultipleSelection;
 /*
  * A Boolean value that controls whether users can select more than one cell simultaneously in editing mode.
- * The default value of this property is NO. If you set it to YES, check marks appear next to selected rows in editing mode. In addition, UITableView does not query for editing styles when it goes into editing mode. If you access indexPathsForSelectedRows, you can get the index paths that identify the selected rows.
+ * The default value of this property is NO. If you set it to YES, check marks appear next to selected rows in editing
+ * mode. In addition, UITableView does not query for editing styles when it goes into editing mode. If you access
+ * indexPathsForSelectedRows, you can get the index paths that identify the selected rows.
  */
-@property (nonatomic) BOOL allowsMultipleSelectionDuringEditing;
+@property(nonatomic) BOOL allowsMultipleSelectionDuringEditing;
 
 /**
  * Tuning parameters for a range type in full mode.
@@ -132,7 +142,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @see ASLayoutRangeMode
  * @see ASLayoutRangeType
  */
-- (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode rangeType:(ASLayoutRangeType)rangeType AS_WARN_UNUSED_RESULT;
+- (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode
+                                              rangeType:(ASLayoutRangeType)rangeType AS_WARN_UNUSED_RESULT;
 
 /**
  * Set the tuning parameters for a range type in the specified mode.
@@ -144,7 +155,9 @@ NS_ASSUME_NONNULL_BEGIN
  * @see ASLayoutRangeMode
  * @see ASLayoutRangeType
  */
-- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeMode:(ASLayoutRangeMode)rangeMode rangeType:(ASLayoutRangeType)rangeType;
+- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters
+               forRangeMode:(ASLayoutRangeMode)rangeMode
+                  rangeType:(ASLayoutRangeType)rangeType;
 
 /**
  * Scrolls the table to the given row.
@@ -155,7 +168,9 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * This method must be called on the main thread.
  */
-- (void)scrollToRowAtIndexPath:(NSIndexPath *)indexPath atScrollPosition:(UITableViewScrollPosition)scrollPosition animated:(BOOL)animated;
+- (void)scrollToRowAtIndexPath:(NSIndexPath *)indexPath
+              atScrollPosition:(UITableViewScrollPosition)scrollPosition
+                      animated:(BOOL)animated;
 
 /**
  * Reload everything from scratch, destroying the working range and all cached nodes.
@@ -181,27 +196,31 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)relayoutItems;
 
 /**
- *  Perform a batch of updates asynchronously, optionally disabling all animations in the batch. This method must be called from the main thread.
- *  The data source must be updated to reflect the changes before the update block completes.
+ *  Perform a batch of updates asynchronously, optionally disabling all animations in the batch. This method must be
+ * called from the main thread. The data source must be updated to reflect the changes before the update block
+ * completes.
  *
  *  @param animated   NO to disable animations for this batch
  *  @param updates    The block that performs the relevant insert, delete, reload, or move operations.
- *  @param completion A completion handler block to execute when all of the operations are finished. This block takes a single
- *                    Boolean parameter that contains the value YES if all of the related animations completed successfully or
- *                    NO if they were interrupted. This parameter may be nil. If supplied, the block is run on the main thread.
+ *  @param completion A completion handler block to execute when all of the operations are finished. This block takes a
+ * single Boolean parameter that contains the value YES if all of the related animations completed successfully or NO if
+ * they were interrupted. This parameter may be nil. If supplied, the block is run on the main thread.
  */
-- (void)performBatchAnimated:(BOOL)animated updates:(nullable AS_NOESCAPE void (^)(void))updates completion:(nullable void (^)(BOOL finished))completion;
+- (void)performBatchAnimated:(BOOL)animated
+                     updates:(nullable AS_NOESCAPE void (^)(void))updates
+                  completion:(nullable void (^)(BOOL finished))completion;
 
 /**
- *  Perform a batch of updates asynchronously with animations in the batch. This method must be called from the main thread.
- *  The data source must be updated to reflect the changes before the update block completes.
+ *  Perform a batch of updates asynchronously with animations in the batch. This method must be called from the main
+ * thread. The data source must be updated to reflect the changes before the update block completes.
  *
  *  @param updates    The block that performs the relevant insert, delete, reload, or move operations.
- *  @param completion A completion handler block to execute when all of the operations are finished. This block takes a single
- *                    Boolean parameter that contains the value YES if all of the related animations completed successfully or
- *                    NO if they were interrupted. This parameter may be nil. If supplied, the block is run on the main thread.
+ *  @param completion A completion handler block to execute when all of the operations are finished. This block takes a
+ * single Boolean parameter that contains the value YES if all of the related animations completed successfully or NO if
+ * they were interrupted. This parameter may be nil. If supplied, the block is run on the main thread.
  */
-- (void)performBatchUpdates:(nullable AS_NOESCAPE void (^)(void))updates completion:(nullable void (^)(BOOL finished))completion;
+- (void)performBatchUpdates:(nullable AS_NOESCAPE void (^)(void))updates
+                 completion:(nullable void (^)(BOOL finished))completion;
 
 /**
  *  Returns YES if the ASCollectionNode is still processing changes from performBatchUpdates:.
@@ -215,7 +234,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  This method will always return NO if called immediately after -waitUntilAllUpdatesAreProcessed.
  */
-@property (nonatomic, readonly) BOOL isProcessingUpdates;
+@property(nonatomic, readonly) BOOL isProcessingUpdates;
 
 /**
  *  Schedules a block to be performed (on the main thread) after processing of performBatchUpdates:
@@ -233,7 +252,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)onDidFinishProcessingUpdates:(void (^)(void))didFinishProcessingUpdates;
 
 /**
- *  Blocks execution of the main thread until all section and item updates are committed to the view. This method must be called from the main thread.
+ *  Blocks execution of the main thread until all section and item updates are committed to the view. This method must
+ * be called from the main thread.
  */
 - (void)waitUntilAllUpdatesAreProcessed;
 
@@ -244,8 +264,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param animation A constant that indicates how the insertion is to be animated. See UITableViewRowAnimation.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)insertSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation;
 
@@ -256,8 +276,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param animation A constant that indicates how the deletion is to be animated. See UITableViewRowAnimation.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)deleteSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation;
 
@@ -268,8 +288,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param animation A constant that indicates how the reloading is to be animated. See UITableViewRowAnimation.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)reloadSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation;
 
@@ -280,20 +300,21 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param newSection The index that is the destination of the move for the section.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)moveSection:(NSInteger)section toSection:(NSInteger)newSection;
 
 /**
  * Inserts rows at the locations identified by an array of index paths, with an option to animate the insertion.
  *
- * @param indexPaths An array of NSIndexPath objects, each representing a row index and section index that together identify a row.
+ * @param indexPaths An array of NSIndexPath objects, each representing a row index and section index that together
+ * identify a row.
  *
  * @param animation A constant that indicates how the insertion is to be animated. See UITableViewRowAnimation.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)insertRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation;
 
@@ -304,8 +325,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param animation A constant that indicates how the deletion is to be animated. See UITableViewRowAnimation.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)deleteRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation;
 
@@ -316,8 +337,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param animation A constant that indicates how the reloading is to be animated. See UITableViewRowAnimation.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)reloadRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation;
 
@@ -328,26 +349,29 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param newIndexPath The index path that is the destination of the move for the row.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)moveRowAtIndexPath:(NSIndexPath *)indexPath toIndexPath:(NSIndexPath *)newIndexPath;
 
 #pragma mark - Selection
 
 /**
- * Selects a row in the table view identified by index path, optionally scrolling the row to a location in the table view.
- * This method does not cause any selection-related delegate methods to be called.
+ * Selects a row in the table view identified by index path, optionally scrolling the row to a location in the table
+ * view. This method does not cause any selection-related delegate methods to be called.
  *
  * @param indexPath An index path identifying a row in the table view.
  *
  * @param animated Specify YES to animate the change in the selection or NO to make the change without animating it.
  *
- * @param scrollPosition A constant that identifies a relative position in the table view (top, middle, bottom) for the row when scrolling concludes. See `UITableViewScrollPosition` for descriptions of valid constants.
+ * @param scrollPosition A constant that identifies a relative position in the table view (top, middle, bottom) for the
+ * row when scrolling concludes. See `UITableViewScrollPosition` for descriptions of valid constants.
  *
  * @discussion This method must be called from the main thread.
  */
-- (void)selectRowAtIndexPath:(nullable NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(UITableViewScrollPosition)scrollPosition;
+- (void)selectRowAtIndexPath:(nullable NSIndexPath *)indexPath
+                    animated:(BOOL)animated
+              scrollPosition:(UITableViewScrollPosition)scrollPosition;
 
 /*
  * Deselects a given row identified by index path, with an option to animate the deselection.
@@ -376,14 +400,14 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The number of sections in the table node.
  */
-@property (nonatomic, readonly) NSInteger numberOfSections;
+@property(nonatomic, readonly) NSInteger numberOfSections;
 
 /**
  * Similar to -visibleCells.
  *
  * @return an array containing the nodes being displayed on screen. This must be called on the main thread.
  */
-@property (nonatomic, readonly) NSArray<__kindof ASCellNode *> *visibleNodes;
+@property(nonatomic, readonly) NSArray<__kindof ASCellNode *> *visibleNodes;
 
 /**
  * Retrieves the node for the row at the given index path.
@@ -436,16 +460,16 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @discussion This method must be called from the main thread.
  */
-@property (nullable, nonatomic, copy, readonly) NSIndexPath *indexPathForSelectedRow;
+@property(nullable, nonatomic, copy, readonly) NSIndexPath *indexPathForSelectedRow;
 
-@property (nonatomic, readonly, nullable) NSArray<NSIndexPath *> *indexPathsForSelectedRows;
+@property(nonatomic, readonly, nullable) NSArray<NSIndexPath *> *indexPathsForSelectedRows;
 
 /**
  * Similar to -[UITableView indexPathForRowAtPoint:]
  *
  * @param point A point in the local coordinate system of the table view (the table view’s bounds).
  *
- * @return An index path representing the row and section associated with point, 
+ * @return An index path representing the row and section associated with point,
  *  or nil if the point is out of the bounds of any row.
  *
  * @discussion This method must be called from the main thread.
@@ -519,8 +543,9 @@ NS_ASSUME_NONNULL_BEGIN
  * @param tableNode The sender.
  * @param indexPath The index path of the row.
  *
- * @return a node to display for this row. This will be called on the main thread and should not implement reuse (it will be called once per row). Unlike UITableView's version, this method
- * is not called when the row is about to display.
+ * @return a node to display for this row. This will be called on the main thread and should not implement reuse (it
+ * will be called once per row). Unlike UITableView's version, this method is not called when the row is about to
+ * display.
  */
 - (ASCellNode *)tableNode:(ASTableNode *)tableNode nodeForRowAtIndexPath:(NSIndexPath *)indexPath;
 
@@ -531,10 +556,13 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param indexPath The index path of the requested node.
  *
- * @return a node for display at this indexpath. This will be called on the main thread and should not implement reuse (it will be called once per row). Unlike UITableView's version, this method
- * is not called when the row is about to display.
+ * @return a node for display at this indexpath. This will be called on the main thread and should not implement reuse
+ * (it will be called once per row). Unlike UITableView's version, this method is not called when the row is about to
+ * display.
  */
-- (ASCellNode *)tableView:(ASTableView *)tableView nodeForRowAtIndexPath:(NSIndexPath *)indexPath AS_WARN_UNUSED_RESULT ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
+- (ASCellNode *)tableView:(ASTableView *)tableView
+    nodeForRowAtIndexPath:(NSIndexPath *)indexPath AS_WARN_UNUSED_RESULT
+    ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
 
 /**
  * Similar to -tableView:nodeForRowAtIndexPath:
@@ -547,48 +575,57 @@ NS_ASSUME_NONNULL_BEGIN
  *   Must be thread-safe (can be called on the main thread or a background
  *   queue) and should not implement reuse (it will be called once per row).
  */
-- (ASCellNodeBlock)tableView:(ASTableView *)tableView nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath AS_WARN_UNUSED_RESULT ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
+- (ASCellNodeBlock)tableView:(ASTableView *)tableView
+    nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath AS_WARN_UNUSED_RESULT
+    ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
 
 /**
  * Indicator to lock the data source for data fetching in async mode.
- * We should not update the data source until the data source has been unlocked. Otherwise, it will incur data inconsistency or exception
- * due to the data access in async mode.
+ * We should not update the data source until the data source has been unlocked. Otherwise, it will incur data
+ * inconsistency or exception due to the data access in async mode.
  *
  * @param tableView The sender.
  * @deprecated The data source is always accessed on the main thread, and this method will not be called.
  */
-- (void)tableViewLockDataSource:(ASTableView *)tableView ASDISPLAYNODE_DEPRECATED_MSG("Data source accesses are on the main thread. Method will not be called.");
+- (void)tableViewLockDataSource:(ASTableView *)tableView
+    ASDISPLAYNODE_DEPRECATED_MSG("Data source accesses are on the main thread. Method will not be called.");
 
 /**
  * Indicator to unlock the data source for data fetching in asyn mode.
- * We should not update the data source until the data source has been unlocked. Otherwise, it will incur data inconsistency or exception
- * due to the data access in async mode.
+ * We should not update the data source until the data source has been unlocked. Otherwise, it will incur data
+ * inconsistency or exception due to the data access in async mode.
  *
  * @param tableView The sender.
  * @deprecated The data source is always accessed on the main thread, and this method will not be called.
  */
-- (void)tableViewUnlockDataSource:(ASTableView *)tableView ASDISPLAYNODE_DEPRECATED_MSG("Data source accesses are on the main thread. Method will not be called.");
+- (void)tableViewUnlockDataSource:(ASTableView *)tableView
+    ASDISPLAYNODE_DEPRECATED_MSG("Data source accesses are on the main thread. Method will not be called.");
 
 /**
  * Generate a unique identifier for an element in a table. This helps state restoration persist the scroll position
- *  of a table view even when the data in that table changes. See the documentation for UIDataSourceModelAssociation for more information.
+ *  of a table view even when the data in that table changes. See the documentation for UIDataSourceModelAssociation for
+ * more information.
  *
  * @param indexPath The index path of the requested node.
  *
  * @param tableNode The sender.
  *
- * @return a unique identifier for the element at the given path. Return nil if the index path does not exist in the table.
+ * @return a unique identifier for the element at the given path. Return nil if the index path does not exist in the
+ * table.
  */
 - (nullable NSString *)modelIdentifierForElementAtIndexPath:(NSIndexPath *)indexPath inNode:(ASTableNode *)tableNode;
 
 /**
- * Similar to -tableView:cellForRowAtIndexPath:. See the documentation for UIDataSourceModelAssociation for more information.
+ * Similar to -tableView:cellForRowAtIndexPath:. See the documentation for UIDataSourceModelAssociation for more
+ * information.
  *
- * @param identifier The model identifier of the element, previously generated by a call to modelIdentifierForElementAtIndexPath.
+ * @param identifier The model identifier of the element, previously generated by a call to
+ * modelIdentifierForElementAtIndexPath.
  *
  * @param tableNode The sender.
  *
- * @return the index path to the current position of the matching element in the table. Return nil if the element is not found.
+ * @return the index path to the current position of the matching element in the table. Return nil if the element is not
+ * found.
  */
 - (nullable NSIndexPath *)indexPathForElementWithModelIdentifier:(NSString *)identifier inNode:(ASTableNode *)tableNode;
 
@@ -621,8 +658,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)tableNode:(ASTableNode *)tableNode didUnhighlightRowAtIndexPath:(NSIndexPath *)indexPath;
 
 - (BOOL)tableNode:(ASTableNode *)tableNode shouldShowMenuForRowAtIndexPath:(NSIndexPath *)indexPath;
-- (BOOL)tableNode:(ASTableNode *)tableNode canPerformAction:(SEL)action forRowAtIndexPath:(NSIndexPath *)indexPath withSender:(nullable id)sender;
-- (void)tableNode:(ASTableNode *)tableNode performAction:(SEL)action forRowAtIndexPath:(NSIndexPath *)indexPath withSender:(nullable id)sender;
+- (BOOL)tableNode:(ASTableNode *)tableNode
+     canPerformAction:(SEL)action
+    forRowAtIndexPath:(NSIndexPath *)indexPath
+           withSender:(nullable id)sender;
+- (void)tableNode:(ASTableNode *)tableNode
+        performAction:(SEL)action
+    forRowAtIndexPath:(NSIndexPath *)indexPath
+           withSender:(nullable id)sender;
 
 /**
  * Provides the constrained size range for measuring the row at the index path.
@@ -675,7 +718,9 @@ NS_ASSUME_NONNULL_BEGIN
  *   passed into this method may not correspond to the same item in your data source
  *   if your data source has been updated since the last edit was processed.
  */
-- (void)tableView:(ASTableView *)tableView willDisplayNode:(ASCellNode *)node forRowAtIndexPath:(NSIndexPath *)indexPath ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
+- (void)tableView:(ASTableView *)tableView
+      willDisplayNode:(ASCellNode *)node
+    forRowAtIndexPath:(NSIndexPath *)indexPath ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
 
 /**
  * Informs the delegate that the table view did remove the provided node from the view hierarchy.
@@ -690,7 +735,9 @@ NS_ASSUME_NONNULL_BEGIN
  *   passed into this method may not correspond to the same item in your data source
  *   if your data source has been updated since the last edit was processed.
  */
-- (void)tableView:(ASTableView *)tableView didEndDisplayingNode:(ASCellNode *)node forRowAtIndexPath:(NSIndexPath *)indexPath ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
+- (void)tableView:(ASTableView *)tableView
+    didEndDisplayingNode:(ASCellNode *)node
+       forRowAtIndexPath:(NSIndexPath *)indexPath ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
 
 /**
  * Receive a message that the tableView is near the end of its data set and more data should be fetched if necessary.
@@ -704,7 +751,9 @@ NS_ASSUME_NONNULL_BEGIN
  * ASTableView currently only supports batch events for tail loads. If you require a head load, consider implementing a
  * UIRefreshControl.
  */
-- (void)tableView:(ASTableView *)tableView willBeginBatchFetchWithContext:(ASBatchContext *)context ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
+- (void)tableView:(ASTableView *)tableView
+    willBeginBatchFetchWithContext:(ASBatchContext *)context
+    ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
 
 /**
  * Tell the tableView if batch fetching should begin.
@@ -717,7 +766,8 @@ NS_ASSUME_NONNULL_BEGIN
  * If not implemented, the tableView assumes that it should notify its asyncDelegate when batch fetching
  * should occur.
  */
-- (BOOL)shouldBatchFetchForTableView:(ASTableView *)tableView AS_WARN_UNUSED_RESULT ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
+- (BOOL)shouldBatchFetchForTableView:(ASTableView *)tableView AS_WARN_UNUSED_RESULT
+    ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
 
 /**
  * Provides the constrained size range for measuring the row at the index path.
@@ -729,7 +779,9 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return A constrained size range for layout the node at this index path.
  */
-- (ASSizeRange)tableView:(ASTableView *)tableView constrainedSizeForRowAtIndexPath:(NSIndexPath *)indexPath AS_WARN_UNUSED_RESULT ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
+- (ASSizeRange)tableView:(ASTableView *)tableView
+    constrainedSizeForRowAtIndexPath:(NSIndexPath *)indexPath AS_WARN_UNUSED_RESULT
+    ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
 
 /**
  * Informs the delegate that the table view will add the node
@@ -744,13 +796,16 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * This method is deprecated. Use @c tableView:willDisplayNode:forRowAtIndexPath: instead.
  */
-- (void)tableView:(ASTableView *)tableView willDisplayNodeForRowAtIndexPath:(NSIndexPath *)indexPath ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
+- (void)tableView:(ASTableView *)tableView
+    willDisplayNodeForRowAtIndexPath:(NSIndexPath *)indexPath
+    ASDISPLAYNODE_DEPRECATED_MSG("Use ASTableNode's method instead.");
 
 @end
 
 @interface ASTableNode (Deprecated)
 
-- (void)waitUntilAllUpdatesAreCommitted ASDISPLAYNODE_DEPRECATED_MSG("This method has been renamed to -waitUntilAllUpdatesAreProcessed.");
+- (void)waitUntilAllUpdatesAreCommitted ASDISPLAYNODE_DEPRECATED_MSG(
+    "This method has been renamed to -waitUntilAllUpdatesAreProcessed.");
 
 @end
 

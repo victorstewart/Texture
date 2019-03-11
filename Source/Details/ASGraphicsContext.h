@@ -6,9 +6,9 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
 #import <CoreGraphics/CoreGraphics.h>
+#import <Foundation/Foundation.h>
 
 @class UIImage;
 
@@ -38,7 +38,7 @@ AS_EXTERN void ASGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque, 
  *
  * Behavior is the same as UIGraphicsGetImageFromCurrentImageContext followed by UIGraphicsEndImageContext.
  */
-AS_EXTERN UIImage * _Nullable ASGraphicsGetImageAndEndCurrentContext(void) NS_RETURNS_RETAINED;
+AS_EXTERN UIImage* _Nullable ASGraphicsGetImageAndEndCurrentContext(void) NS_RETURNS_RETAINED;
 
 /**
  * Call this if you want to end the current context without making an image.

@@ -12,9 +12,9 @@
 // These methods must never be called or overridden by other classes.
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASDisplayNode.h>
 #import <AsyncDisplayKit/ASObjectDescriptionHelpers.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,80 +25,77 @@ NS_ASSUME_NONNULL_BEGIN
  Examples include rasterization and external driving of the .interfaceState property.
  By passing this information explicitly, performance is optimized by avoiding iteration up the supernode chain.
  Lastly, this avoidance of supernode traversal protects against the possibility of deadlocks when a supernode is
- simultaneously attempting to materialize views / layers for its subtree (as many related methods require property locking)
- 
- Note: as the hierarchy deepens, more state properties may be enabled.  However, state properties may never be disabled /
- cancelled below the point they are enabled.  They continue to the leaves of the hierarchy.
+ simultaneously attempting to materialize views / layers for its subtree (as many related methods require property
+ locking)
+
+ Note: as the hierarchy deepens, more state properties may be enabled.  However, state properties may never be disabled
+ / cancelled below the point they are enabled.  They continue to the leaves of the hierarchy.
  */
 
-typedef NS_OPTIONS(NSUInteger, ASHierarchyState)
-{
+typedef NS_OPTIONS(NSUInteger, ASHierarchyState) {
   /** The node may or may not have a supernode, but no supernode has a special hierarchy-influencing option enabled. */
-  ASHierarchyStateNormal                  = 0,
+  ASHierarchyStateNormal = 0,
   /** The node has a supernode with .rasterizesSubtree = YES.
-      Note: the root node of the rasterized subtree (the one with the property set on it) will NOT have this state set. */
-  ASHierarchyStateRasterized              = 1 << 0,
+      Note: the root node of the rasterized subtree (the one with the property set on it) will NOT have this state set.
+   */
+  ASHierarchyStateRasterized = 1 << 0,
   /** The node or one of its supernodes is managed by a class like ASRangeController.  Most commonly, these nodes are
       ASCellNode objects or a subnode of one, and are used in ASTableView or ASCollectionView.
       These nodes also receive regular updates to the .interfaceState property with more detailed status information. */
-  ASHierarchyStateRangeManaged            = 1 << 1,
+  ASHierarchyStateRangeManaged = 1 << 1,
   /** Down-propagated version of _flags.visibilityNotificationsDisabled.  This flag is very rarely set, but by having it
       locally available to nodes, they do not have to walk up supernodes at the critical points it is checked. */
   ASHierarchyStateTransitioningSupernodes = 1 << 2,
   /** One of the supernodes of this node is performing a transition.
       Any layout calculated during this state should not be applied immediately, but pending until later. */
-  ASHierarchyStateLayoutPending           = 1 << 3,
+  ASHierarchyStateLayoutPending = 1 << 3,
 };
 
-ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesLayoutPending(ASHierarchyState hierarchyState)
-{
+ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesLayoutPending(ASHierarchyState hierarchyState) {
   return ((hierarchyState & ASHierarchyStateLayoutPending) == ASHierarchyStateLayoutPending);
 }
 
-ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesRangeManaged(ASHierarchyState hierarchyState)
-{
+ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesRangeManaged(ASHierarchyState hierarchyState) {
   return ((hierarchyState & ASHierarchyStateRangeManaged) == ASHierarchyStateRangeManaged);
 }
 
-ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesRasterized(ASHierarchyState hierarchyState)
-{
-	return ((hierarchyState & ASHierarchyStateRasterized) == ASHierarchyStateRasterized);
+ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesRasterized(ASHierarchyState hierarchyState) {
+  return ((hierarchyState & ASHierarchyStateRasterized) == ASHierarchyStateRasterized);
 }
 
-ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesTransitioningSupernodes(ASHierarchyState hierarchyState)
-{
-	return ((hierarchyState & ASHierarchyStateTransitioningSupernodes) == ASHierarchyStateTransitioningSupernodes);
+ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesTransitioningSupernodes(ASHierarchyState hierarchyState) {
+  return ((hierarchyState & ASHierarchyStateTransitioningSupernodes) == ASHierarchyStateTransitioningSupernodes);
 }
 
-__unused static NSString * _Nonnull NSStringFromASHierarchyState(ASHierarchyState hierarchyState)
-{
-	NSMutableArray *states = [NSMutableArray array];
-	if (hierarchyState == ASHierarchyStateNormal) {
-		[states addObject:@"Normal"];
-	}
-	if (ASHierarchyStateIncludesRangeManaged(hierarchyState)) {
-		[states addObject:@"RangeManaged"];
-	}
-	if (ASHierarchyStateIncludesLayoutPending(hierarchyState)) {
-		[states addObject:@"LayoutPending"];
-	}
-	if (ASHierarchyStateIncludesRasterized(hierarchyState)) {
-		[states addObject:@"Rasterized"];
-	}
-	if (ASHierarchyStateIncludesTransitioningSupernodes(hierarchyState)) {
-		[states addObject:@"TransitioningSupernodes"];
-	}
-	return [NSString stringWithFormat:@"{ %@ }", [states componentsJoinedByString:@" | "]];
+__unused static NSString *_Nonnull NSStringFromASHierarchyState(ASHierarchyState hierarchyState) {
+  NSMutableArray *states = [NSMutableArray array];
+  if (hierarchyState == ASHierarchyStateNormal) {
+    [states addObject:@"Normal"];
+  }
+  if (ASHierarchyStateIncludesRangeManaged(hierarchyState)) {
+    [states addObject:@"RangeManaged"];
+  }
+  if (ASHierarchyStateIncludesLayoutPending(hierarchyState)) {
+    [states addObject:@"LayoutPending"];
+  }
+  if (ASHierarchyStateIncludesRasterized(hierarchyState)) {
+    [states addObject:@"Rasterized"];
+  }
+  if (ASHierarchyStateIncludesTransitioningSupernodes(hierarchyState)) {
+    [states addObject:@"TransitioningSupernodes"];
+  }
+  return [NSString stringWithFormat:@"{ %@ }", [states componentsJoinedByString:@" | "]];
 }
 
-#define HIERARCHY_STATE_DELTA(Name) ({ \
-  if ((oldState & ASHierarchyState##Name) != (newState & ASHierarchyState##Name)) { \
-    [changes appendFormat:@"%c%s ", (newState & ASHierarchyState##Name ? '+' : '-'), #Name]; \
-  } \
-})
+#define HIERARCHY_STATE_DELTA(Name)                                                            \
+  ({                                                                                           \
+    if ((oldState & ASHierarchyState##Name) != (newState & ASHierarchyState##Name)) {          \
+      [changes appendFormat:@"%c%s ", (newState & ASHierarchyState##Name ? '+' : '-'), #Name]; \
+    }                                                                                          \
+  })
 
-__unused static NSString * _Nonnull NSStringFromASHierarchyStateChange(ASHierarchyState oldState, ASHierarchyState newState)
-{
+__unused static NSString *_Nonnull NSStringFromASHierarchyStateChange(ASHierarchyState oldState,
+                                                                      ASHierarchyState newState) {
   if (oldState == newState) {
     return @"{ }";
   }
@@ -114,9 +111,8 @@ __unused static NSString * _Nonnull NSStringFromASHierarchyStateChange(ASHierarc
 
 #undef HIERARCHY_STATE_DELTA
 
-@interface ASDisplayNode () <ASDescriptionProvider, ASDebugDescriptionProvider>
-{
-@protected
+@interface ASDisplayNode () <ASDescriptionProvider, ASDebugDescriptionProvider> {
+ @protected
   ASInterfaceState _interfaceState;
   ASHierarchyState _hierarchyState;
 }
@@ -125,14 +121,14 @@ __unused static NSString * _Nonnull NSStringFromASHierarchyStateChange(ASHierarc
 + (Class)viewClass;
 
 // Thread safe way to access the bounds of the node
-@property (nonatomic) CGRect threadSafeBounds;
+@property(nonatomic) CGRect threadSafeBounds;
 
 // Returns the bounds of the node without reaching the view or layer
 - (CGRect)_locked_threadSafeBounds;
 
 // The -pendingInterfaceState holds the value that will be applied to -interfaceState by the
 // ASCATransactionQueue. If already applied, it matches -interfaceState. Thread-safe access.
-@property (nonatomic, readonly) ASInterfaceState pendingInterfaceState;
+@property(nonatomic, readonly) ASInterfaceState pendingInterfaceState;
 
 // These methods are recursive, and either union or remove the provided interfaceState to all sub-elements.
 - (void)enterInterfaceState:(ASInterfaceState)interfaceState;
@@ -144,20 +140,23 @@ __unused static NSString * _Nonnull NSStringFromASHierarchyStateChange(ASHierarc
 - (void)exitHierarchyState:(ASHierarchyState)hierarchyState;
 
 // Changed before calling willEnterHierarchy / didExitHierarchy.
-@property (readonly, getter = isInHierarchy) BOOL inHierarchy;
-// Call willEnterHierarchy if necessary and set inHierarchy = YES if visibility notifications are enabled on all of its parents
+@property(readonly, getter=isInHierarchy) BOOL inHierarchy;
+// Call willEnterHierarchy if necessary and set inHierarchy = YES if visibility notifications are enabled on all of its
+// parents
 - (void)__enterHierarchy;
-// Call didExitHierarchy if necessary and set inHierarchy = NO if visibility notifications are enabled on all of its parents
+// Call didExitHierarchy if necessary and set inHierarchy = NO if visibility notifications are enabled on all of its
+// parents
 - (void)__exitHierarchy;
 
 /**
  * @abstract Returns the Hierarchy State of the node.
  *
- * @return The current ASHierarchyState of the node, indicating whether it is rasterized or managed by a range controller.
+ * @return The current ASHierarchyState of the node, indicating whether it is rasterized or managed by a range
+ * controller.
  *
  * @see ASInterfaceState
  */
-@property (nonatomic) ASHierarchyState hierarchyState;
+@property(nonatomic) ASHierarchyState hierarchyState;
 
 /**
  * @abstract Return if the node is range managed or not
@@ -177,7 +176,8 @@ __unused static NSString * _Nonnull NSStringFromASHierarchyStateChange(ASHierarc
  * placeholder states are never visible to the user.  It is used by ASTableView, ASCollectionView, and ASViewController
  * to implement their respective ".neverShowPlaceholders" option.
  *
- * If all nodes have layer.contents set and/or their layer does not have -needsDisplay set, the method will return immediately.
+ * If all nodes have layer.contents set and/or their layer does not have -needsDisplay set, the method will return
+ * immediately.
  *
  * This method is capable of handling a mixed set of nodes, with some not having started display, some in progress on an
  * asynchronous display operation, and some already finished.
@@ -208,7 +208,8 @@ __unused static NSString * _Nonnull NSStringFromASHierarchyStateChange(ASHierarc
 - (void)recursivelyPreload;
 
 /**
- * @abstract Triggers a recursive call to -didEnterPreloadState when the node has an interfaceState of ASInterfaceStatePreload
+ * @abstract Triggers a recursive call to -didEnterPreloadState when the node has an interfaceState of
+ * ASInterfaceStatePreload
  */
 - (void)setNeedsPreload;
 
@@ -218,7 +219,8 @@ __unused static NSString * _Nonnull NSStringFromASHierarchyStateChange(ASHierarc
  * @discussion Nodes that are expensive to draw and expected to have placeholder even with
  * .neverShowPlaceholders enabled should set this to YES.
  *
- * ASImageNode uses the default of NO, as it is often used for UI images that are expected to synchronize with ensureDisplay.
+ * ASImageNode uses the default of NO, as it is often used for UI images that are expected to synchronize with
+ * ensureDisplay.
  *
  * ASNetworkImageNode and ASMultiplexImageNode set this to YES, because they load data from a database or server,
  * and are expected to support a placeholder state given that display is often blocked on slow data fetching.
@@ -237,7 +239,7 @@ __unused static NSString * _Nonnull NSStringFromASHierarchyStateChange(ASHierarc
  * @discussion This should be set by the owning view controller based on it's layout guides.
  * If this is not a view controllet's node the value will be calculated automatically by the parent node.
  */
-@property (nonatomic) UIEdgeInsets fallbackSafeAreaInsets;
+@property(nonatomic) UIEdgeInsets fallbackSafeAreaInsets;
 
 /**
  * @abstract Indicates if this node is a view controller's root node. Defaults to NO.
@@ -247,10 +249,9 @@ __unused static NSString * _Nonnull NSStringFromASHierarchyStateChange(ASHierarc
  * YES here only means that this node is used as an ASViewController node. It doesn't mean that this node is a root of
  * ASDisplayNode hierarchy, e.g. when its view controller is parented by another ASViewController.
  */
-@property (nonatomic, getter=isViewControllerRoot) BOOL viewControllerRoot;
+@property(nonatomic, getter=isViewControllerRoot) BOOL viewControllerRoot;
 
 @end
-
 
 @interface ASDisplayNode (ASLayoutInternal)
 
@@ -314,14 +315,15 @@ __unused static NSString * _Nonnull NSStringFromASHierarchyStateChange(ASHierarc
 
 @interface ASDisplayNode (AccessibilityInternal)
 - (NSArray *)accessibilityElements;
-@end;
+@end
+;
 
 @interface UIView (ASDisplayNodeInternal)
-@property (nullable, weak) ASDisplayNode *asyncdisplaykit_node;
+@property(nullable, weak) ASDisplayNode *asyncdisplaykit_node;
 @end
 
 @interface CALayer (ASDisplayNodeInternal)
-@property (nullable, weak) ASDisplayNode *asyncdisplaykit_node;
+@property(nullable, weak) ASDisplayNode *asyncdisplaykit_node;
 @end
 
 NS_ASSUME_NONNULL_END

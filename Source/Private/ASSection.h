@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 @protocol ASSectionContext;
 
@@ -25,11 +25,12 @@ NS_ASSUME_NONNULL_BEGIN
 AS_SUBCLASSING_RESTRICTED
 @interface ASSection : NSObject
 
-@property (readonly) NSInteger sectionID;
-@property (nullable, readonly) id<ASSectionContext> context;
+@property(readonly) NSInteger sectionID;
+@property(nullable, readonly) id<ASSectionContext> context;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithSectionID:(NSInteger)sectionID context:(nullable id<ASSectionContext>)context NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSectionID:(NSInteger)sectionID
+                          context:(nullable id<ASSectionContext>)context NS_DESIGNATED_INITIALIZER;
 
 @end
 

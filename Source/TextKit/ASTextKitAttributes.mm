@@ -16,8 +16,7 @@
 NSString *const ASTextKitTruncationAttributeName = @"ck_truncation";
 NSString *const ASTextKitEntityAttributeName = @"ck_entity";
 
-size_t ASTextKitAttributes::hash() const
-{
+size_t ASTextKitAttributes::hash() const {
 #pragma clang diagnostic push
 #pragma clang diagnostic warning "-Wpadded"
   struct {
@@ -33,16 +32,16 @@ size_t ASTextKitAttributes::hash() const
     CGFloat shadowRadius;
 #pragma clang diagnostic pop
   } data = {
-    [attributedString hash],
-    [truncationAttributedString hash],
-    [avoidTailTruncationSet hash],
-    lineBreakMode,
-    maximumNumberOfLines,
-    [exclusionPaths hash],
-    shadowOffset,
-    [shadowColor hash],
-    shadowOpacity,
-    shadowRadius,
+      [attributedString hash],
+      [truncationAttributedString hash],
+      [avoidTailTruncationSet hash],
+      lineBreakMode,
+      maximumNumberOfLines,
+      [exclusionPaths hash],
+      shadowOffset,
+      [shadowColor hash],
+      shadowOpacity,
+      shadowRadius,
   };
   return ASHashBytes(&data, sizeof(data));
 }

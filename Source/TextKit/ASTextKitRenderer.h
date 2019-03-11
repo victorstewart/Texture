@@ -46,19 +46,19 @@
 - (instancetype)initWithTextKitAttributes:(const ASTextKitAttributes &)textComponentAttributes
                           constrainedSize:(const CGSize)constrainedSize;
 
-@property (nonatomic, readonly) ASTextKitContext *context;
+@property(nonatomic, readonly) ASTextKitContext *context;
 
-@property (nonatomic, readonly) id<ASTextKitTruncating> truncater;
+@property(nonatomic, readonly) id<ASTextKitTruncating> truncater;
 
-@property (nonatomic, readonly) ASTextKitFontSizeAdjuster *fontSizeAdjuster;
+@property(nonatomic, readonly) ASTextKitFontSizeAdjuster *fontSizeAdjuster;
 
-@property (nonatomic, readonly) ASTextKitShadower *shadower;
+@property(nonatomic, readonly) ASTextKitShadower *shadower;
 
-@property (nonatomic, readonly) ASTextKitAttributes attributes;
+@property(nonatomic, readonly) ASTextKitAttributes attributes;
 
-@property (nonatomic, readonly) CGSize constrainedSize;
+@property(nonatomic, readonly) CGSize constrainedSize;
 
-@property (nonatomic, readonly) CGFloat currentScaleFactor;
+@property(nonatomic, readonly) CGFloat currentScaleFactor;
 
 #pragma mark - Drawing
 /**
@@ -81,7 +81,7 @@
  The character range from the original attributedString that is displayed by the renderer given the parameters in the
  initializer.
  */
-@property (nonatomic, readonly) std::vector<NSRange> visibleRanges;
+@property(nonatomic, readonly) std::vector<NSRange> visibleRanges;
 
 /**
  The number of lines shown in the string.
@@ -101,7 +101,7 @@
  Returns the first visible range or an NSRange with location of NSNotFound and size of 0 if no first visible
  range exists
  */
-@property (nonatomic, readonly) NSRange firstVisibleRange;
+@property(nonatomic, readonly) NSRange firstVisibleRange;
 
 @end
 

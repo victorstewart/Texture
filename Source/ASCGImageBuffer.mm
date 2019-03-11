@@ -8,10 +8,10 @@
 
 #import "ASCGImageBuffer.h"
 
-#import <sys/mman.h>
 #import <mach/mach_init.h>
 #import <mach/vm_map.h>
 #import <mach/vm_statistics.h>
+#import <sys/mman.h>
 
 /**
  * The behavior of this class is modeled on the private function
@@ -28,19 +28,19 @@
   NSUInteger _length;
 }
 
-- (instancetype)initWithLength:(NSUInteger)length
-{
+- (instancetype)initWithLength:(NSUInteger)length {
   if (self = [super init]) {
     _length = length;
     _isVM = (length >= vm_page_size);
     if (_isVM) {
-      _mutableBytes = mmap(NULL, length, PROT_WRITE | PROT_READ, MAP_ANONYMOUS | MAP_PRIVATE, VM_MAKE_TAG(VM_MEMORY_COREGRAPHICS_DATA), 0);
+      _mutableBytes = mmap(NULL, length, PROT_WRITE | PROT_READ, MAP_ANONYMOUS | MAP_PRIVATE,
+                           VM_MAKE_TAG(VM_MEMORY_COREGRAPHICS_DATA), 0);
       if (_mutableBytes == MAP_FAILED) {
         NSAssert(NO, @"Failed to map for CG image data.");
         _isVM = NO;
       }
     }
-    
+
     // Check the VM flag again because we may have failed above.
     if (!_isVM) {
       _mutableBytes = calloc(1, length);
@@ -49,37 +49,39 @@
   return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
   if (!_createdData) {
     [ASCGImageBuffer deallocateBuffer:_mutableBytes length:_length isVM:_isVM];
   }
 }
 
-- (CGDataProviderRef)createDataProviderAndInvalidate
-{
+- (CGDataProviderRef)createDataProviderAndInvalidate {
   NSAssert(!_createdData, @"Should not create data provider from buffer multiple times.");
   _createdData = YES;
-  
+
   // Mark the pages as read-only.
   if (_isVM) {
-    __unused kern_return_t result = vm_protect(mach_task_self(), (vm_address_t)_mutableBytes, _length, true, VM_PROT_READ);
-    NSAssert(result == noErr, @"Error marking buffer as read-only: %@", [NSError errorWithDomain:NSMachErrorDomain code:result userInfo:nil]);
+    __unused kern_return_t result =
+        vm_protect(mach_task_self(), (vm_address_t)_mutableBytes, _length, true, VM_PROT_READ);
+    NSAssert(result == noErr, @"Error marking buffer as read-only: %@",
+             [NSError errorWithDomain:NSMachErrorDomain code:result userInfo:nil]);
   }
-  
+
   // Wrap in an NSData
   BOOL isVM = _isVM;
-  NSData *d = [[NSData alloc] initWithBytesNoCopy:_mutableBytes length:_length deallocator:^(void * _Nonnull bytes, NSUInteger length) {
-    [ASCGImageBuffer deallocateBuffer:bytes length:length isVM:isVM];
-  }];
+  NSData *d = [[NSData alloc] initWithBytesNoCopy:_mutableBytes
+                                           length:_length
+                                      deallocator:^(void *_Nonnull bytes, NSUInteger length) {
+                                        [ASCGImageBuffer deallocateBuffer:bytes length:length isVM:isVM];
+                                      }];
   return CGDataProviderCreateWithCFData((__bridge CFDataRef)d);
 }
 
-+ (void)deallocateBuffer:(void *)buf length:(NSUInteger)length isVM:(BOOL)isVM
-{
++ (void)deallocateBuffer:(void *)buf length:(NSUInteger)length isVM:(BOOL)isVM {
   if (isVM) {
     __unused kern_return_t result = vm_deallocate(mach_task_self(), (vm_address_t)buf, length);
-    NSAssert(result == noErr, @"Failed to unmap cg image buffer: %@", [NSError errorWithDomain:NSMachErrorDomain code:result userInfo:nil]);
+    NSAssert(result == noErr, @"Failed to unmap cg image buffer: %@",
+             [NSError errorWithDomain:NSMachErrorDomain code:result userInfo:nil]);
   } else {
     free(buf);
   }

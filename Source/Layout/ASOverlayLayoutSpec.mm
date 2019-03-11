@@ -7,10 +7,10 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASOverlayLayoutSpec.h>
-#import <AsyncDisplayKit/ASLayoutSpec+Subclasses.h>
 #import <AsyncDisplayKit/ASAssert.h>
 #import <AsyncDisplayKit/ASCollections.h>
+#import <AsyncDisplayKit/ASLayoutSpec+Subclasses.h>
+#import <AsyncDisplayKit/ASOverlayLayoutSpec.h>
 
 static NSUInteger const kUnderlayChildIndex = 0;
 static NSUInteger const kOverlayChildIndex = 1;
@@ -19,15 +19,14 @@ static NSUInteger const kOverlayChildIndex = 1;
 
 #pragma mark - Class
 
-+ (instancetype)overlayLayoutSpecWithChild:(id<ASLayoutElement>)child overlay:(id<ASLayoutElement>)overlay NS_RETURNS_RETAINED
-{
++ (instancetype)overlayLayoutSpecWithChild:(id<ASLayoutElement>)child
+                                   overlay:(id<ASLayoutElement>)overlay NS_RETURNS_RETAINED {
   return [[self alloc] initWithChild:child overlay:overlay];
 }
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithChild:(id<ASLayoutElement>)child overlay:(id<ASLayoutElement>)overlay
-{
+- (instancetype)initWithChild:(id<ASLayoutElement>)child overlay:(id<ASLayoutElement>)overlay {
   if (!(self = [super init])) {
     return nil;
   }
@@ -38,25 +37,21 @@ static NSUInteger const kOverlayChildIndex = 1;
 
 #pragma mark - Setter / Getter
 
-- (void)setChild:(id<ASLayoutElement>)child
-{
+- (void)setChild:(id<ASLayoutElement>)child {
   ASDisplayNodeAssertNotNil(child, @"Child that will be overlayed on shouldn't be nil");
   [super setChild:child atIndex:kUnderlayChildIndex];
 }
 
-- (id<ASLayoutElement>)child
-{
+- (id<ASLayoutElement>)child {
   return [super childAtIndex:kUnderlayChildIndex];
 }
 
-- (void)setOverlay:(id<ASLayoutElement>)overlay
-{
+- (void)setOverlay:(id<ASLayoutElement>)overlay {
   ASDisplayNodeAssertNotNil(overlay, @"Overlay cannot be nil");
   [super setChild:overlay atIndex:kOverlayChildIndex];
 }
 
-- (id<ASLayoutElement>)overlay
-{
+- (id<ASLayoutElement>)overlay {
   return [super childAtIndex:kOverlayChildIndex];
 }
 
@@ -67,8 +62,7 @@ static NSUInteger const kOverlayChildIndex = 1;
  */
 - (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize
                      restrictedToSize:(ASLayoutElementSize)size
-                 relativeToParentSize:(CGSize)parentSize
-{
+                 relativeToParentSize:(CGSize)parentSize {
   ASLayout *contentsLayout = [self.child layoutThatFits:constrainedSize parentSize:parentSize];
   contentsLayout.position = CGPointZero;
   ASLayout *rawSublayouts[2];
@@ -80,7 +74,7 @@ static NSUInteger const kOverlayChildIndex = 1;
     overlayLayout.position = CGPointZero;
     rawSublayouts[i++] = overlayLayout;
   }
-  
+
   const auto sublayouts = [NSArray<ASLayout *> arrayByTransferring:rawSublayouts count:i];
   return [ASLayout layoutWithLayoutElement:self size:contentsLayout.size sublayouts:sublayouts];
 }

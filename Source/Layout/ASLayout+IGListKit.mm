@@ -9,22 +9,20 @@
 #if AS_IG_LIST_KIT
 #import "ASLayout+IGListKit.h"
 
-@interface ASLayout() {
-@public
+@interface ASLayout () {
+ @public
   id<ASLayoutElement> _layoutElement;
 }
 @end
 
-@implementation ASLayout(IGListKit)
+@implementation ASLayout (IGListKit)
 
-- (id <NSObject>)diffIdentifier
-{
+- (id<NSObject>)diffIdentifier {
   return self->_layoutElement;
 }
 
-- (BOOL)isEqualToDiffableObject:(id <IGListDiffable>)other
-{
+- (BOOL)isEqualToDiffableObject:(id<IGListDiffable>)other {
   return [self isEqual:other];
 }
 @end
-#endif // AS_IG_LIST_KIT
+#endif  // AS_IG_LIST_KIT

@@ -11,9 +11,7 @@
 
 #if AS_ENABLE_TEXTNODE
 
-typedef void (^as_text_component_index_block_t)(NSUInteger characterIndex,
-                                                CGRect glyphBoundingRect,
-                                                BOOL *stop);
+typedef void (^as_text_component_index_block_t)(NSUInteger characterIndex, CGRect glyphBoundingRect, BOOL *stop);
 
 /**
  Measure options are used to specify which type of line height measurement to use.
@@ -57,8 +55,7 @@ typedef NS_ENUM(NSUInteger, ASTextKitRendererMeasureOption) {
 
  Triggers initialization of textkit components, truncation, and sizing.
  */
-- (NSArray *)rectsForTextRange:(NSRange)textRange
-                 measureOption:(ASTextKitRendererMeasureOption)measureOption;
+- (NSArray *)rectsForTextRange:(NSRange)textRange measureOption:(ASTextKitRendererMeasureOption)measureOption;
 
 /**
  Enumerate the text character indexes at a position within the coordinate space of the renderer.
@@ -79,8 +76,7 @@ typedef NS_ENUM(NSUInteger, ASTextKitRendererMeasureOption) {
 
  Triggers initialization of textkit components, truncation, and sizing.
  */
-- (void)enumerateTextIndexesAtPosition:(CGPoint)position
-                            usingBlock:(as_text_component_index_block_t)block;
+- (void)enumerateTextIndexesAtPosition:(CGPoint)position usingBlock:(as_text_component_index_block_t)block;
 
 /**
  Returns the single text index whose glyph's centroid is closest to the given position.

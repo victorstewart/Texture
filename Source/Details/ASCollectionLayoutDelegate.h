@@ -7,9 +7,9 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
+#import <AsyncDisplayKit/ASScrollDirection.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <AsyncDisplayKit/ASScrollDirection.h>
 
 @class ASElementMap, ASCollectionLayoutContext, ASCollectionLayoutState;
 
@@ -28,12 +28,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (ASScrollDirection)scrollableDirections;
 
 /**
- * @abstract Returns any additional information needed for a coming layout pass (@see @c -calculateLayoutWithContext:) with the given elements.
+ * @abstract Returns any additional information needed for a coming layout pass (@see @c -calculateLayoutWithContext:)
+ * with the given elements.
  *
  * @param elements The elements to be laid out later.
  *
- * @discussion The returned object must support equality and hashing (i.e `-isEqual:` and `-hash` must be properly implemented).
- * It should contain all the information needed for the layout pass to perform. It will be available in the context parameter in +calculateLayoutWithContext:
+ * @discussion The returned object must support equality and hashing (i.e `-isEqual:` and `-hash` must be properly
+ * implemented). It should contain all the information needed for the layout pass to perform. It will be available in
+ * the context parameter in +calculateLayoutWithContext:
  *
  * This method will be called on main thread.
  */
@@ -46,11 +48,12 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return The new layout calculated for the given context.
  *
- * @discussion This method is called ahead of time, i.e before the underlying collection/table view is aware of the provided elements.
- * As a result, clients must solely rely on the given context and should not reach out to other objects for information not available in the context.
+ * @discussion This method is called ahead of time, i.e before the underlying collection/table view is aware of the
+ * provided elements. As a result, clients must solely rely on the given context and should not reach out to other
+ * objects for information not available in the context.
  *
- * This method can be called on background theads. It must be thread-safe and should not change any internal state of this delegate.
- * It must block the calling thread but can dispatch to other theads to reduce total blocking time.
+ * This method can be called on background theads. It must be thread-safe and should not change any internal state of
+ * this delegate. It must block the calling thread but can dispatch to other theads to reduce total blocking time.
  */
 + (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context;
 

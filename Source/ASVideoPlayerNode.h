@@ -12,10 +12,10 @@
 #if AS_USE_VIDEO
 
 #if TARGET_OS_IOS
-#import <CoreMedia/CoreMedia.h>
+#import <AsyncDisplayKit/ASDisplayNode+Subclasses.h>
 #import <AsyncDisplayKit/ASThread.h>
 #import <AsyncDisplayKit/ASVideoNode.h>
-#import <AsyncDisplayKit/ASDisplayNode+Subclasses.h>
+#import <CoreMedia/CoreMedia.h>
 
 @class AVAsset;
 @class ASButtonNode;
@@ -34,44 +34,47 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ASVideoPlayerNode : ASDisplayNode
 
-@property (nullable, nonatomic, weak) id<ASVideoPlayerNodeDelegate> delegate;
+@property(nullable, nonatomic, weak) id<ASVideoPlayerNodeDelegate> delegate;
 
-@property (nonatomic, readonly) CMTime duration;
+@property(nonatomic, readonly) CMTime duration;
 
-@property (nonatomic) BOOL controlsDisabled;
+@property(nonatomic) BOOL controlsDisabled;
 
 #pragma mark - ASVideoNode property proxy
 /**
- * When shouldAutoplay is set to true, a video node will play when it has both loaded and entered the "visible" interfaceState.
- * If it leaves the visible interfaceState it will pause but will resume once it has returned.
+ * When shouldAutoplay is set to true, a video node will play when it has both loaded and entered the "visible"
+ * interfaceState. If it leaves the visible interfaceState it will pause but will resume once it has returned.
  */
-@property (nonatomic) BOOL shouldAutoPlay;
-@property (nonatomic) BOOL shouldAutoRepeat;
-@property (nonatomic) BOOL muted;
-@property (nonatomic, readonly) ASVideoNodePlayerState playerState;
-@property (nonatomic) BOOL shouldAggressivelyRecoverFromStall;
-@property (nullable, nonatomic) NSURL *placeholderImageURL;
+@property(nonatomic) BOOL shouldAutoPlay;
+@property(nonatomic) BOOL shouldAutoRepeat;
+@property(nonatomic) BOOL muted;
+@property(nonatomic, readonly) ASVideoNodePlayerState playerState;
+@property(nonatomic) BOOL shouldAggressivelyRecoverFromStall;
+@property(nullable, nonatomic) NSURL *placeholderImageURL;
 
-@property (nullable, nonatomic) AVAsset *asset;
+@property(nullable, nonatomic) AVAsset *asset;
 /**
  ** @abstract The URL with which the asset was initialized.
- ** @discussion Setting the URL will override the current asset with a newly created AVURLAsset created from the given URL, and AVAsset *asset will point to that newly created AVURLAsset.  Please don't set both assetURL and asset.
+ ** @discussion Setting the URL will override the current asset with a newly created AVURLAsset created from the given
+ *URL, and AVAsset *asset will point to that newly created AVURLAsset.  Please don't set both assetURL and asset.
  ** @return Current URL the asset was initialized or nil if no URL was given.
  **/
-@property (nullable, nonatomic) NSURL *assetURL;
+@property(nullable, nonatomic) NSURL *assetURL;
 
 /// You should never set any value on the backing video node. Use exclusivively the video player node to set properties
-@property (nonatomic, readonly) ASVideoNode *videoNode;
+@property(nonatomic, readonly) ASVideoNode *videoNode;
 
 //! Defaults to 100
-@property (nonatomic) int32_t periodicTimeObserverTimescale;
+@property(nonatomic) int32_t periodicTimeObserverTimescale;
 //! Defaults to AVLayerVideoGravityResizeAspect
-@property (nonatomic, copy) NSString *gravity;
+@property(nonatomic, copy) NSString *gravity;
 
 #pragma mark - Lifecycle
 - (instancetype)initWithURL:(NSURL *)URL;
 - (instancetype)initWithAsset:(AVAsset *)asset;
-- (instancetype)initWithAsset:(AVAsset *)asset videoComposition:(AVVideoComposition *)videoComposition audioMix:(AVAudioMix *)audioMix;
+- (instancetype)initWithAsset:(AVAsset *)asset
+             videoComposition:(AVVideoComposition *)videoComposition
+                     audioMix:(AVAudioMix *)audioMix;
 
 #pragma mark - Public API
 - (void)seekToTime:(CGFloat)percentComplete;
@@ -89,21 +92,23 @@ NS_ASSUME_NONNULL_BEGIN
  * @abstract Delegate method invoked before creating controlbar controls
  * @param videoPlayer The sender
  */
-- (NSArray *)videoPlayerNodeNeededDefaultControls:(ASVideoPlayerNode*)videoPlayer;
+- (NSArray *)videoPlayerNodeNeededDefaultControls:(ASVideoPlayerNode *)videoPlayer;
 
 /**
  * @abstract Delegate method invoked before creating default controls, asks delegate for custom controls dictionary.
  * This dictionary must constain only ASDisplayNode subclass objects.
  * @param videoPlayer The sender
- * @discussion - This method is invoked only when developer implements videoPlayerNodeLayoutSpec:forControls:forMaximumSize:
- * and gives ability to add custom constrols to ASVideoPlayerNode, for example mute button.
+ * @discussion - This method is invoked only when developer implements
+ * videoPlayerNodeLayoutSpec:forControls:forMaximumSize: and gives ability to add custom constrols to ASVideoPlayerNode,
+ * for example mute button.
  */
-- (NSDictionary *)videoPlayerNodeCustomControls:(ASVideoPlayerNode*)videoPlayer;
+- (NSDictionary *)videoPlayerNodeCustomControls:(ASVideoPlayerNode *)videoPlayer;
 
 /**
  * @abstract Delegate method invoked in layoutSpecThatFits:
  * @param videoPlayer The sender
- * @param controls - Dictionary of controls which are used in videoPlayer; Dictionary keys are ASVideoPlayerNodeControlType
+ * @param controls - Dictionary of controls which are used in videoPlayer; Dictionary keys are
+ * ASVideoPlayerNodeControlType
  * @param maxSize - Maximum size for ASVideoPlayerNode
  * @discussion - Developer can layout whole ASVideoPlayerNode as he wants. ASVideoNode is locked and it can't be changed
  */
@@ -113,14 +118,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Text delegate methods
 /**
- * @abstract Delegate method invoked before creating ASVideoPlayerNodeControlTypeElapsedText and ASVideoPlayerNodeControlTypeDurationText
+ * @abstract Delegate method invoked before creating ASVideoPlayerNodeControlTypeElapsedText and
+ * ASVideoPlayerNodeControlTypeDurationText
  * @param videoPlayer The sender
  * @param timeLabelType The of the time label
  */
-- (NSDictionary *)videoPlayerNodeTimeLabelAttributes:(ASVideoPlayerNode *)videoPlayer timeLabelType:(ASVideoPlayerNodeControlType)timeLabelType;
+- (NSDictionary *)videoPlayerNodeTimeLabelAttributes:(ASVideoPlayerNode *)videoPlayer
+                                       timeLabelType:(ASVideoPlayerNodeControlType)timeLabelType;
 - (NSString *)videoPlayerNode:(ASVideoPlayerNode *)videoPlayerNode
-   timeStringForTimeLabelType:(ASVideoPlayerNodeControlType)timeLabelType
-                      forTime:(CMTime)time;
+    timeStringForTimeLabelType:(ASVideoPlayerNodeControlType)timeLabelType
+                       forTime:(CMTime)time;
 
 #pragma mark Scrubber delegate methods
 - (UIColor *)videoPlayerNodeScrubberMaximumTrackTint:(ASVideoPlayerNode *)videoPlayer;
@@ -138,7 +145,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Fullscreen button delegate methods
 
 - (UIImage *)videoPlayerNodeFullScreenButtonImage:(ASVideoPlayerNode *)videoPlayer;
-
 
 #pragma mark ASVideoNodeDelegate proxy methods
 /**
@@ -167,7 +173,9 @@ NS_ASSUME_NONNULL_BEGIN
  * @param toState ASVideoNode new state.
  * @discussion This method is called after each state change
  */
-- (void)videoPlayerNode:(ASVideoPlayerNode *)videoPlayer willChangeVideoNodeState:(ASVideoNodePlayerState)state toVideoNodeState:(ASVideoNodePlayerState)toState;
+- (void)videoPlayerNode:(ASVideoPlayerNode *)videoPlayer
+    willChangeVideoNodeState:(ASVideoNodePlayerState)state
+            toVideoNodeState:(ASVideoNodePlayerState)toState;
 
 /**
  * @abstract Delegate method is invoked when ASVideoNode decides to change state.
@@ -177,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
  * ASVideoNodePlayerStatePlaying or ASVideoNodePlayerStatePaused
  * and asks delegate if state change is valid
  */
-- (BOOL)videoPlayerNode:(ASVideoPlayerNode*)videoPlayer shouldChangeVideoNodeStateTo:(ASVideoNodePlayerState)state;
+- (BOOL)videoPlayerNode:(ASVideoPlayerNode *)videoPlayer shouldChangeVideoNodeStateTo:(ASVideoNodePlayerState)state;
 
 /**
  * @abstract Delegate method invoked when the ASVideoNode has played to its end time.
@@ -216,7 +224,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @param videoPlayer The videoplayer
  */
 - (void)videoPlayerNodeDidRecoverFromStall:(ASVideoPlayerNode *)videoPlayer;
-
 
 @end
 NS_ASSUME_NONNULL_END

@@ -11,30 +11,28 @@
 
 #define ASAnimatedImageDefaultRunLoopMode NSRunLoopCommonModes
 
-@interface ASImageNode ()
-{
+@interface ASImageNode () {
   AS::Mutex _displayLinkLock;
-  id <ASAnimatedImageProtocol> _animatedImage;
+  id<ASAnimatedImageProtocol> _animatedImage;
   BOOL _animatedImagePaused;
   NSString *_animatedImageRunLoopMode;
   CADisplayLink *_displayLink;
   NSUInteger _lastSuccessfulFrameIndex;
-  
-  //accessed on main thread only
+
+  // accessed on main thread only
   CFTimeInterval _playHead;
   NSUInteger _playedLoops;
 }
 
-@property (nonatomic) CFTimeInterval lastDisplayLinkFire;
+@property(nonatomic) CFTimeInterval lastDisplayLinkFire;
 
 @end
 
 @interface ASImageNode (AnimatedImagePrivate)
 
-- (void)_locked_setAnimatedImage:(id <ASAnimatedImageProtocol>)animatedImage;
+- (void)_locked_setAnimatedImage:(id<ASAnimatedImageProtocol>)animatedImage;
 
 @end
-
 
 @interface ASImageNode (AnimatedImageInvalidation)
 

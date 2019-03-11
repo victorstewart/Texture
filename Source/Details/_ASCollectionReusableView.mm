@@ -14,28 +14,24 @@
 
 @implementation _ASCollectionReusableView
 
-- (ASCellNode *)node
-{
+- (ASCellNode *)node {
   return self.element.node;
 }
 
-- (void)setElement:(ASCollectionElement *)element
-{
+- (void)setElement:(ASCollectionElement *)element {
   ASDisplayNodeAssertMainThread();
   element.node.layoutAttributes = _layoutAttributes;
   _element = element;
 }
 
-- (void)setLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes
-{
+- (void)setLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes {
   _layoutAttributes = layoutAttributes;
   self.node.layoutAttributes = layoutAttributes;
 }
 
-- (void)prepareForReuse
-{
+- (void)prepareForReuse {
   self.layoutAttributes = nil;
-  
+
   // Need to clear element before UIKit calls setSelected:NO / setHighlighted:NO on its cells
   self.element = nil;
   [super prepareForReuse];
@@ -48,16 +44,14 @@
  *   have our node assigned e.g. during a layout update for existing cells, we also attempt
  *   to update it now.
  */
-- (void)applyLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes
-{
+- (void)applyLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes {
   self.layoutAttributes = layoutAttributes;
 }
 
 /**
  * Keep our node filling our content view.
  */
-- (void)layoutSubviews
-{
+- (void)layoutSubviews {
   [super layoutSubviews];
   self.node.frame = self.bounds;
 }
@@ -79,8 +73,7 @@
 
 @implementation _ASCollectionReusableView (IGListBindable)
 
-- (void)bindViewModel:(id)viewModel
-{
+- (void)bindViewModel:(id)viewModel {
   // nop
 }
 

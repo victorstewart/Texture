@@ -15,10 +15,9 @@
 
 @implementation UIResponder (AsyncDisplayKit)
 
-- (__kindof UIViewController *)asdk_associatedViewController
-{
+- (__kindof UIViewController *)asdk_associatedViewController {
   ASDisplayNodeAssertMainThread();
-  
+
   for (UIResponder *responder in [self asdk_responderChainEnumerator]) {
     UIViewController *vc = ASDynamicCast(responder, UIViewController);
     if (vc) {
@@ -29,4 +28,3 @@
 }
 
 @end
-

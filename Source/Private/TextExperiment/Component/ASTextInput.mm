@@ -10,7 +10,6 @@
 #import <AsyncDisplayKit/ASTextInput.h>
 #import <AsyncDisplayKit/ASTextUtilities.h>
 
-
 @implementation ASTextPosition
 
 + (instancetype)positionWithOffset:(NSInteger)offset NS_RETURNS_RETAINED {
@@ -29,7 +28,8 @@
 }
 
 - (NSString *)description {
-  return [NSString stringWithFormat:@"<%@: %p> (%@%@)", self.class, self, @(_offset), _affinity == ASTextAffinityForward ? @"F":@"B"];
+  return [NSString stringWithFormat:@"<%@: %p> (%@%@)", self.class, self, @(_offset),
+                                    _affinity == ASTextAffinityForward ? @"F" : @"B"];
 }
 
 - (NSUInteger)hash {
@@ -46,13 +46,12 @@
   if (_offset < otherPosition.offset) return NSOrderedAscending;
   if (_offset > otherPosition.offset) return NSOrderedDescending;
   if (_affinity == ASTextAffinityBackward && otherPosition.affinity == ASTextAffinityForward) return NSOrderedAscending;
-  if (_affinity == ASTextAffinityForward && otherPosition.affinity == ASTextAffinityBackward) return NSOrderedDescending;
+  if (_affinity == ASTextAffinityForward && otherPosition.affinity == ASTextAffinityBackward)
+    return NSOrderedDescending;
   return NSOrderedSame;
 }
 
 @end
-
-
 
 @implementation ASTextRange {
   ASTextPosition *_start;
@@ -113,7 +112,9 @@
 }
 
 - (NSString *)description {
-  return [NSString stringWithFormat:@"<%@: %p> (%@, %@)%@", self.class, self, @(_start.offset), @(_end.offset - _start.offset), _end.affinity == ASTextAffinityForward ? @"F":@"B"];
+  return
+      [NSString stringWithFormat:@"<%@: %p> (%@, %@)%@", self.class, self, @(_start.offset),
+                                 @(_end.offset - _start.offset), _end.affinity == ASTextAffinityForward ? @"F" : @"B"];
 }
 
 - (NSUInteger)hash {
@@ -126,8 +127,6 @@
 }
 
 @end
-
-
 
 @implementation ASTextSelectionRect
 

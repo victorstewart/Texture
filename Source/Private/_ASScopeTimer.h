@@ -26,31 +26,27 @@
  */
 
 namespace AS {
-  struct ScopeTimer {
-    NSTimeInterval begin;
-    NSTimeInterval &outT;
-    ScopeTimer(NSTimeInterval &outRef) : outT(outRef) {
+struct ScopeTimer {
+  NSTimeInterval begin;
+  NSTimeInterval &outT;
+  ScopeTimer(NSTimeInterval &outRef) : outT(outRef) { begin = CACurrentMediaTime(); }
+  ~ScopeTimer() { outT = CACurrentMediaTime() - begin; }
+};
+
+// variant where repeated calls are summed
+struct SumScopeTimer {
+  NSTimeInterval begin;
+  NSTimeInterval &outT;
+  BOOL enable;
+  SumScopeTimer(NSTimeInterval &outRef, BOOL enable = YES) : outT(outRef), enable(enable) {
+    if (enable) {
       begin = CACurrentMediaTime();
     }
-    ~ScopeTimer() {
-      outT = CACurrentMediaTime() - begin;
+  }
+  ~SumScopeTimer() {
+    if (enable) {
+      outT += CACurrentMediaTime() - begin;
     }
-  };
-
-  // variant where repeated calls are summed
-  struct SumScopeTimer {
-    NSTimeInterval begin;
-    NSTimeInterval &outT;
-    BOOL enable;
-    SumScopeTimer(NSTimeInterval &outRef, BOOL enable = YES) : outT(outRef), enable(enable) {
-      if (enable) {
-        begin = CACurrentMediaTime();
-      }
-    }
-    ~SumScopeTimer() {
-      if (enable) {
-        outT += CACurrentMediaTime() - begin;
-      }
-    }
-  };
-}
+  }
+};
+}  // namespace AS

@@ -19,15 +19,14 @@
 
 @implementation ASLayerBackingTipProvider
 
-- (ASTip *)tipForNode:(ASDisplayNode *)node
-{
+- (ASTip *)tipForNode:(ASDisplayNode *)node {
   // Already layer-backed.
   if (node.layerBacked) {
     return nil;
   }
 
   // TODO: Avoid revisiting nodes we already visited
-  ASDisplayNode *failNode = ASDisplayNodeFindFirstNode(node, ^BOOL(ASDisplayNode * _Nonnull node) {
+  ASDisplayNode *failNode = ASDisplayNodeFindFirstNode(node, ^BOOL(ASDisplayNode *_Nonnull node) {
     return !node.supportsLayerBacking;
   });
   if (failNode != nil) {
@@ -42,4 +41,4 @@
 
 @end
 
-#endif // AS_ENABLE_TIPS
+#endif  // AS_ENABLE_TIPS

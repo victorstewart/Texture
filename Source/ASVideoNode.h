@@ -42,30 +42,30 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resetToPlaceholder;
 
 // TODO: copy
-@property (nullable) AVAsset *asset;
+@property(nullable) AVAsset *asset;
 
 /**
  ** @abstract The URL with which the asset was initialized.
- ** @discussion Setting the URL will override the current asset with a newly created AVURLAsset created from the given URL, and AVAsset *asset will point to that newly created AVURLAsset.  Please don't set both assetURL and asset.
+ ** @discussion Setting the URL will override the current asset with a newly created AVURLAsset created from the given
+ *URL, and AVAsset *asset will point to that newly created AVURLAsset.  Please don't set both assetURL and asset.
  ** @return Current URL the asset was initialized or nil if no URL was given.
  **/
-@property (nullable, copy) NSURL *assetURL;
+@property(nullable, copy) NSURL *assetURL;
 
 // TODO: copy both of these.
-@property (nullable) AVVideoComposition *videoComposition;
-@property (nullable) AVAudioMix *audioMix;
+@property(nullable) AVVideoComposition *videoComposition;
+@property(nullable) AVAudioMix *audioMix;
 
-@property (nullable, readonly) AVPlayer *player;
+@property(nullable, readonly) AVPlayer *player;
 
 // TODO: copy
-@property (nullable, readonly) AVPlayerItem *currentItem;
+@property(nullable, readonly) AVPlayerItem *currentItem;
 
-@property (nullable, nonatomic, readonly) AVPlayerLayer *playerLayer;
-
+@property(nullable, nonatomic, readonly) AVPlayerLayer *playerLayer;
 
 /**
- * When shouldAutoplay is set to true, a video node will play when it has both loaded and entered the "visible" interfaceState.
- * If it leaves the visible interfaceState it will pause but will resume once it has returned.
+ * When shouldAutoplay is set to true, a video node will play when it has both loaded and entered the "visible"
+ * interfaceState. If it leaves the visible interfaceState it will pause but will resume once it has returned.
  */
 @property BOOL shouldAutoplay;
 @property BOOL shouldAutorepeat;
@@ -73,14 +73,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property BOOL muted;
 @property BOOL shouldAggressivelyRecoverFromStall;
 
-@property (readonly) ASVideoNodePlayerState playerState;
+@property(readonly) ASVideoNodePlayerState playerState;
 //! Defaults to 1000
 @property int32_t periodicTimeObserverTimescale;
 
 //! Defaults to AVLayerVideoGravityResizeAspect
-@property (null_resettable, copy) NSString *gravity;
+@property(null_resettable, copy) NSString *gravity;
 
-@property (nullable, weak) id<ASVideoNodeDelegate, ASNetworkImageNodeDelegate> delegate;
+@property(nullable, weak) id<ASVideoNodeDelegate, ASNetworkImageNodeDelegate> delegate;
 
 @end
 
@@ -104,7 +104,9 @@ NS_ASSUME_NONNULL_BEGIN
  * @param toState player new state.
  * @discussion This method is called after each state change
  */
-- (void)videoNode:(ASVideoNode *)videoNode willChangePlayerState:(ASVideoNodePlayerState)state toState:(ASVideoNodePlayerState)toState;
+- (void)videoNode:(ASVideoNode *)videoNode
+    willChangePlayerState:(ASVideoNodePlayerState)state
+                  toState:(ASVideoNodePlayerState)toState;
 /**
  * @abstract Ssks delegate if state change is allowed
  * ASVideoNodePlayerStatePlaying or ASVideoNodePlayerStatePaused.
@@ -115,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
  * ASVideoNodePlayerStatePlaying or ASVideoNodePlayerStatePaused
  * and asks delegate if state change is valid
  */
-- (BOOL)videoNode:(ASVideoNode*)videoNode shouldChangePlayerStateTo:(ASVideoNodePlayerState)state;
+- (BOOL)videoNode:(ASVideoNode *)videoNode shouldChangePlayerStateTo:(ASVideoNodePlayerState)state;
 /**
  * @abstract Delegate method invoked when player playback time is updated.
  * @param videoNode The video node.
@@ -139,7 +141,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)videoNodeDidFinishInitialLoading:(ASVideoNode *)videoNode;
 /**
- * @abstract Delegate method invoked when the AVPlayerItem for the asset has been set up and can be accessed throught currentItem.
+ * @abstract Delegate method invoked when the AVPlayerItem for the asset has been set up and can be accessed throught
+ * currentItem.
  * @param videoNode The videoNode.
  * @param currentItem The AVPlayerItem that was constructed from the asset.
  */
@@ -156,13 +159,17 @@ NS_ASSUME_NONNULL_BEGIN
  * @param asset The asset.
  * @param error The error that occurs.
  */
-- (void)videoNode:(ASVideoNode *)videoNode didFailToLoadValueForKey:(NSString *)key asset:(AVAsset *)asset error:(NSError *)error;
+- (void)videoNode:(ASVideoNode *)videoNode
+    didFailToLoadValueForKey:(NSString *)key
+                       asset:(AVAsset *)asset
+                       error:(NSError *)error;
 
 @end
 
 @interface ASVideoNode (Unavailable)
 
-- (instancetype)initWithViewBlock:(ASDisplayNodeViewBlock)viewBlock didLoadBlock:(nullable ASDisplayNodeDidLoadBlock)didLoadBlock NS_UNAVAILABLE;
+- (instancetype)initWithViewBlock:(ASDisplayNodeViewBlock)viewBlock
+                     didLoadBlock:(nullable ASDisplayNodeDidLoadBlock)didLoadBlock NS_UNAVAILABLE;
 
 @end
 

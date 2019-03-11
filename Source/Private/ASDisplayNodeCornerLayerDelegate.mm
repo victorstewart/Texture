@@ -11,8 +11,7 @@
 
 @implementation ASDisplayNodeCornerLayerDelegate
 
-- (id<CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event
-{
+- (id<CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event {
   return (id)kCFNull;
 }
 

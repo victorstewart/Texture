@@ -7,13 +7,13 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 AS_SUBCLASSING_RESTRICTED
 @interface ASMainSerialQueue : NSObject
 
-@property (nonatomic, readonly) NSUInteger numberOfScheduledBlocks;
+@property(nonatomic, readonly) NSUInteger numberOfScheduledBlocks;
 - (void)performBlockOnMainThread:(dispatch_block_t)block;
 
 @end

@@ -15,8 +15,7 @@
 
 @implementation UICollectionViewLayout (ASLayoutInspectorProviding)
 
-- (id<ASCollectionViewLayoutInspecting>)asdk_layoutInspector
-{
+- (id<ASCollectionViewLayoutInspecting>)asdk_layoutInspector {
   UICollectionViewFlowLayout *flow = ASDynamicCast(self, UICollectionViewFlowLayout);
   if (flow != nil) {
     return [[ASCollectionViewFlowLayoutInspector alloc] initWithFlowLayout:flow];

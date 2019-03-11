@@ -22,39 +22,33 @@ typedef NS_ENUM(NSInteger, ASBatchContextState) {
   atomic_int _state;
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
   if (self = [super init]) {
     _state = ATOMIC_VAR_INIT(ASBatchContextStateCompleted);
   }
   return self;
 }
 
-- (BOOL)isFetching
-{
+- (BOOL)isFetching {
   return atomic_load(&_state) == ASBatchContextStateFetching;
 }
 
-- (BOOL)batchFetchingWasCancelled
-{
+- (BOOL)batchFetchingWasCancelled {
   return atomic_load(&_state) == ASBatchContextStateCancelled;
 }
 
-- (void)beginBatchFetching
-{
+- (void)beginBatchFetching {
   atomic_store(&_state, ASBatchContextStateFetching);
 }
 
-- (void)completeBatchFetching:(BOOL)didComplete
-{
+- (void)completeBatchFetching:(BOOL)didComplete {
   if (didComplete) {
     as_log_debug(ASCollectionLog(), "Completed batch fetch with context %@", self);
     atomic_store(&_state, ASBatchContextStateCompleted);
   }
 }
 
-- (void)cancelBatchFetching
-{
+- (void)cancelBatchFetching {
   atomic_store(&_state, ASBatchContextStateCancelled);
 }
 

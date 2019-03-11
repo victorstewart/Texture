@@ -11,25 +11,25 @@
 
 #if AS_ENABLE_TIPS
 
+#import <AsyncDisplayKit/ASDisplayNodeExtras.h>
 #import <AsyncDisplayKit/ASDisplayNodeTipState.h>
-#import <AsyncDisplayKit/AsyncDisplayKit+Tips.h>
 #import <AsyncDisplayKit/ASTipNode.h>
 #import <AsyncDisplayKit/ASTipProvider.h>
 #import <AsyncDisplayKit/ASTipsWindow.h>
-#import <AsyncDisplayKit/ASDisplayNodeExtras.h>
+#import <AsyncDisplayKit/AsyncDisplayKit+Tips.h>
 
 @interface ASTipsController ()
 
 /// Nil on init, updates to most recent visible window.
-@property (nonatomic) UIWindow *appVisibleWindow;
+@property(nonatomic) UIWindow *appVisibleWindow;
 
 /// Nil until an application window has become visible.
-@property (nonatomic) ASTipsWindow *tipWindow;
+@property(nonatomic) ASTipsWindow *tipWindow;
 
 /// Main-thread-only.
-@property (nonatomic, readonly) NSMapTable<ASDisplayNode *, ASDisplayNodeTipState *> *nodeToTipStates;
+@property(nonatomic, readonly) NSMapTable<ASDisplayNode *, ASDisplayNodeTipState *> *nodeToTipStates;
 
-@property (nonatomic) NSMutableArray<ASDisplayNode *> *nodesThatAppearedDuringRunLoop;
+@property(nonatomic) NSMutableArray<ASDisplayNode *> *nodesThatAppearedDuringRunLoop;
 
 @end
 
@@ -37,16 +37,14 @@
 
 #pragma mark - Singleton
 
-+ (void)load
-{
++ (void)load {
   [NSNotificationCenter.defaultCenter addObserver:self.shared
                                          selector:@selector(windowDidBecomeVisibleWithNotification:)
                                              name:UIWindowDidBecomeVisibleNotification
                                            object:nil];
 }
 
-+ (ASTipsController *)shared
-{
++ (ASTipsController *)shared {
   static ASTipsController *ctrl;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -57,11 +55,12 @@
 
 #pragma mark - Lifecycle
 
-- (instancetype)init
-{
+- (instancetype)init {
   ASDisplayNodeAssertMainThread();
   if (self = [super init]) {
-    _nodeToTipStates = [NSMapTable mapTableWithKeyOptions:(NSPointerFunctionsWeakMemory | NSPointerFunctionsObjectPointerPersonality) valueOptions:NSPointerFunctionsStrongMemory];
+    _nodeToTipStates =
+        [NSMapTable mapTableWithKeyOptions:(NSPointerFunctionsWeakMemory | NSPointerFunctionsObjectPointerPersonality)
+                              valueOptions:NSPointerFunctionsStrongMemory];
     _nodesThatAppearedDuringRunLoop = [NSMutableArray array];
   }
   return self;
@@ -69,8 +68,7 @@
 
 #pragma mark - Event Handling
 
-- (void)nodeDidAppear:(ASDisplayNode *)node
-{
+- (void)nodeDidAppear:(ASDisplayNode *)node {
   ASDisplayNodeAssertMainThread();
   // If they disabled tips on this class, bail.
   if (![[node class] enableTips]) {
@@ -86,8 +84,7 @@
 }
 
 // If this is a main window, start watching it and clear out our tip window.
-- (void)windowDidBecomeVisibleWithNotification:(NSNotification *)notification
-{
+- (void)windowDidBecomeVisibleWithNotification:(NSNotification *)notification {
   ASDisplayNodeAssertMainThread();
   UIWindow *window = notification.object;
 
@@ -111,8 +108,7 @@
   [_nodeToTipStates removeAllObjects];
 }
 
-- (void)runLoopDidTick
-{
+- (void)runLoopDidTick {
   NSArray *nodes = [_nodesThatAppearedDuringRunLoop copy];
   [_nodesThatAppearedDuringRunLoop removeAllObjects];
 
@@ -134,7 +130,9 @@
 
     for (ASTipProvider *provider in ASTipProvider.all) {
       ASTip *tip = [provider tipForNode:node];
-      if (!tip) { continue; }
+      if (!tip) {
+        continue;
+      }
 
       if (!tipState) {
         tipState = [self createTipStateForNode:node];
@@ -148,8 +146,7 @@
 
 #pragma mark - Internal
 
-- (void)createTipWindowIfNeededWithFrame:(CGRect)tipWindowFrame
-{
+- (void)createTipWindowIfNeededWithFrame:(CGRect)tipWindowFrame {
   // Lots of property accesses, but simple safe code, only run once.
   if (self.tipWindow == nil) {
     self.tipWindow = [[ASTipsWindow alloc] initWithFrame:tipWindowFrame];
@@ -164,16 +161,16 @@
  * on the view controller's view. It will then layout the main window, and then update the frames
  * for tip nodes accordingly.
  */
-- (void)setupRunLoopObserver
-{
-  CFRunLoopObserverRef o = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, kCFRunLoopBeforeWaiting, true, 0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
-    [self runLoopDidTick];
-  });
+- (void)setupRunLoopObserver {
+  CFRunLoopObserverRef o =
+      CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, kCFRunLoopBeforeWaiting, true, 0,
+                                         ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
+                                           [self runLoopDidTick];
+                                         });
   CFRunLoopAddObserver(CFRunLoopGetMain(), o, kCFRunLoopCommonModes);
 }
 
-- (ASDisplayNodeTipState *)createTipStateForNode:(ASDisplayNode *)node
-{
+- (ASDisplayNodeTipState *)createTipStateForNode:(ASDisplayNode *)node {
   ASDisplayNodeAssertMainThread();
   ASDisplayNodeTipState *tipState = [[ASDisplayNodeTipState alloc] initWithNode:node];
   [_nodeToTipStates setObject:tipState forKey:node];
@@ -182,4 +179,4 @@
 
 @end
 
-#endif // AS_ENABLE_TIPS
+#endif  // AS_ENABLE_TIPS

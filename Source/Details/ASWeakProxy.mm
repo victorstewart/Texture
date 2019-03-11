@@ -7,54 +7,47 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASWeakProxy.h>
-#import <AsyncDisplayKit/ASObjectDescriptionHelpers.h>
 #import <AsyncDisplayKit/ASAssert.h>
+#import <AsyncDisplayKit/ASObjectDescriptionHelpers.h>
+#import <AsyncDisplayKit/ASWeakProxy.h>
 
 @implementation ASWeakProxy
 
-- (instancetype)initWithTarget:(id)target
-{
+- (instancetype)initWithTarget:(id)target {
   if (self) {
     _target = target;
   }
   return self;
 }
 
-+ (instancetype)weakProxyWithTarget:(id)target NS_RETURNS_RETAINED
-{
++ (instancetype)weakProxyWithTarget:(id)target NS_RETURNS_RETAINED {
   return [[ASWeakProxy alloc] initWithTarget:target];
 }
 
-- (id)forwardingTargetForSelector:(SEL)aSelector
-{
+- (id)forwardingTargetForSelector:(SEL)aSelector {
   return _target;
 }
 
-- (BOOL)respondsToSelector:(SEL)aSelector
-{
+- (BOOL)respondsToSelector:(SEL)aSelector {
   return [_target respondsToSelector:aSelector];
 }
 
-- (BOOL)conformsToProtocol:(Protocol *)aProtocol
-{
+- (BOOL)conformsToProtocol:(Protocol *)aProtocol {
   return [_target conformsToProtocol:aProtocol];
 }
 
 /// Strangely, this method doesn't get forwarded by ObjC.
-- (BOOL)isKindOfClass:(Class)aClass
-{
+- (BOOL)isKindOfClass:(Class)aClass {
   return [_target isKindOfClass:aClass];
 }
 
-- (NSString *)description
-{
-  return ASObjectDescriptionMake(self, @[@{ @"target": _target ?: (id)kCFNull }]);
+- (NSString *)description {
+  return ASObjectDescriptionMake(self, @[ @{@"target" : _target ?: (id)kCFNull} ]);
 }
 
-- (NSMethodSignature *)methodSignatureForSelector:(SEL)sel
-{
-  ASDisplayNodeAssertNil(_target, @"ASWeakProxy got %@ when its target is still alive, which is unexpected.", NSStringFromSelector(_cmd));
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
+  ASDisplayNodeAssertNil(_target, @"ASWeakProxy got %@ when its target is still alive, which is unexpected.",
+                         NSStringFromSelector(_cmd));
   // Unfortunately, in order to get this object to work properly, the use of a method which creates an NSMethodSignature
   // from a C string. -methodSignatureForSelector is called when a compiled definition for the selector cannot be found.
   // This is the place where we have to create our own dud NSMethodSignature. This is necessary because if this method
@@ -64,9 +57,9 @@
   // the dud NSMethodSignature simply gets us around the exception.
   return [NSMethodSignature signatureWithObjCTypes:"@^v^c"];
 }
-- (void)forwardInvocation:(NSInvocation *)invocation
-{
-  ASDisplayNodeAssertNil(_target, @"ASWeakProxy got %@ when its target is still alive, which is unexpected.", NSStringFromSelector(_cmd));
+- (void)forwardInvocation:(NSInvocation *)invocation {
+  ASDisplayNodeAssertNil(_target, @"ASWeakProxy got %@ when its target is still alive, which is unexpected.",
+                         NSStringFromSelector(_cmd));
 }
 
 @end

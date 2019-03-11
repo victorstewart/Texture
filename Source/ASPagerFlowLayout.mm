@@ -7,9 +7,9 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASPagerFlowLayout.h>
 #import <AsyncDisplayKit/ASCellNode.h>
 #import <AsyncDisplayKit/ASCollectionView.h>
+#import <AsyncDisplayKit/ASPagerFlowLayout.h>
 
 @interface ASPagerFlowLayout () {
   __weak ASCellNode *_currentCellNode;
@@ -17,25 +17,22 @@
 
 @end
 
-//TODO make this an ASCollectionViewLayout
+// TODO make this an ASCollectionViewLayout
 @implementation ASPagerFlowLayout
 
-- (ASCollectionView *)asCollectionView
-{
+- (ASCollectionView *)asCollectionView {
   // Dynamic cast is too slow and not worth it.
   return (ASCollectionView *)self.collectionView;
 }
 
-- (void)prepareLayout
-{
+- (void)prepareLayout {
   [super prepareLayout];
   if (_currentCellNode == nil) {
     [self _updateCurrentNode];
   }
 }
 
-- (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset
-{
+- (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset {
   // Don't mess around if the user is interacting with the page node. Although if just a rotation happened we should
   // try to use the current index path to not end up setting the target content offset to something in between pages
   if (!self.collectionView.decelerating && !self.collectionView.tracking) {
@@ -48,12 +45,12 @@
   return [super targetContentOffsetForProposedContentOffset:proposedContentOffset];
 }
 
-- (CGPoint)_targetContentOffsetForItemAtIndexPath:(NSIndexPath *)indexPath proposedContentOffset:(CGPoint)proposedContentOffset
-{
+- (CGPoint)_targetContentOffsetForItemAtIndexPath:(NSIndexPath *)indexPath
+                            proposedContentOffset:(CGPoint)proposedContentOffset {
   if ([self _dataSourceIsEmpty]) {
     return proposedContentOffset;
   }
-  
+
   UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:indexPath];
   if (attributes == nil) {
     return proposedContentOffset;
@@ -63,14 +60,11 @@
   return CGPointMake(attributes.frame.origin.x - xOffset, proposedContentOffset.y);
 }
 
-- (BOOL)_dataSourceIsEmpty
-{
-  return ([self.collectionView numberOfSections] == 0 ||
-          [self.collectionView numberOfItemsInSection:0] == 0);
+- (BOOL)_dataSourceIsEmpty {
+  return ([self.collectionView numberOfSections] == 0 || [self.collectionView numberOfItemsInSection:0] == 0);
 }
 
-- (void)_updateCurrentNode
-{
+- (void)_updateCurrentNode {
   // Never change node during an animated bounds change (rotation)
   // NOTE! Listening for -prepareForAnimatedBoundsChange and -finalizeAnimatedBoundsChange
   // isn't sufficient here! It's broken!
@@ -80,7 +74,7 @@
       return;
     }
   }
-  
+
   CGRect bounds = self.collectionView.bounds;
   CGRect rect = CGRectMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds), 1, 1);
 
@@ -93,15 +87,14 @@
   }
 }
 
-- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
-{
+- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
   [self _updateCurrentNode];
   return [super shouldInvalidateLayoutForBoundsChange:newBounds];
 }
 
-- (UICollectionViewLayoutInvalidationContext *)invalidationContextForBoundsChange:(CGRect)newBounds
-{
-  UICollectionViewFlowLayoutInvalidationContext *ctx = (UICollectionViewFlowLayoutInvalidationContext *)[super invalidationContextForBoundsChange:newBounds];
+- (UICollectionViewLayoutInvalidationContext *)invalidationContextForBoundsChange:(CGRect)newBounds {
+  UICollectionViewFlowLayoutInvalidationContext *ctx =
+      (UICollectionViewFlowLayoutInvalidationContext *)[super invalidationContextForBoundsChange:newBounds];
   ctx.invalidateFlowLayoutDelegateMetrics = YES;
   ctx.invalidateFlowLayoutAttributes = YES;
   return ctx;

@@ -7,10 +7,10 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
 #import <AsyncDisplayKit/ASElementMap.h>
 #import <AsyncDisplayKit/ASIntegerMap.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,7 +25,9 @@ AS_SUBCLASSING_RESTRICTED
 
 - (instancetype)init __unavailable;
 
-- (instancetype)initWithSections:(NSArray<ASSection *> *)sections items:(ASCollectionElementTwoDimensionalArray *)items supplementaryElements:(ASSupplementaryElementDictionary *)supplementaryElements;
+- (instancetype)initWithSections:(NSArray<ASSection *> *)sections
+                           items:(ASCollectionElementTwoDimensionalArray *)items
+           supplementaryElements:(ASSupplementaryElementDictionary *)supplementaryElements;
 
 - (void)insertSection:(ASSection *)section atIndex:(NSInteger)index;
 

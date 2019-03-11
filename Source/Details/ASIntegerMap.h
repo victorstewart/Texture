@@ -6,8 +6,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,7 +32,7 @@ AS_SUBCLASSING_RESTRICTED
  *
  * Note: You cannot mutate this.
  */
-@property (class, readonly) ASIntegerMap *identityMap;
+@property(class, readonly) ASIntegerMap *identityMap;
 + (ASIntegerMap *)identityMap NS_RETURNS_RETAINED;
 
 /**
@@ -40,7 +40,7 @@ AS_SUBCLASSING_RESTRICTED
  *
  * Note: You cannot mutate this.
  */
-@property (class, readonly) ASIntegerMap *emptyMap;
+@property(class, readonly) ASIntegerMap *emptyMap;
 + (ASIntegerMap *)emptyMap NS_RETURNS_RETAINED;
 
 /**

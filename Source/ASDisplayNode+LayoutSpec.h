@@ -6,8 +6,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASDisplayNode.h>
 #import <AsyncDisplayKit/ASDimension.h>
+#import <AsyncDisplayKit/ASDisplayNode.h>
 
 @class ASLayout;
 
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @code ^ASLayoutSpec *(__kindof ASDisplayNode * _Nonnull node, ASSizeRange constrainedSize) {};
  */
-@property (nullable) ASLayoutSpecBlock layoutSpecBlock;
+@property(nullable) ASLayoutSpecBlock layoutSpecBlock;
 
 @end
 
@@ -48,10 +48,10 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param constrainedSize The minimum and maximum sizes the receiver should fit in.
  *
- * @discussion Subclasses that override should expect this method to be called on a non-main thread. The returned layout spec
- * is used to calculate an ASLayout and cached by ASDisplayNode for quick access during -layout. Other expensive work that needs to
- * be done before display can be performed here, and using ivars to cache any valuable intermediate results is
- * encouraged.
+ * @discussion Subclasses that override should expect this method to be called on a non-main thread. The returned layout
+ * spec is used to calculate an ASLayout and cached by ASDisplayNode for quick access during -layout. Other expensive
+ * work that needs to be done before display can be performed here, and using ivars to cache any valuable intermediate
+ * results is encouraged.
  *
  * @note This method should not be called directly outside of ASDisplayNode; use -layoutThatFits: instead.
  *

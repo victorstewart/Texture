@@ -7,9 +7,9 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
 #import <AsyncDisplayKit/ASLocking.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,23 +32,21 @@ AS_SUBCLASSING_RESTRICTED
  *
  * @discussion You may pass @c nil for the handler if you simply want the objects to
  * be retained at enqueue time, and released during the run loop step. This is useful
- * for creating a "main deallocation queue", as @c ASDeallocQueue creates its own 
+ * for creating a "main deallocation queue", as @c ASDeallocQueue creates its own
  * worker thread with its own run loop.
  */
 - (instancetype)initWithRunLoop:(CFRunLoopRef)runloop
                   retainObjects:(BOOL)retainsObjects
-                        handler:(nullable void(^)(ObjectType dequeuedItem, BOOL isQueueDrained))handlerBlock;
+                        handler:(nullable void (^)(ObjectType dequeuedItem, BOOL isQueueDrained))handlerBlock;
 
 - (void)enqueue:(ObjectType)object;
 
-@property (readonly) BOOL isEmpty;
+@property(readonly) BOOL isEmpty;
 
-@property (nonatomic) NSUInteger batchSize;           // Default == 1.
-@property (nonatomic) BOOL ensureExclusiveMembership; // Default == YES.  Set-like behavior.
+@property(nonatomic) NSUInteger batchSize;            // Default == 1.
+@property(nonatomic) BOOL ensureExclusiveMembership;  // Default == YES.  Set-like behavior.
 
 @end
-
-
 
 /**
  * The queue to run on main run loop before CATransaction commit.
@@ -60,9 +58,9 @@ AS_SUBCLASSING_RESTRICTED
 AS_SUBCLASSING_RESTRICTED
 @interface ASCATransactionQueue : ASAbstractRunLoopQueue
 
-@property (readonly) BOOL isEmpty;
+@property(readonly) BOOL isEmpty;
 
-@property (readonly, getter=isEnabled) BOOL enabled;
+@property(readonly, getter=isEnabled) BOOL enabled;
 
 - (void)enqueue:(id<ASCATransactionQueueObserving>)object;
 
@@ -79,12 +77,12 @@ NS_INLINE ASCATransactionQueue *ASCATransactionQueueGet(void) {
 
 @interface ASDeallocQueue : NSObject
 
-@property (class, readonly) ASDeallocQueue *sharedDeallocationQueue;
+@property(class, readonly) ASDeallocQueue *sharedDeallocationQueue;
 + (ASDeallocQueue *)sharedDeallocationQueue NS_RETURNS_RETAINED;
 
 - (void)drain;
 
-- (void)releaseObjectInBackground:(id __strong _Nullable * _Nonnull)objectPtr;
+- (void)releaseObjectInBackground:(id __strong _Nullable *_Nonnull)objectPtr;
 
 @end
 

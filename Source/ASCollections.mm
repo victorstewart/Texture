@@ -28,8 +28,7 @@ static const void *ASTransferRetain(CFAllocatorRef allocator, const void *val) {
 
 @implementation NSArray (ASCollections)
 
-+ (NSArray *)arrayByTransferring:(__strong id *)pointers count:(NSUInteger)count NS_RETURNS_RETAINED
-{
++ (NSArray *)arrayByTransferring:(__strong id *)pointers count:(NSUInteger)count NS_RETURNS_RETAINED {
   // Custom callbacks that point to our ASTransferRetain callback.
   static CFArrayCallBacks callbacks;
   static dispatch_once_t onceToken;
@@ -40,20 +39,21 @@ static const void *ASTransferRetain(CFAllocatorRef allocator, const void *val) {
     CFAllocatorGetContext(NULL, &ctx);
     gTransferAllocator = CFAllocatorCreate(NULL, &ctx);
   });
-  
+
   // NSZeroArray fast path.
   if (count == 0) {
-    return @[]; // Does not actually call +array when optimized.
+    return @[];  // Does not actually call +array when optimized.
   }
-  
+
   // NSSingleObjectArray fast path. Retain/release here is worth it.
   if (count == 1) {
     NSArray *result = [[NSArray alloc] initWithObjects:pointers count:1];
     pointers[0] = nil;
     return result;
   }
-  
-  NSArray *result = (__bridge_transfer NSArray *)CFArrayCreate(gTransferAllocator, (const void **)(void *)pointers, count, &callbacks);
+
+  NSArray *result = (__bridge_transfer NSArray *)CFArrayCreate(gTransferAllocator, (const void **)(void *)pointers,
+                                                               count, &callbacks);
   memset(pointers, 0, count * sizeof(id));
   return result;
 }

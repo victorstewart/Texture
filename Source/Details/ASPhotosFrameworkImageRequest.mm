@@ -40,8 +40,7 @@ static NSString *const _ASPhotosURLQueryKeyCropHeight = @"crop_h";
 
 @implementation ASPhotosFrameworkImageRequest
 
-- (instancetype)initWithAssetIdentifier:(NSString *)assetIdentifier
-{
+- (instancetype)initWithAssetIdentifier:(NSString *)assetIdentifier {
   self = [super init];
   if (self) {
     _assetIdentifier = assetIdentifier;
@@ -54,9 +53,9 @@ static NSString *const _ASPhotosURLQueryKeyCropHeight = @"crop_h";
 
 #pragma mark NSCopying
 
-- (id)copyWithZone:(NSZone *)zone
-{
-  ASPhotosFrameworkImageRequest *copy = [[ASPhotosFrameworkImageRequest alloc] initWithAssetIdentifier:self.assetIdentifier];
+- (id)copyWithZone:(NSZone *)zone {
+  ASPhotosFrameworkImageRequest *copy =
+      [[ASPhotosFrameworkImageRequest alloc] initWithAssetIdentifier:self.assetIdentifier];
   copy.options = [self.options copy];
   copy.targetSize = self.targetSize;
   copy.contentMode = self.contentMode;
@@ -65,21 +64,27 @@ static NSString *const _ASPhotosURLQueryKeyCropHeight = @"crop_h";
 
 #pragma mark Converting to URL
 
-- (NSURL *)url
-{
+- (NSURL *)url {
   NSURLComponents *comp = [NSURLComponents new];
   comp.scheme = ASPhotosURLScheme;
   comp.host = _assetIdentifier;
-  NSMutableArray *queryItems = [NSMutableArray arrayWithObjects:
-    [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyWidth value:@(_targetSize.width).stringValue],
-    [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyHeight value:@(_targetSize.height).stringValue],
-    [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyVersion value:@(_options.version).stringValue],
-    [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyContentMode value:@(_contentMode).stringValue],
-    [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyAllowNetworkAccess value:@(_options.networkAccessAllowed).stringValue],
-    [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyResizeMode value:@(_options.resizeMode).stringValue],
-    [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyDeliveryMode value:@(_options.deliveryMode).stringValue]
-  , nil];
-  
+  NSMutableArray *queryItems =
+      [NSMutableArray arrayWithObjects:[NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyWidth
+                                                                   value:@(_targetSize.width).stringValue],
+                                       [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyHeight
+                                                                   value:@(_targetSize.height).stringValue],
+                                       [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyVersion
+                                                                   value:@(_options.version).stringValue],
+                                       [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyContentMode
+                                                                   value:@(_contentMode).stringValue],
+                                       [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyAllowNetworkAccess
+                                                                   value:@(_options.networkAccessAllowed).stringValue],
+                                       [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyResizeMode
+                                                                   value:@(_options.resizeMode).stringValue],
+                                       [NSURLQueryItem queryItemWithName:_ASPhotosURLQueryKeyDeliveryMode
+                                                                   value:@(_options.deliveryMode).stringValue],
+                                       nil];
+
   CGRect cropRect = _options.normalizedCropRect;
   if (!CGRectIsEmpty(cropRect)) {
     [queryItems addObjectsFromArray:@[
@@ -95,17 +100,16 @@ static NSString *const _ASPhotosURLQueryKeyCropHeight = @"crop_h";
 
 #pragma mark Converting from URL
 
-+ (ASPhotosFrameworkImageRequest *)requestWithURL:(NSURL *)url
-{
++ (ASPhotosFrameworkImageRequest *)requestWithURL:(NSURL *)url {
   // not a photos URL
   if (![url.scheme isEqualToString:ASPhotosURLScheme]) {
     return nil;
   }
-  
+
   NSURLComponents *comp = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
-  
+
   ASPhotosFrameworkImageRequest *request = [[ASPhotosFrameworkImageRequest alloc] initWithAssetIdentifier:url.host];
-  
+
   CGRect cropRect = CGRectZero;
   CGSize targetSize = PHImageManagerMaximumSize;
   for (NSURLQueryItem *item in comp.queryItems) {
@@ -140,20 +144,17 @@ static NSString *const _ASPhotosURLQueryKeyCropHeight = @"crop_h";
 
 #pragma mark NSObject
 
-- (BOOL)isEqual:(id)object
-{
+- (BOOL)isEqual:(id)object {
   if (![object isKindOfClass:ASPhotosFrameworkImageRequest.class]) {
     return NO;
   }
   ASPhotosFrameworkImageRequest *other = object;
-  return [other.assetIdentifier isEqualToString:self.assetIdentifier] &&
-    other.contentMode == self.contentMode &&
-    CGSizeEqualToSize(other.targetSize, self.targetSize) &&
-    CGRectEqualToRect(other.options.normalizedCropRect, self.options.normalizedCropRect) &&
-    other.options.resizeMode == self.options.resizeMode &&
-    other.options.version == self.options.version;
+  return [other.assetIdentifier isEqualToString:self.assetIdentifier] && other.contentMode == self.contentMode &&
+         CGSizeEqualToSize(other.targetSize, self.targetSize) &&
+         CGRectEqualToRect(other.options.normalizedCropRect, self.options.normalizedCropRect) &&
+         other.options.resizeMode == self.options.resizeMode && other.options.version == self.options.version;
 }
 
 @end
 
-#endif // AS_USE_PHOTOS
+#endif  // AS_USE_PHOTOS

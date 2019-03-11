@@ -17,13 +17,11 @@
 static const CGFloat kCornerRadius = 2.5;
 static const UIEdgeInsets padding = {2, 4, 1.5, 4};
 
-@implementation ASHighlightOverlayLayer
-{
+@implementation ASHighlightOverlayLayer {
   NSArray *_rects;
 }
 
-+ (id)defaultValueForKey:(NSString *)key
-{
++ (id)defaultValueForKey:(NSString *)key {
   if ([key isEqualToString:@"contentsScale"]) {
     return @(ASScreenScale());
   } else if ([key isEqualToString:@"highlightColor"]) {
@@ -37,8 +35,7 @@ static const UIEdgeInsets padding = {2, 4, 1.5, 4};
   }
 }
 
-+ (BOOL)needsDisplayForKey:(NSString *)key
-{
++ (BOOL)needsDisplayForKey:(NSString *)key {
   if ([key isEqualToString:@"bounds"]) {
     return YES;
   } else {
@@ -46,18 +43,15 @@ static const UIEdgeInsets padding = {2, 4, 1.5, 4};
   }
 }
 
-+ (id<CAAction>)defaultActionForKey:(NSString *)event
-{
++ (id<CAAction>)defaultActionForKey:(NSString *)event {
   return (id<CAAction>)[NSNull null];
 }
 
-- (instancetype)initWithRects:(NSArray *)rects
-{
+- (instancetype)initWithRects:(NSArray *)rects {
   return [self initWithRects:rects targetLayer:nil];
 }
 
-- (instancetype)initWithRects:(NSArray *)rects targetLayer:(id)targetLayer
-{
+- (instancetype)initWithRects:(NSArray *)rects targetLayer:(id)targetLayer {
   if (self = [super init]) {
     _rects = [rects copy];
     _targetLayer = targetLayer;
@@ -67,8 +61,7 @@ static const UIEdgeInsets padding = {2, 4, 1.5, 4};
 
 @dynamic highlightColor;
 
-- (void)drawInContext:(CGContextRef)ctx
-{
+- (void)drawInContext:(CGContextRef)ctx {
   [super drawInContext:ctx];
 
   CGAffineTransform affine = CGAffineTransformIdentity;
@@ -86,7 +79,8 @@ static const UIEdgeInsets padding = {2, 4, 1.5, 4};
     if (targetLayer != nil) {
       rect = [self convertRect:rect fromLayer:targetLayer];
     }
-    rect = CGRectMake(std::round(rect.origin.x), std::round(rect.origin.y), std::round(rect.size.width), std::round(rect.size.height));
+    rect = CGRectMake(std::round(rect.origin.x), std::round(rect.origin.y), std::round(rect.size.width),
+                      std::round(rect.size.height));
 
     CGFloat minX = rect.origin.x - padding.left;
     CGFloat maxX = CGRectGetMaxX(rect) + padding.right;
@@ -109,8 +103,7 @@ static const UIEdgeInsets padding = {2, 4, 1.5, 4};
   CGPathRelease(highlightPath);
 }
 
-- (CALayer *)hitTest:(CGPoint)p
-{
+- (CALayer *)hitTest:(CGPoint)p {
   // Don't handle taps
   return nil;
 }
@@ -121,13 +114,11 @@ static const UIEdgeInsets padding = {2, 4, 1.5, 4};
 
 static NSString *kAllowsHighlightDrawingKey = @"allows_highlight_drawing";
 
-- (BOOL)as_allowsHighlightDrawing
-{
+- (BOOL)as_allowsHighlightDrawing {
   return [[self valueForKey:kAllowsHighlightDrawingKey] boolValue];
 }
 
-- (void)as_setAllowsHighlightDrawing:(BOOL)allowsHighlightDrawing
-{
+- (void)as_setAllowsHighlightDrawing:(BOOL)allowsHighlightDrawing {
   [self setValue:@(allowsHighlightDrawing) forKey:kAllowsHighlightDrawingKey];
 }
 

@@ -7,9 +7,9 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASDimension.h>
 #import <AsyncDisplayKit/ASScrollDirection.h>
+#import <Foundation/Foundation.h>
 
 @class ASCollectionView;
 @protocol ASCollectionDataSource;
@@ -24,7 +24,8 @@ AS_EXTERN ASSizeRange NodeConstrainedSizeForScrollDirection(ASCollectionView *co
 /**
  * Asks the inspector to provide a constrained size range for the given collection view node.
  */
-- (ASSizeRange)collectionView:(ASCollectionView *)collectionView constrainedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath;
+- (ASSizeRange)collectionView:(ASCollectionView *)collectionView
+    constrainedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath;
 
 /**
  * Return the directions in which your collection view can scroll
@@ -36,12 +37,16 @@ AS_EXTERN ASSizeRange NodeConstrainedSizeForScrollDirection(ASCollectionView *co
 /**
  * Asks the inspector to provide a constrained size range for the given supplementary node.
  */
-- (ASSizeRange)collectionView:(ASCollectionView *)collectionView constrainedSizeForSupplementaryNodeOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath;
+- (ASSizeRange)collectionView:(ASCollectionView *)collectionView
+    constrainedSizeForSupplementaryNodeOfKind:(NSString *)kind
+                                  atIndexPath:(NSIndexPath *)indexPath;
 
 /**
  * Asks the inspector for the number of supplementary views for the given kind in the specified section.
  */
-- (NSUInteger)collectionView:(ASCollectionView *)collectionView supplementaryNodesOfKind:(NSString *)kind inSection:(NSUInteger)section;
+- (NSUInteger)collectionView:(ASCollectionView *)collectionView
+    supplementaryNodesOfKind:(NSString *)kind
+                   inSection:(NSUInteger)section;
 
 /**
  * Allow the inspector to respond to delegate changes.
@@ -63,9 +68,12 @@ AS_EXTERN ASSizeRange NodeConstrainedSizeForScrollDirection(ASCollectionView *co
  * Asks the inspector for the number of supplementary sections in the collection view for the given kind.
  *
  * @deprecated This method will not be called, and it is only deprecated as a reminder to remove it.
- * Supplementary elements must exist in the same sections as regular collection view items i.e. -numberOfSectionsInCollectionView:
+ * Supplementary elements must exist in the same sections as regular collection view items i.e.
+ * -numberOfSectionsInCollectionView:
  */
-- (NSUInteger)collectionView:(ASCollectionView *)collectionView numberOfSectionsForSupplementaryNodeOfKind:(NSString *)kind ASDISPLAYNODE_DEPRECATED_MSG("Use ASCollectionNode's method instead.");
+- (NSUInteger)collectionView:(ASCollectionView *)collectionView
+    numberOfSectionsForSupplementaryNodeOfKind:(NSString *)kind
+    ASDISPLAYNODE_DEPRECATED_MSG("Use ASCollectionNode's method instead.");
 
 @end
 

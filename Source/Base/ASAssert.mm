@@ -12,17 +12,14 @@
 #if AS_TLS_AVAILABLE
 
 static _Thread_local int tls_mainThreadAssertionsDisabledCount;
-BOOL ASMainThreadAssertionsAreDisabled() {
-  return tls_mainThreadAssertionsDisabledCount > 0;
-}
+BOOL ASMainThreadAssertionsAreDisabled() { return tls_mainThreadAssertionsDisabledCount > 0; }
 
-void ASPushMainThreadAssertionsDisabled() {
-  tls_mainThreadAssertionsDisabledCount += 1;
-}
+void ASPushMainThreadAssertionsDisabled() { tls_mainThreadAssertionsDisabledCount += 1; }
 
 void ASPopMainThreadAssertionsDisabled() {
   tls_mainThreadAssertionsDisabledCount -= 1;
-  ASDisplayNodeCAssert(tls_mainThreadAssertionsDisabledCount >= 0, @"Attempt to pop thread assertion-disabling without corresponding push.");
+  ASDisplayNodeCAssert(tls_mainThreadAssertionsDisabledCount >= 0,
+                       @"Attempt to pop thread assertion-disabling without corresponding push.");
 }
 
 #else
@@ -55,4 +52,4 @@ void ASPopMainThreadAssertionsDisabled() {
   ASDisplayNodeCAssert(oldVal > 0, @"Attempt to pop thread assertion-disabling without corresponding push.");
 }
 
-#endif // AS_TLS_AVAILABLE
+#endif  // AS_TLS_AVAILABLE

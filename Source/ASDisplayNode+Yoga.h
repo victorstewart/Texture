@@ -14,11 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ASLayout;
 
-AS_EXTERN void ASDisplayNodePerformBlockOnEveryYogaChild(ASDisplayNode * _Nullable node, void(^block)(ASDisplayNode *node));
+AS_EXTERN void ASDisplayNodePerformBlockOnEveryYogaChild(ASDisplayNode *_Nullable node,
+                                                         void (^block)(ASDisplayNode *node));
 
 @interface ASDisplayNode (Yoga)
 
-@property (copy) NSArray *yogaChildren;
+@property(copy) NSArray *yogaChildren;
 
 - (void)addYogaChild:(ASDisplayNode *)child;
 - (void)removeYogaChild:(ASDisplayNode *)child;
@@ -28,11 +29,10 @@ AS_EXTERN void ASDisplayNodePerformBlockOnEveryYogaChild(ASDisplayNode * _Nullab
 
 @property BOOL yogaLayoutInProgress;
 // TODO: Make this atomic (lock).
-@property (nullable, nonatomic) ASLayout *yogaCalculatedLayout;
+@property(nullable, nonatomic) ASLayout *yogaCalculatedLayout;
 
 // Will walk up the Yoga tree and returns the root node
 - (ASDisplayNode *)yogaRoot;
-
 
 @end
 
@@ -44,7 +44,6 @@ AS_EXTERN void ASDisplayNodePerformBlockOnEveryYogaChild(ASDisplayNode * _Nullab
 - (ASLockSet)lockToRootIfNeededForLayout;
 
 @end
-
 
 // These methods are intended to be used internally to Texture, and should not be called directly.
 @interface ASDisplayNode (YogaInternal)
@@ -76,7 +75,7 @@ AS_EXTERN void ASDisplayNodePerformBlockOnEveryYogaChild(ASDisplayNode * _Nullab
 - (YGNodeRef)yogaNodeCreateIfNeeded;
 - (void)destroyYogaNode;
 
-@property (readonly) YGNodeRef yogaNode;
+@property(readonly) YGNodeRef yogaNode;
 
 @property ASStackLayoutDirection flexDirection;
 @property YGDirection direction;
@@ -94,8 +93,8 @@ AS_EXTERN void ASDisplayNodePerformBlockOnEveryYogaChild(ASDisplayNode * _Nullab
 
 NS_ASSUME_NONNULL_END
 
-// When Yoga is enabled, there are several points where we want to lock the tree to the root but otherwise (without Yoga)
-// will want to simply lock self.
+// When Yoga is enabled, there are several points where we want to lock the tree to the root but otherwise (without
+// Yoga) will want to simply lock self.
 #define ASScopedLockSelfOrToRoot() ASScopedLockSet lockSet = [self lockToRootIfNeededForLayout]
 #else
 #define ASScopedLockSelfOrToRoot() ASLockScopeSelf()

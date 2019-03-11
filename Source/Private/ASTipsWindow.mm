@@ -11,18 +11,17 @@
 #if AS_ENABLE_TIPS
 
 #import <AsyncDisplayKit/ASDisplayNodeTipState.h>
-#import <AsyncDisplayKit/ASTipNode.h>
 #import <AsyncDisplayKit/ASTip.h>
+#import <AsyncDisplayKit/ASTipNode.h>
 #import <AsyncDisplayKit/AsyncDisplayKit+Tips.h>
 
 @interface ASTipsWindow ()
-@property (nonatomic, readonly) ASDisplayNode *node;
+@property(nonatomic, readonly) ASDisplayNode *node;
 @end
 
 @implementation ASTipsWindow
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
+- (instancetype)initWithFrame:(CGRect)frame {
   if (self = [super initWithFrame:frame]) {
     /**
      * UIKit throws an exception if you don't add a root view controller to a window,
@@ -42,8 +41,7 @@
   return self;
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
   UIView *result = [super hitTest:point withEvent:event];
   // Ignore touches unless they hit one of my node's subnodes
   if (result == _node.view) {
@@ -52,27 +50,24 @@
   return result;
 }
 
-- (void)setMainWindow:(UIWindow *)mainWindow
-{
+- (void)setMainWindow:(UIWindow *)mainWindow {
   _mainWindow = mainWindow;
   for (ASDisplayNode *node in _node.subnodes) {
     [node removeFromSupernode];
   }
 }
 
-- (void)didTapTipNode:(ASTipNode *)tipNode
-{
+- (void)didTapTipNode:(ASTipNode *)tipNode {
   ASDisplayNode.tipDisplayBlock(tipNode.tip.node, tipNode.tip.text);
 }
 
-- (void)layoutSubviews
-{
+- (void)layoutSubviews {
   [super layoutSubviews];
   _node.frame = self.bounds;
-  
+
   // Ensure the main window is laid out first.
   [self.mainWindow layoutIfNeeded];
-  
+
   NSMutableSet *tipNodesToRemove = [NSMutableSet setWithArray:_node.subnodes];
   for (ASDisplayNodeTipState *tipState in [_nodeToTipStates objectEnumerator]) {
     ASDisplayNode *node = tipState.node;
@@ -86,7 +81,7 @@
       [_node addSubnode:tipNode];
     }
   }
-  
+
   // Clean up any tip nodes whose target nodes have disappeared.
   for (ASTipNode *tipNode in tipNodesToRemove) {
     [tipNode removeFromSupernode];
@@ -95,4 +90,4 @@
 
 @end
 
-#endif // AS_ENABLE_TIPS
+#endif  // AS_ENABLE_TIPS

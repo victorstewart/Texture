@@ -47,17 +47,18 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return The interitem spacing
  */
-- (CGFloat)galleryLayoutDelegate:(ASCollectionGalleryLayoutDelegate *)delegate minimumLineSpacingForElements:(ASElementMap *)elements;
+- (CGFloat)galleryLayoutDelegate:(ASCollectionGalleryLayoutDelegate *)delegate
+    minimumLineSpacingForElements:(ASElementMap *)elements;
 
 /**
  * Returns the minumum spacing to use between items in the same row or column, depending on the scroll directions.
  *
  * @discussion This method will only be called on main thread.
  *
- * @discussion For a vertically scrolling layout, this value represents the minimum spacing between items in the same row. 
- * For a horizontally scrolling one, it represents the minimum spacing between items in the same column.
- * It is considered while fitting items into lines, but the actual final spacing between some items might be larger.
- * This is the same behavior as UICollectionViewFlowLayout's minimumInteritemSpacing.
+ * @discussion For a vertically scrolling layout, this value represents the minimum spacing between items in the same
+ * row. For a horizontally scrolling one, it represents the minimum spacing between items in the same column. It is
+ * considered while fitting items into lines, but the actual final spacing between some items might be larger. This is
+ * the same behavior as UICollectionViewFlowLayout's minimumInteritemSpacing.
  *
  * @param delegate The calling object.
  *
@@ -65,7 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return The interitem spacing
  */
-- (CGFloat)galleryLayoutDelegate:(ASCollectionGalleryLayoutDelegate *)delegate minimumInteritemSpacingForElements:(ASElementMap *)elements;
+- (CGFloat)galleryLayoutDelegate:(ASCollectionGalleryLayoutDelegate *)delegate
+    minimumInteritemSpacingForElements:(ASElementMap *)elements;
 
 /**
  * Returns the margins of each section.
@@ -78,7 +80,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return The margins used to layout content in a section
  */
-- (UIEdgeInsets)galleryLayoutDelegate:(ASCollectionGalleryLayoutDelegate *)delegate sectionInsetForElements:(ASElementMap *)elements;
+- (UIEdgeInsets)galleryLayoutDelegate:(ASCollectionGalleryLayoutDelegate *)delegate
+              sectionInsetForElements:(ASElementMap *)elements;
 
 @end
 
@@ -90,12 +93,13 @@ NS_ASSUME_NONNULL_BEGIN
 AS_SUBCLASSING_RESTRICTED
 @interface ASCollectionGalleryLayoutDelegate : NSObject <ASCollectionLayoutDelegate>
 
-@property (nonatomic, weak) id<ASCollectionGalleryLayoutPropertiesProviding> propertiesProvider;
+@property(nonatomic, weak) id<ASCollectionGalleryLayoutPropertiesProviding> propertiesProvider;
 
 /**
  * Designated initializer.
  *
- * @param scrollableDirections The scrollable directions of this layout. Must be either vertical or horizontal directions.
+ * @param scrollableDirections The scrollable directions of this layout. Must be either vertical or horizontal
+ * directions.
  */
 - (instancetype)initWithScrollableDirections:(ASScrollDirection)scrollableDirections NS_DESIGNATED_INITIALIZER;
 

@@ -16,20 +16,23 @@
 @implementation ASTextNodeWordKerner
 
 #pragma mark - NSLayoutManager Delegate
-- (NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)properties characterIndexes:(const NSUInteger *)characterIndexes font:(UIFont *)aFont forGlyphRange:(NSRange)glyphRange
-{
+- (NSUInteger)layoutManager:(NSLayoutManager *)layoutManager
+       shouldGenerateGlyphs:(const CGGlyph *)glyphs
+                 properties:(const NSGlyphProperty *)properties
+           characterIndexes:(const NSUInteger *)characterIndexes
+                       font:(UIFont *)aFont
+              forGlyphRange:(NSRange)glyphRange {
   NSUInteger glyphCount = glyphRange.length;
   NSGlyphProperty *newGlyphProperties = NULL;
 
   BOOL usesWordKerning = NO;
 
-  // If our typing attributes specify word kerning, specify the spaces as whitespace control characters so we can customize their width.
-  // Are any of the characters spaces?
+  // If our typing attributes specify word kerning, specify the spaces as whitespace control characters so we can
+  // customize their width. Are any of the characters spaces?
   NSString *textStorageString = layoutManager.textStorage.string;
   for (NSUInteger arrayIndex = 0; arrayIndex < glyphCount; arrayIndex++) {
     NSUInteger characterIndex = characterIndexes[arrayIndex];
-    if ([textStorageString characterAtIndex:characterIndex] != ' ')
-      continue;
+    if ([textStorageString characterAtIndex:characterIndex] != ' ') continue;
 
     // If we've set the whitespace control character for this space already, we have nothing to do.
     if (properties[arrayIndex] == NSGlyphPropertyControlCharacter) {
@@ -47,11 +50,17 @@
     newGlyphProperties[arrayIndex] = NSGlyphPropertyControlCharacter;
   }
 
-  // If we don't have any custom glyph properties, return 0 to indicate to the layout manager that it should use the standard glyphs+properties.
+  // If we don't have any custom glyph properties, return 0 to indicate to the layout manager that it should use the
+  // standard glyphs+properties.
   if (!newGlyphProperties) {
     if (usesWordKerning) {
-      // If the text does use word kerning we have to make sure we return the correct glyphCount, or the layout manager will just use the default properties and ignore our kerning.
-      [layoutManager setGlyphs:glyphs properties:properties characterIndexes:characterIndexes font:aFont forGlyphRange:glyphRange];
+      // If the text does use word kerning we have to make sure we return the correct glyphCount, or the layout manager
+      // will just use the default properties and ignore our kerning.
+      [layoutManager setGlyphs:glyphs
+                    properties:properties
+              characterIndexes:characterIndexes
+                          font:aFont
+                 forGlyphRange:glyphRange];
       return glyphCount;
     } else {
       return 0;
@@ -59,14 +68,19 @@
   }
 
   // Otherwise, use our custom glyph properties.
-  [layoutManager setGlyphs:glyphs properties:newGlyphProperties characterIndexes:characterIndexes font:aFont forGlyphRange:glyphRange];
+  [layoutManager setGlyphs:glyphs
+                properties:newGlyphProperties
+          characterIndexes:characterIndexes
+                      font:aFont
+             forGlyphRange:glyphRange];
   free(newGlyphProperties);
 
   return glyphCount;
 }
 
-- (NSControlCharacterAction)layoutManager:(NSLayoutManager *)layoutManager shouldUseAction:(NSControlCharacterAction)defaultAction forControlCharacterAtIndex:(NSUInteger)characterIndex
-{
+- (NSControlCharacterAction)layoutManager:(NSLayoutManager *)layoutManager
+                          shouldUseAction:(NSControlCharacterAction)defaultAction
+               forControlCharacterAtIndex:(NSUInteger)characterIndex {
   // If it's a space character and we have custom word kerning, use the whitespace action control character.
   if ([layoutManager.textStorage.string characterAtIndex:characterIndex] == ' ')
     return NSControlCharacterActionWhitespace;
@@ -74,14 +88,23 @@
   return defaultAction;
 }
 
-- (CGRect)layoutManager:(NSLayoutManager *)layoutManager boundingBoxForControlGlyphAtIndex:(NSUInteger)glyphIndex forTextContainer:(NSTextContainer *)textContainer proposedLineFragment:(CGRect)proposedRect glyphPosition:(CGPoint)glyphPosition characterIndex:(NSUInteger)characterIndex
-{
-  CGFloat wordKernedSpaceWidth = [self _wordKernedSpaceWidthForCharacterAtIndex:characterIndex atGlyphPosition:glyphPosition forTextContainer:textContainer layoutManager:layoutManager];
+- (CGRect)layoutManager:(NSLayoutManager *)layoutManager
+    boundingBoxForControlGlyphAtIndex:(NSUInteger)glyphIndex
+                     forTextContainer:(NSTextContainer *)textContainer
+                 proposedLineFragment:(CGRect)proposedRect
+                        glyphPosition:(CGPoint)glyphPosition
+                       characterIndex:(NSUInteger)characterIndex {
+  CGFloat wordKernedSpaceWidth = [self _wordKernedSpaceWidthForCharacterAtIndex:characterIndex
+                                                                atGlyphPosition:glyphPosition
+                                                               forTextContainer:textContainer
+                                                                  layoutManager:layoutManager];
   return CGRectMake(glyphPosition.x, glyphPosition.y, wordKernedSpaceWidth, CGRectGetHeight(proposedRect));
 }
 
-- (CGFloat)_wordKernedSpaceWidthForCharacterAtIndex:(NSUInteger)characterIndex atGlyphPosition:(CGPoint)glyphPosition forTextContainer:(NSTextContainer *)textContainer layoutManager:(NSLayoutManager *)layoutManager
-{
+- (CGFloat)_wordKernedSpaceWidthForCharacterAtIndex:(NSUInteger)characterIndex
+                                    atGlyphPosition:(CGPoint)glyphPosition
+                                   forTextContainer:(NSTextContainer *)textContainer
+                                      layoutManager:(NSLayoutManager *)layoutManager {
   // We use a map table for pointer equality and non-copying keys.
   static NSMapTable *spaceSizes;
   // NSMapTable is a defined thread unsafe class, so we need to synchronize
@@ -90,18 +113,22 @@
   static dispatch_queue_t mapQueue;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    spaceSizes = [[NSMapTable alloc] initWithKeyOptions:NSMapTableStrongMemory valueOptions:NSMapTableStrongMemory capacity:1];
+    spaceSizes = [[NSMapTable alloc] initWithKeyOptions:NSMapTableStrongMemory
+                                           valueOptions:NSMapTableStrongMemory
+                                               capacity:1];
     mapQueue = dispatch_queue_create("org.AsyncDisplayKit.wordKerningQueue", DISPATCH_QUEUE_SERIAL);
   });
   CGFloat ordinarySpaceWidth;
   UIFont *font = [layoutManager.textStorage attribute:NSFontAttributeName atIndex:characterIndex effectiveRange:NULL];
-  CGFloat wordKerning = [[layoutManager.textStorage attribute:ASTextNodeWordKerningAttributeName atIndex:characterIndex effectiveRange:NULL] floatValue];
+  CGFloat wordKerning = [[layoutManager.textStorage attribute:ASTextNodeWordKerningAttributeName
+                                                      atIndex:characterIndex
+                                               effectiveRange:NULL] floatValue];
   __block NSNumber *ordinarySpaceSizeValue;
   dispatch_sync(mapQueue, ^{
     ordinarySpaceSizeValue = [spaceSizes objectForKey:font];
   });
   if (ordinarySpaceSizeValue == nil) {
-    ordinarySpaceWidth = [@" " sizeWithAttributes:@{ NSFontAttributeName : font }].width;
+    ordinarySpaceWidth = [@" " sizeWithAttributes:@{NSFontAttributeName : font}].width;
     dispatch_async(mapQueue, ^{
       [spaceSizes setObject:@(ordinarySpaceWidth) forKey:font];
     });

@@ -27,7 +27,7 @@
 AS_SUBCLASSING_RESTRICTED
 @interface ASTextKitEntityAttribute : NSObject
 
-@property (nonatomic, readonly) id<NSObject> entity;
+@property(nonatomic, readonly) id<NSObject> entity;
 
 - (instancetype)initWithEntity:(id<NSObject>)entity;
 

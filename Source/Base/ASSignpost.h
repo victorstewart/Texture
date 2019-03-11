@@ -10,21 +10,21 @@
 /// should be kept up-to-date with these values.
 typedef NS_ENUM(uint32_t, ASSignpostName) {
   // Collection/Table (Blue)
-  ASSignpostDataControllerBatch = 300,    // Alloc/layout nodes before collection update.
-  ASSignpostRangeControllerUpdate,        // Ranges update pass.
-  ASSignpostCollectionUpdate,             // Entire update process, from -endUpdates to [super perform…]
-  
+  ASSignpostDataControllerBatch = 300,  // Alloc/layout nodes before collection update.
+  ASSignpostRangeControllerUpdate,      // Ranges update pass.
+  ASSignpostCollectionUpdate,           // Entire update process, from -endUpdates to [super perform…]
+
   // Rendering (Green)
-  ASSignpostLayerDisplay = 325,           // Client display callout.
-  ASSignpostRunLoopQueueBatch,            // One batch of ASRunLoopQueue.
-  
+  ASSignpostLayerDisplay = 325,  // Client display callout.
+  ASSignpostRunLoopQueueBatch,   // One batch of ASRunLoopQueue.
+
   // Layout (Purple)
-  ASSignpostCalculateLayout = 350,        // Start of calculateLayoutThatFits to end. Max 1 per thread.
-  
+  ASSignpostCalculateLayout = 350,  // Start of calculateLayoutThatFits to end. Max 1 per thread.
+
   // Misc (Orange)
-  ASSignpostDeallocQueueDrain = 375,      // One chunk of dealloc queue work. arg0 is count.
-  ASSignpostCATransactionLayout,          // The CA transaction commit layout phase.
-  ASSignpostCATransactionCommit           // The CA transaction commit post-layout phase.
+  ASSignpostDeallocQueueDrain = 375,  // One chunk of dealloc queue work. arg0 is count.
+  ASSignpostCATransactionLayout,      // The CA transaction commit layout phase.
+  ASSignpostCATransactionCommit       // The CA transaction commit post-layout phase.
 };
 
 typedef NS_ENUM(uintptr_t, ASSignpostColor) {
@@ -45,9 +45,9 @@ static inline ASSignpostColor ASSignpostGetColor(ASSignpostName name, ASSignpost
 }
 
 #if defined(PROFILE) && __has_include(<sys/kdebug_signpost.h>)
-  #define AS_KDEBUG_ENABLE 1
+#define AS_KDEBUG_ENABLE 1
 #else
-  #define AS_KDEBUG_ENABLE 0
+#define AS_KDEBUG_ENABLE 0
 #endif
 
 #if AS_KDEBUG_ENABLE
@@ -64,23 +64,28 @@ static inline ASSignpostColor ASSignpostGetColor(ASSignpostName name, ASSignpost
 #define DBG_FUNC_END 2
 #define DBG_APPS 33
 #define SYS_kdebug_trace 180
-#define KDBG_CODE(Class, SubClass, code) (((Class & 0xff) << 24) | ((SubClass & 0xff) << 16) | ((code & 0x3fff)  << 2))
-#define APPSDBG_CODE(SubClass,code) KDBG_CODE(DBG_APPS, SubClass, code)
+#define KDBG_CODE(Class, SubClass, code) (((Class & 0xff) << 24) | ((SubClass & 0xff) << 16) | ((code & 0x3fff) << 2))
+#define APPSDBG_CODE(SubClass, code) KDBG_CODE(DBG_APPS, SubClass, code)
 #endif
 
 // Currently we'll reserve arg3.
-#define ASSignpost(name, identifier, arg2, color) \
-AS_AT_LEAST_IOS10 ? kdebug_signpost(name, (uintptr_t)identifier, (uintptr_t)arg2, 0, ASSignpostGetColor(name, color)) \
-: syscall(SYS_kdebug_trace, APPSDBG_CODE(DBG_MACH_CHUD, name) | DBG_FUNC_NONE, (uintptr_t)identifier, (uintptr_t)arg2, 0, ASSignpostGetColor(name, color));
+#define ASSignpost(name, identifier, arg2, color)                                                       \
+  AS_AT_LEAST_IOS10                                                                                     \
+  ? kdebug_signpost(name, (uintptr_t)identifier, (uintptr_t)arg2, 0, ASSignpostGetColor(name, color))   \
+  : syscall(SYS_kdebug_trace, APPSDBG_CODE(DBG_MACH_CHUD, name) | DBG_FUNC_NONE, (uintptr_t)identifier, \
+            (uintptr_t)arg2, 0, ASSignpostGetColor(name, color));
 
-#define ASSignpostStartCustom(name, identifier, arg2) \
-AS_AT_LEAST_IOS10 ? kdebug_signpost_start(name, (uintptr_t)identifier, (uintptr_t)arg2, 0, 0) \
-: syscall(SYS_kdebug_trace, APPSDBG_CODE(DBG_MACH_CHUD, name) | DBG_FUNC_START, (uintptr_t)identifier, (uintptr_t)arg2, 0, 0);
+#define ASSignpostStartCustom(name, identifier, arg2)                                               \
+  AS_AT_LEAST_IOS10 ? kdebug_signpost_start(name, (uintptr_t)identifier, (uintptr_t)arg2, 0, 0)     \
+                    : syscall(SYS_kdebug_trace, APPSDBG_CODE(DBG_MACH_CHUD, name) | DBG_FUNC_START, \
+                              (uintptr_t)identifier, (uintptr_t)arg2, 0, 0);
 #define ASSignpostStart(name) ASSignpostStartCustom(name, self, 0)
 
-#define ASSignpostEndCustom(name, identifier, arg2, color) \
-AS_AT_LEAST_IOS10 ? kdebug_signpost_end(name, (uintptr_t)identifier, (uintptr_t)arg2, 0, ASSignpostGetColor(name, color)) \
-: syscall(SYS_kdebug_trace, APPSDBG_CODE(DBG_MACH_CHUD, name) | DBG_FUNC_END, (uintptr_t)identifier, (uintptr_t)arg2, 0, ASSignpostGetColor(name, color));
+#define ASSignpostEndCustom(name, identifier, arg2, color)                                                \
+  AS_AT_LEAST_IOS10                                                                                       \
+  ? kdebug_signpost_end(name, (uintptr_t)identifier, (uintptr_t)arg2, 0, ASSignpostGetColor(name, color)) \
+  : syscall(SYS_kdebug_trace, APPSDBG_CODE(DBG_MACH_CHUD, name) | DBG_FUNC_END, (uintptr_t)identifier,    \
+            (uintptr_t)arg2, 0, ASSignpostGetColor(name, color));
 #define ASSignpostEnd(name) ASSignpostEndCustom(name, self, 0, ASSignpostColorDefault)
 
 #else

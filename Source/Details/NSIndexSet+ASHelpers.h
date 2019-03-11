@@ -18,7 +18,8 @@
 /// Returns all the item indexes from the given index paths that are in the given section.
 + (NSIndexSet *)as_indexSetFromIndexPaths:(NSArray<NSIndexPath *> *)indexPaths inSection:(NSUInteger)section;
 
-/// If you've got an old index, and you insert items using this index set, this returns the change to get to the new index.
+/// If you've got an old index, and you insert items using this index set, this returns the change to get to the new
+/// index.
 - (NSUInteger)as_indexChangeByInsertingItemsBelowIndex:(NSUInteger)index;
 
 - (NSString *)as_smallDescription;

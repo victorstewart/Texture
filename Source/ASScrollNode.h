@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @abstract The node's UIScrollView.
  */
-@property (readonly) UIScrollView *view;
+@property(readonly) UIScrollView *view;
 
 /**
  * @abstract When enabled, the size calculated by the node's layout spec is used as

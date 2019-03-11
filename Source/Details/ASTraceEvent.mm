@@ -13,14 +13,13 @@
 static NSString *const ASTraceEventThreadDescriptionKey = @"ASThreadTraceEventDescription";
 
 @interface ASTraceEvent ()
-@property (nonatomic, readonly) NSString *objectDescription;
-@property (nonatomic, readonly) NSString *threadDescription;
+@property(nonatomic, readonly) NSString *objectDescription;
+@property(nonatomic, readonly) NSString *threadDescription;
 @end
 
 @implementation ASTraceEvent
 
-- (instancetype)initWithBacktrace:(NSArray<NSString *> *)backtrace format:(NSString *)format arguments:(va_list)args
-{
+- (instancetype)initWithBacktrace:(NSArray<NSString *> *)backtrace format:(NSString *)format arguments:(va_list)args {
   self = [super init];
   if (self != nil) {
     static NSTimeInterval refTime;
@@ -28,10 +27,10 @@ static NSString *const ASTraceEventThreadDescriptionKey = @"ASThreadTraceEventDe
     dispatch_once(&onceToken, ^{
       refTime = CACurrentMediaTime();
     });
-    
+
     // Create the format string passed to us.
     _message = [[NSString alloc] initWithFormat:format arguments:args];
-	  
+
     NSThread *thread = [NSThread currentThread];
     NSString *threadDescription = thread.name;
     if (threadDescription.length == 0) {
@@ -59,8 +58,7 @@ static NSString *const ASTraceEventThreadDescriptionKey = @"ASThreadTraceEventDe
   return self;
 }
 
-- (NSString *)description
-{
+- (NSString *)description {
   return [NSString stringWithFormat:@"<(%@) t=%7.3f: %@>", _threadDescription, _timestamp, _message];
 }
 

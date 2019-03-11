@@ -8,8 +8,8 @@
 //
 
 #import <AsyncDisplayKit/ASBlockTypes.h>
-#import <AsyncDisplayKit/ASDisplayNode.h>
 #import <AsyncDisplayKit/ASDisplayNode+LayoutSpec.h>
+#import <AsyncDisplayKit/ASDisplayNode.h>
 
 @class ASLayoutSpec, _ASDisplayLayer;
 
@@ -43,23 +43,24 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @abstract Return the calculated layout.
  *
- * @discussion For node subclasses that implement manual layout (e.g., they have a custom -layout method), 
- * calculatedLayout may be accessed on subnodes to retrieved cached information about their size.  
- * This allows -layout to be very fast, saving time on the main thread.  
+ * @discussion For node subclasses that implement manual layout (e.g., they have a custom -layout method),
+ * calculatedLayout may be accessed on subnodes to retrieved cached information about their size.
+ * This allows -layout to be very fast, saving time on the main thread.
  * Note: .calculatedLayout will only be set for nodes that have had -layoutThatFits: called on them.
  * For manual layout, make sure you call -layoutThatFits: in your implementation of -calculateSizeThatFits:.
  *
- * For node subclasses that use automatic layout (e.g., they implement -layoutSpecThatFits:), 
- * it is typically not necessary to use .calculatedLayout at any point.  For these nodes, 
+ * For node subclasses that use automatic layout (e.g., they implement -layoutSpecThatFits:),
+ * it is typically not necessary to use .calculatedLayout at any point.  For these nodes,
  * the ASLayoutSpec implementation will automatically call -layoutThatFits: on all of the subnodes,
- * and the ASDisplayNode base class implementation of -layout will automatically make use of .calculatedLayout on the subnodes.
+ * and the ASDisplayNode base class implementation of -layout will automatically make use of .calculatedLayout on the
+ * subnodes.
  *
  * @return Layout that wraps calculated size returned by -calculateSizeThatFits: (in manual layout mode),
  * or layout already calculated from layout spec returned by -layoutSpecThatFits: (in automatic layout mode).
  *
  * @warning Subclasses must not override this; it returns the last cached layout and is never expensive.
  */
-@property (nullable, readonly) ASLayout *calculatedLayout;
+@property(nullable, readonly) ASLayout *calculatedLayout;
 
 #pragma mark - View Lifecycle
 /** @name View Lifecycle */
@@ -114,7 +115,6 @@ AS_CATEGORY_IMPLEMENTABLE
 AS_CATEGORY_IMPLEMENTABLE
 - (void)calculatedLayoutDidChange ASDISPLAYNODE_REQUIRES_SUPER;
 
-
 #pragma mark - Layout calculation
 /** @name Layout calculation */
 
@@ -125,11 +125,12 @@ AS_CATEGORY_IMPLEMENTABLE
  *
  * @return An ASLayout instance defining the layout of the receiver (and its children, if the box layout model is used).
  *
- * @discussion This method is called on a non-main thread. The default implementation calls either -layoutSpecThatFits: 
+ * @discussion This method is called on a non-main thread. The default implementation calls either -layoutSpecThatFits:
  * or -calculateSizeThatFits:, whichever method is overriden. Subclasses rarely need to override this method,
  * override -layoutSpecThatFits: or -calculateSizeThatFits: instead.
  *
- * @note This method should not be called directly outside of ASDisplayNode; use -layoutThatFits: or -calculatedLayout instead.
+ * @note This method should not be called directly outside of ASDisplayNode; use -layoutThatFits: or -calculatedLayout
+ * instead.
  */
 - (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize;
 
@@ -156,17 +157,19 @@ AS_CATEGORY_IMPLEMENTABLE
  * be done before display can be performed here, and using ivars to cache any valuable intermediate results is
  * encouraged.
  *
- * @note Subclasses that override are committed to manual layout. Therefore, -layout: must be overriden to layout all subnodes or subviews.
+ * @note Subclasses that override are committed to manual layout. Therefore, -layout: must be overriden to layout all
+ * subnodes or subviews.
  *
- * @note This method should not be called directly outside of ASDisplayNode; use -layoutThatFits: or layoutThatFits:parentSize: instead.
+ * @note This method should not be called directly outside of ASDisplayNode; use -layoutThatFits: or
+ * layoutThatFits:parentSize: instead.
  */
 - (CGSize)calculateSizeThatFits:(CGSize)constrainedSize;
 
 /**
  * @abstract Invalidate previously measured and cached layout.
  *
- * @discussion Subclasses should call this method to invalidate the previously measured and cached layout for the display
- * node, when the contents of the node change in such a way as to require measuring it again.
+ * @discussion Subclasses should call this method to invalidate the previously measured and cached layout for the
+ * display node, when the contents of the node change in such a way as to require measuring it again.
  */
 - (void)invalidateCalculatedLayout;
 
@@ -174,27 +177,27 @@ AS_CATEGORY_IMPLEMENTABLE
 /** @name Observing node state changes */
 
 /**
-  * Declare <ASInterfaceStateDelegate> methods as requiring super calls (this can't be required in the protocol).
-  * For descriptions, see <ASInterfaceStateDelegate> definition.
-  */
+ * Declare <ASInterfaceStateDelegate> methods as requiring super calls (this can't be required in the protocol).
+ * For descriptions, see <ASInterfaceStateDelegate> definition.
+ */
 
 AS_CATEGORY_IMPLEMENTABLE
 - (void)didEnterVisibleState ASDISPLAYNODE_REQUIRES_SUPER;
 
 AS_CATEGORY_IMPLEMENTABLE
-- (void)didExitVisibleState  ASDISPLAYNODE_REQUIRES_SUPER;
+- (void)didExitVisibleState ASDISPLAYNODE_REQUIRES_SUPER;
 
 AS_CATEGORY_IMPLEMENTABLE
 - (void)didEnterDisplayState ASDISPLAYNODE_REQUIRES_SUPER;
 
 AS_CATEGORY_IMPLEMENTABLE
-- (void)didExitDisplayState  ASDISPLAYNODE_REQUIRES_SUPER;
+- (void)didExitDisplayState ASDISPLAYNODE_REQUIRES_SUPER;
 
 AS_CATEGORY_IMPLEMENTABLE
 - (void)didEnterPreloadState ASDISPLAYNODE_REQUIRES_SUPER;
 
 AS_CATEGORY_IMPLEMENTABLE
-- (void)didExitPreloadState  ASDISPLAYNODE_REQUIRES_SUPER;
+- (void)didExitPreloadState ASDISPLAYNODE_REQUIRES_SUPER;
 
 AS_CATEGORY_IMPLEMENTABLE
 - (void)interfaceStateDidChange:(ASInterfaceState)newState
@@ -225,9 +228,10 @@ AS_CATEGORY_IMPLEMENTABLE
  *
  * @note Called on the display queue and/or main queue (MUST BE THREAD SAFE)
  */
-+ (void)drawRect:(CGRect)bounds withParameters:(nullable id)parameters
-                                   isCancelled:(AS_NOESCAPE asdisplaynode_iscancelled_block_t)isCancelledBlock
-                                 isRasterizing:(BOOL)isRasterizing;
++ (void)drawRect:(CGRect)bounds
+    withParameters:(nullable id)parameters
+       isCancelled:(AS_NOESCAPE asdisplaynode_iscancelled_block_t)isCancelledBlock
+     isRasterizing:(BOOL)isRasterizing;
 
 /**
  * @summary Delegate override to provide new layer contents as a UIImage.
@@ -264,7 +268,8 @@ AS_CATEGORY_IMPLEMENTABLE
  *
  * @note Called on the main thread only
  */
-- (void)displayWillStart ASDISPLAYNODE_REQUIRES_SUPER ASDISPLAYNODE_DEPRECATED_MSG("Use displayWillStartAsynchronously: instead.");
+- (void)displayWillStart ASDISPLAYNODE_REQUIRES_SUPER
+    ASDISPLAYNODE_DEPRECATED_MSG("Use displayWillStartAsynchronously: instead.");
 
 /**
  * @abstract Indicates that the receiver is about to display.
@@ -298,21 +303,22 @@ AS_CATEGORY_IMPLEMENTABLE
 
 /**
  * Called just after the view is added to a window.
- * Note: this may be called multiple times during view controller transitions. To overcome this: use didEnterVisibleState or its equavalents.
+ * Note: this may be called multiple times during view controller transitions. To overcome this: use
+ * didEnterVisibleState or its equavalents.
  */
 - (void)didEnterHierarchy ASDISPLAYNODE_REQUIRES_SUPER;
 
 /**
  * @abstract Whether the view or layer of this display node is currently in a window
  */
-@property (readonly, getter=isInHierarchy) BOOL inHierarchy;
+@property(readonly, getter=isInHierarchy) BOOL inHierarchy;
 
 /**
  * Provides an opportunity to clear backing store and other memory-intensive intermediates, such as text layout managers
  * on the current node.
  *
- * @discussion Called by -recursivelyClearContents. Always called on main thread. Base class implements self.contents = nil, clearing any backing
- * store, for asynchronous regeneration when needed.
+ * @discussion Called by -recursivelyClearContents. Always called on main thread. Base class implements self.contents =
+ * nil, clearing any backing store, for asynchronous regeneration when needed.
  */
 - (void)clearContents ASDISPLAYNODE_REQUIRES_SUPER;
 
@@ -374,8 +380,7 @@ AS_CATEGORY_IMPLEMENTABLE
  *
  * @see setNeedsDisplayAtScale:
  */
-@property (readonly) CGFloat contentsScaleForDisplay;
-
+@property(readonly) CGFloat contentsScaleForDisplay;
 
 #pragma mark - Touch handling
 /** @name Touch handling */
@@ -410,8 +415,8 @@ AS_CATEGORY_IMPLEMENTABLE
  * @param touches A set of UITouch instances.
  * @param event A UIEvent associated with the touch.
  */
-- (void)touchesCancelled:(nullable NSSet<UITouch *> *)touches withEvent:(nullable UIEvent *)event ASDISPLAYNODE_REQUIRES_SUPER;
-
+- (void)touchesCancelled:(nullable NSSet<UITouch *> *)touches
+               withEvent:(nullable UIEvent *)event ASDISPLAYNODE_REQUIRES_SUPER;
 
 #pragma mark - Managing Gesture Recognizers
 /** @name Managing Gesture Recognizers */
@@ -422,7 +427,6 @@ AS_CATEGORY_IMPLEMENTABLE
  * @param gestureRecognizer A gesture recognizer trying to recognize a gesture.
  */
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer;
-
 
 #pragma mark - Hit Testing
 
@@ -442,7 +446,6 @@ AS_CATEGORY_IMPLEMENTABLE
  * 2) hitTest: is never called before the views are created.
  */
 - (nullable UIView *)hitTest:(CGPoint)point withEvent:(nullable UIEvent *)event;
-
 
 #pragma mark - Placeholders
 /** @name Placeholders */
@@ -464,7 +467,6 @@ AS_CATEGORY_IMPLEMENTABLE
  */
 - (nullable UIImage *)placeholderImage;
 
-
 #pragma mark - Description
 /** @name Description */
 
@@ -477,16 +479,26 @@ AS_CATEGORY_IMPLEMENTABLE
 
 @end
 
-
 // Check that at most a layoutSpecBlock or one of the three layout methods is overridden
-#define __ASDisplayNodeCheckForLayoutMethodOverrides \
-    ASDisplayNodeAssert(_layoutSpecBlock != NULL || \
-    ((ASDisplayNodeSubclassOverridesSelector(self.class, @selector(calculateSizeThatFits:)) ? 1 : 0) \
-    + (ASDisplayNodeSubclassOverridesSelector(self.class, @selector(layoutSpecThatFits:)) ? 1 : 0) \
-    + (ASDisplayNodeSubclassOverridesSelector(self.class, @selector(calculateLayoutThatFits:)) ? 1 : 0)) <= 1, \
-    @"Subclass %@ must at least provide a layoutSpecBlock or override at most one of the three layout methods: calculateLayoutThatFits:, layoutSpecThatFits:, or calculateSizeThatFits:", NSStringFromClass(self.class))
+#define __ASDisplayNodeCheckForLayoutMethodOverrides                                                                \
+  ASDisplayNodeAssert(                                                                                              \
+      _layoutSpecBlock != NULL ||                                                                                   \
+          ((ASDisplayNodeSubclassOverridesSelector(self.class, @selector(calculateSizeThatFits:)) ? 1 : 0) +        \
+           (ASDisplayNodeSubclassOverridesSelector(self.class, @selector(layoutSpecThatFits:)) ? 1 : 0) +           \
+           (ASDisplayNodeSubclassOverridesSelector(self.class, @selector(calculateLayoutThatFits:)) ? 1 : 0)) <= 1, \
+      @"Subclass %@ must at least provide a layoutSpecBlock or override at most one of the three layout methods: "  \
+      @"calculateLayoutThatFits:, layoutSpecThatFits:, or calculateSizeThatFits:",                                  \
+      NSStringFromClass(self.class))
 
-#define ASDisplayNodeAssertThreadAffinity(viewNode)   ASDisplayNodeAssert(!viewNode || ASMainThreadAssertionsAreDisabled() || ASDisplayNodeThreadIsMain() || !(viewNode).nodeLoaded, @"Incorrect display node thread affinity - this method should not be called off the main thread after the ASDisplayNode's view or layer have been created")
-#define ASDisplayNodeCAssertThreadAffinity(viewNode) ASDisplayNodeCAssert(!viewNode || ASMainThreadAssertionsAreDisabled() || ASDisplayNodeThreadIsMain() || !(viewNode).nodeLoaded, @"Incorrect display node thread affinity - this method should not be called off the main thread after the ASDisplayNode's view or layer have been created")
+#define ASDisplayNodeAssertThreadAffinity(viewNode)                                                               \
+  ASDisplayNodeAssert(                                                                                            \
+      !viewNode || ASMainThreadAssertionsAreDisabled() || ASDisplayNodeThreadIsMain() || !(viewNode).nodeLoaded,  \
+      @"Incorrect display node thread affinity - this method should not be called off the main thread after the " \
+      @"ASDisplayNode's view or layer have been created")
+#define ASDisplayNodeCAssertThreadAffinity(viewNode)                                                              \
+  ASDisplayNodeCAssert(                                                                                           \
+      !viewNode || ASMainThreadAssertionsAreDisabled() || ASDisplayNodeThreadIsMain() || !(viewNode).nodeLoaded,  \
+      @"Incorrect display node thread affinity - this method should not be called off the main thread after the " \
+      @"ASDisplayNode's view or layer have been created")
 
 NS_ASSUME_NONNULL_END

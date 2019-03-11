@@ -31,11 +31,12 @@ AS_EXTERN IMP ASReplaceMethodWithBlock(Class c, SEL origSEL, id block);
 /// Dispatches the given block to the main queue if not already running on the main thread
 AS_EXTERN void ASPerformBlockOnMainThread(void (^block)(void));
 
-/// Dispatches the given block to a background queue with priority of DISPATCH_QUEUE_PRIORITY_DEFAULT if not already run on a background queue
-AS_EXTERN void ASPerformBlockOnBackgroundThread(void (^block)(void)); // DISPATCH_QUEUE_PRIORITY_DEFAULT
+/// Dispatches the given block to a background queue with priority of DISPATCH_QUEUE_PRIORITY_DEFAULT if not already run
+/// on a background queue
+AS_EXTERN void ASPerformBlockOnBackgroundThread(void (^block)(void));  // DISPATCH_QUEUE_PRIORITY_DEFAULT
 
 /// For deallocation of objects on a background thread without GCD overhead / thread explosion
-AS_EXTERN void ASPerformBackgroundDeallocation(id __strong _Nullable * _Nonnull object);
+AS_EXTERN void ASPerformBackgroundDeallocation(id __strong _Nullable *_Nonnull object);
 
 AS_EXTERN CGFloat ASScreenScale(void);
 
@@ -51,7 +52,7 @@ AS_EXTERN CGFloat ASCeilPixelValue(CGFloat f);
 
 AS_EXTERN CGFloat ASRoundPixelValue(CGFloat f);
 
-AS_EXTERN Class _Nullable ASGetClassFromType(const char * _Nullable type);
+AS_EXTERN Class _Nullable ASGetClassFromType(const char *_Nullable type);
 
 ASDISPLAYNODE_INLINE BOOL ASImageAlphaInfoIsOpaque(CGImageAlphaInfo info) {
   switch (info) {
@@ -66,10 +67,10 @@ ASDISPLAYNODE_INLINE BOOL ASImageAlphaInfoIsOpaque(CGImageAlphaInfo info) {
 
 /**
  @summary Conditionally performs UIView geometry changes in the given block without animation.
- 
+
  Used primarily to circumvent UITableView forcing insertion animations when explicitly told not to via
  `UITableViewRowAnimationNone`. More info: https://github.com/facebook/AsyncDisplayKit/pull/445
- 
+
  @param withoutAnimation Set to `YES` to perform given block without animation
  @param block Perform UIView geometry changes within the passed block
  */
@@ -81,15 +82,14 @@ ASDISPLAYNODE_INLINE void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, 
   }
 }
 
-ASDISPLAYNODE_INLINE void ASBoundsAndPositionForFrame(CGRect rect, CGPoint origin, CGPoint anchorPoint, CGRect *bounds, CGPoint *position)
-{
-  *bounds   = (CGRect){ origin, rect.size };
-  *position = CGPointMake(rect.origin.x + rect.size.width * anchorPoint.x,
-                          rect.origin.y + rect.size.height * anchorPoint.y);
+ASDISPLAYNODE_INLINE void ASBoundsAndPositionForFrame(
+    CGRect rect, CGPoint origin, CGPoint anchorPoint, CGRect *bounds, CGPoint *position) {
+  *bounds = (CGRect){origin, rect.size};
+  *position =
+      CGPointMake(rect.origin.x + rect.size.width * anchorPoint.x, rect.origin.y + rect.size.height * anchorPoint.y);
 }
 
-ASDISPLAYNODE_INLINE UIEdgeInsets ASConcatInsets(UIEdgeInsets insetsA, UIEdgeInsets insetsB)
-{
+ASDISPLAYNODE_INLINE UIEdgeInsets ASConcatInsets(UIEdgeInsets insetsA, UIEdgeInsets insetsB) {
   insetsA.top += insetsB.top;
   insetsA.left += insetsB.left;
   insetsA.bottom += insetsB.bottom;
@@ -97,7 +97,8 @@ ASDISPLAYNODE_INLINE UIEdgeInsets ASConcatInsets(UIEdgeInsets insetsA, UIEdgeIns
   return insetsA;
 }
 
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASImageDownloaderPriority ASImageDownloaderPriorityWithInterfaceState(ASInterfaceState interfaceState) {
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASImageDownloaderPriority
+ASImageDownloaderPriorityWithInterfaceState(ASInterfaceState interfaceState) {
   if (ASInterfaceStateIncludesVisible(interfaceState)) {
     return ASImageDownloaderPriorityVisible;
   }

@@ -11,9 +11,9 @@
 
 #if AS_USE_PHOTOS
 
-#import <UIKit/UIKit.h>
-#import <Photos/Photos.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Photos/Photos.h>
+#import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,32 +36,32 @@ API_AVAILABLE(ios(8.0), tvos(10.0))
 /**
  @abstract The asset identifier for this image request provided during initialization.
  */
-@property (nonatomic, readonly) NSString *assetIdentifier;
+@property(nonatomic, readonly) NSString *assetIdentifier;
 
 /**
  @abstract The target size for this image request. Defaults to `PHImageManagerMaximumSize`.
  */
-@property (nonatomic) CGSize targetSize;
+@property(nonatomic) CGSize targetSize;
 
 /**
  @abstract The content mode for this image request. Defaults to `PHImageContentModeDefault`.
- 
+
  @see `PHImageManager`
  */
-@property (nonatomic) PHImageContentMode contentMode;
+@property(nonatomic) PHImageContentMode contentMode;
 
 /**
  @abstract The options specified for this request. Default value is the result of `[PHImageRequestOptions new]`.
- 
+
  @discussion Some properties of this object are ignored when converting this request into a URL.
  As of iOS SDK 9.0, these properties are `progressHandler` and `synchronous`.
  */
-@property (nonatomic) PHImageRequestOptions *options;
+@property(nonatomic) PHImageRequestOptions *options;
 
 /**
  @return A new URL converted from this request.
  */
-@property (nonatomic, readonly) NSURL *url;
+@property(nonatomic, readonly) NSURL *url;
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
@@ -70,4 +70,4 @@ API_AVAILABLE(ios(8.0), tvos(10.0))
 
 NS_ASSUME_NONNULL_END
 
-#endif // AS_USE_PHOTOS
+#endif  // AS_USE_PHOTOS

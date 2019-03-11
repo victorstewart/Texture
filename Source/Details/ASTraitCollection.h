@@ -7,7 +7,6 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-
 #import <UIKit/UIKit.h>
 
 #import <AsyncDisplayKit/ASBaseDefines.h>
@@ -25,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @discussion This struct is for internal use only. Framework users should always use ASTraitCollection.
  *
- * If you use ASPrimitiveTraitCollection, please do make sure to initialize it with ASPrimitiveTraitCollectionMakeDefault()
- * or ASPrimitiveTraitCollectionFromUITraitCollection(UITraitCollection*).
+ * If you use ASPrimitiveTraitCollection, please do make sure to initialize it with
+ * ASPrimitiveTraitCollectionMakeDefault() or ASPrimitiveTraitCollectionFromUITraitCollection(UITraitCollection*).
  */
 #pragma clang diagnostic push
 #pragma clang diagnostic warning "-Wpadded"
@@ -59,13 +58,14 @@ AS_EXTERN ASPrimitiveTraitCollection ASPrimitiveTraitCollectionMakeDefault(void)
 /**
  * Creates a ASPrimitiveTraitCollection from a given UITraitCollection.
  */
-AS_EXTERN ASPrimitiveTraitCollection ASPrimitiveTraitCollectionFromUITraitCollection(UITraitCollection *traitCollection);
-
+AS_EXTERN ASPrimitiveTraitCollection
+ASPrimitiveTraitCollectionFromUITraitCollection(UITraitCollection *traitCollection);
 
 /**
  * Compares two ASPrimitiveTraitCollection to determine if they are the same.
  */
-AS_EXTERN BOOL ASPrimitiveTraitCollectionIsEqualToASPrimitiveTraitCollection(ASPrimitiveTraitCollection lhs, ASPrimitiveTraitCollection rhs);
+AS_EXTERN BOOL ASPrimitiveTraitCollectionIsEqualToASPrimitiveTraitCollection(ASPrimitiveTraitCollection lhs,
+                                                                             ASPrimitiveTraitCollection rhs);
 
 /**
  * Returns a string representation of a ASPrimitiveTraitCollection.
@@ -106,55 +106,54 @@ AS_EXTERN void ASTraitCollectionPropagateDown(id<ASLayoutElement> element, ASPri
 
 @end
 
-#define ASPrimitiveTraitCollectionDefaults \
-- (ASPrimitiveTraitCollection)primitiveTraitCollection\
-{\
-  return _primitiveTraitCollection.load();\
-}\
-- (void)setPrimitiveTraitCollection:(ASPrimitiveTraitCollection)traitCollection\
-{\
-  _primitiveTraitCollection = traitCollection;\
-}\
+#define ASPrimitiveTraitCollectionDefaults                                           \
+  -(ASPrimitiveTraitCollection)primitiveTraitCollection {                            \
+    return _primitiveTraitCollection.load();                                         \
+  }                                                                                  \
+  -(void)setPrimitiveTraitCollection : (ASPrimitiveTraitCollection)traitCollection { \
+    _primitiveTraitCollection = traitCollection;                                     \
+  }
 
-#define ASLayoutElementCollectionTableSetTraitCollection(lock) \
-- (void)setPrimitiveTraitCollection:(ASPrimitiveTraitCollection)traitCollection\
-{\
-  AS::MutexLocker l(lock);\
-\
-  ASPrimitiveTraitCollection oldTraits = self.primitiveTraitCollection;\
-  [super setPrimitiveTraitCollection:traitCollection];\
-\
-  /* Extra Trait Collection Handling */\
-\
-  /* If the node is not loaded  yet don't do anything as otherwise the access of the view will trigger a load */\
-  if (! self.isNodeLoaded) { return; }\
-\
-  ASPrimitiveTraitCollection currentTraits = self.primitiveTraitCollection;\
-  if (ASPrimitiveTraitCollectionIsEqualToASPrimitiveTraitCollection(currentTraits, oldTraits) == NO) {\
-    [self.dataController environmentDidChange];\
-  }\
-}\
+#define ASLayoutElementCollectionTableSetTraitCollection(lock)                                                     \
+  -(void)setPrimitiveTraitCollection : (ASPrimitiveTraitCollection)traitCollection {                               \
+    AS::MutexLocker l(lock);                                                                                       \
+                                                                                                                   \
+    ASPrimitiveTraitCollection oldTraits = self.primitiveTraitCollection;                                          \
+    [super setPrimitiveTraitCollection:traitCollection];                                                           \
+                                                                                                                   \
+    /* Extra Trait Collection Handling */                                                                          \
+                                                                                                                   \
+    /* If the node is not loaded  yet don't do anything as otherwise the access of the view will trigger a load */ \
+    if (!self.isNodeLoaded) {                                                                                      \
+      return;                                                                                                      \
+    }                                                                                                              \
+                                                                                                                   \
+    ASPrimitiveTraitCollection currentTraits = self.primitiveTraitCollection;                                      \
+    if (ASPrimitiveTraitCollectionIsEqualToASPrimitiveTraitCollection(currentTraits, oldTraits) == NO) {           \
+      [self.dataController environmentDidChange];                                                                  \
+    }                                                                                                              \
+  }
 
 #pragma mark - ASTraitCollection
 
 AS_SUBCLASSING_RESTRICTED
 @interface ASTraitCollection : NSObject
 
-@property (readonly) UIUserInterfaceSizeClass horizontalSizeClass;
-@property (readonly) UIUserInterfaceSizeClass verticalSizeClass;
+@property(readonly) UIUserInterfaceSizeClass horizontalSizeClass;
+@property(readonly) UIUserInterfaceSizeClass verticalSizeClass;
 
-@property (readonly) CGFloat displayScale;
-@property (readonly) UIDisplayGamut displayGamut API_AVAILABLE(ios(10.0));
+@property(readonly) CGFloat displayScale;
+@property(readonly) UIDisplayGamut displayGamut API_AVAILABLE(ios(10.0));
 
-@property (readonly) UIUserInterfaceIdiom userInterfaceIdiom;
-@property (readonly) UIForceTouchCapability forceTouchCapability;
-@property (readonly) UITraitEnvironmentLayoutDirection layoutDirection API_AVAILABLE(ios(10.0));
+@property(readonly) UIUserInterfaceIdiom userInterfaceIdiom;
+@property(readonly) UIForceTouchCapability forceTouchCapability;
+@property(readonly) UITraitEnvironmentLayoutDirection layoutDirection API_AVAILABLE(ios(10.0));
 #if AS_BUILD_UIUSERINTERFACESTYLE
-@property (readonly) UIUserInterfaceStyle userInterfaceStyle API_AVAILABLE(tvos(10.0), ios(12.0));
+@property(readonly) UIUserInterfaceStyle userInterfaceStyle API_AVAILABLE(tvos(10.0), ios(12.0));
 #endif
-@property (readonly) UIContentSizeCategory preferredContentSizeCategory  API_AVAILABLE(ios(10.0));
+@property(readonly) UIContentSizeCategory preferredContentSizeCategory API_AVAILABLE(ios(10.0));
 
-@property (readonly) CGSize containerSize;
+@property(readonly) CGSize containerSize;
 
 - (BOOL)isEqualToTraitCollection:(ASTraitCollection *)traitCollection;
 
@@ -165,7 +164,8 @@ AS_SUBCLASSING_RESTRICTED
  */
 @interface ASTraitCollection (PrimitiveTraits)
 
-+ (ASTraitCollection *)traitCollectionWithASPrimitiveTraitCollection:(ASPrimitiveTraitCollection)traits NS_RETURNS_RETAINED;
++ (ASTraitCollection *)traitCollectionWithASPrimitiveTraitCollection:(ASPrimitiveTraitCollection)traits
+    NS_RETURNS_RETAINED;
 
 - (ASPrimitiveTraitCollection)primitiveTraitCollection;
 

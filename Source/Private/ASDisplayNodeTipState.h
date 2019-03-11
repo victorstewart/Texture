@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 @class ASDisplayNode, ASTipNode;
 
@@ -22,10 +22,10 @@ AS_SUBCLASSING_RESTRICTED
 - (instancetype)init NS_UNAVAILABLE;
 
 /// Unsafe because once the node is deallocated, we will not be able to access the tip state.
-@property (nonatomic, unsafe_unretained, readonly) ASDisplayNode *node;
+@property(nonatomic, unsafe_unretained, readonly) ASDisplayNode *node;
 
 /// Main-thread-only.
-@property (nonatomic, nullable) ASTipNode *tipNode;
+@property(nonatomic, nullable) ASTipNode *tipNode;
 
 @end
 

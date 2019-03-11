@@ -7,15 +7,15 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
+#import <AsyncDisplayKit/ASAbsoluteLayoutSpec.h>
+#import <AsyncDisplayKit/ASBackgroundLayoutSpec.h>
 #import <AsyncDisplayKit/ASButtonNode+Private.h>
 #import <AsyncDisplayKit/ASButtonNode+Yoga.h>
+#import <AsyncDisplayKit/ASDisplayNode+Subclasses.h>
+#import <AsyncDisplayKit/ASInsetLayoutSpec.h>
+#import <AsyncDisplayKit/ASInternalHelpers.h>
 #import <AsyncDisplayKit/ASStackLayoutSpec.h>
 #import <AsyncDisplayKit/ASThread.h>
-#import <AsyncDisplayKit/ASDisplayNode+Subclasses.h>
-#import <AsyncDisplayKit/ASBackgroundLayoutSpec.h>
-#import <AsyncDisplayKit/ASInsetLayoutSpec.h>
-#import <AsyncDisplayKit/ASAbsoluteLayoutSpec.h>
-#import <AsyncDisplayKit/ASInternalHelpers.h>
 
 @implementation ASButtonNode
 
@@ -31,11 +31,10 @@
 
 #pragma mark - Lifecycle
 
-- (instancetype)init
-{
+- (instancetype)init {
   if (self = [super init]) {
     self.automaticallyManagesSubnodes = YES;
-    
+
     _contentSpacing = 8.0;
     _laysOutHorizontally = YES;
     _contentHorizontalAlignment = ASHorizontalAlignmentMiddle;
@@ -49,14 +48,13 @@
   return self;
 }
 
-- (ASTextNode *)titleNode
-{
+- (ASTextNode *)titleNode {
   ASLockScopeSelf();
   if (!_titleNode) {
     _titleNode = [[ASTextNode alloc] init];
-#if TARGET_OS_IOS 
-      // tvOS needs access to the underlying view
-      // of the button node to add a touch handler.
+#if TARGET_OS_IOS
+    // tvOS needs access to the underlying view
+    // of the button node to add a touch handler.
     [_titleNode setLayerBacked:YES];
 #endif
     _titleNode.style.flexShrink = 1.0;
@@ -66,8 +64,7 @@
 
 #pragma mark - Public Getter
 
-- (ASImageNode *)imageNode
-{
+- (ASImageNode *)imageNode {
   ASLockScopeSelf();
   if (!_imageNode) {
     _imageNode = [[ASImageNode alloc] init];
@@ -76,8 +73,7 @@
   return _imageNode;
 }
 
-- (ASImageNode *)backgroundImageNode
-{
+- (ASImageNode *)backgroundImageNode {
   ASLockScopeSelf();
   if (!_backgroundImageNode) {
     _backgroundImageNode = [[ASImageNode alloc] init];
@@ -87,14 +83,12 @@
   return _backgroundImageNode;
 }
 
-- (void)setLayerBacked:(BOOL)layerBacked
-{
+- (void)setLayerBacked:(BOOL)layerBacked {
   ASDisplayNodeAssert(!layerBacked, @"ASButtonNode must not be layer backed!");
   [super setLayerBacked:layerBacked];
 }
 
-- (void)setEnabled:(BOOL)enabled
-{
+- (void)setEnabled:(BOOL)enabled {
   if (self.enabled != enabled) {
     [super setEnabled:enabled];
     self.accessibilityTraits = self.defaultAccessibilityTraits;
@@ -102,41 +96,36 @@
   }
 }
 
-- (void)setHighlighted:(BOOL)highlighted
-{
+- (void)setHighlighted:(BOOL)highlighted {
   if (self.highlighted != highlighted) {
     [super setHighlighted:highlighted];
     [self updateButtonContent];
   }
 }
 
-- (void)setSelected:(BOOL)selected
-{
+- (void)setSelected:(BOOL)selected {
   if (self.selected != selected) {
     [super setSelected:selected];
     [self updateButtonContent];
   }
 }
 
-- (void)updateButtonContent
-{
+- (void)updateButtonContent {
   [self updateBackgroundImage];
   [self updateImage];
   [self updateTitle];
 }
 
-- (void)setDisplaysAsynchronously:(BOOL)displaysAsynchronously
-{
+- (void)setDisplaysAsynchronously:(BOOL)displaysAsynchronously {
   [super setDisplaysAsynchronously:displaysAsynchronously];
   [self.backgroundImageNode setDisplaysAsynchronously:displaysAsynchronously];
   [self.imageNode setDisplaysAsynchronously:displaysAsynchronously];
   [self.titleNode setDisplaysAsynchronously:displaysAsynchronously];
 }
 
-- (void)updateImage
-{
+- (void)updateImage {
   [self lock];
-  
+
   UIImage *newImage;
   if (self.enabled == NO && _disabledImage) {
     newImage = _disabledImage;
@@ -149,7 +138,7 @@
   } else {
     newImage = _normalImage;
   }
-  
+
   if ((_imageNode != nil || newImage != nil) && newImage != self.imageNode.image) {
     _imageNode.image = newImage;
     [self unlock];
@@ -158,12 +147,11 @@
     [self setNeedsLayout];
     return;
   }
-  
+
   [self unlock];
 }
 
-- (void)updateTitle
-{
+- (void)updateTitle {
   [self lock];
 
   NSAttributedString *newTitle;
@@ -180,23 +168,23 @@
   }
 
   // Calling self.titleNode is essential here because _titleNode is lazily created by the getter.
-  if ((_titleNode != nil || newTitle.length > 0) && [self.titleNode.attributedText isEqualToAttributedString:newTitle] == NO) {
+  if ((_titleNode != nil || newTitle.length > 0) &&
+      [self.titleNode.attributedText isEqualToAttributedString:newTitle] == NO) {
     _titleNode.attributedText = newTitle;
     [self unlock];
-    
+
     self.accessibilityLabel = self.defaultAccessibilityLabel;
     [self updateYogaLayoutIfNeeded];
     [self setNeedsLayout];
     return;
   }
-  
+
   [self unlock];
 }
 
-- (void)updateBackgroundImage
-{
+- (void)updateBackgroundImage {
   [self lock];
-  
+
   UIImage *newImage;
   if (self.enabled == NO && _disabledBackgroundImage) {
     newImage = _disabledBackgroundImage;
@@ -209,7 +197,7 @@
   } else {
     newImage = _normalBackgroundImage;
   }
-  
+
   if ((_backgroundImageNode != nil || newImage != nil) && newImage != self.backgroundImageNode.image) {
     _backgroundImageNode.image = newImage;
     [self unlock];
@@ -218,149 +206,133 @@
     [self setNeedsLayout];
     return;
   }
-  
+
   [self unlock];
 }
 
-- (CGFloat)contentSpacing
-{
+- (CGFloat)contentSpacing {
   ASLockScopeSelf();
   return _contentSpacing;
 }
 
-- (void)setContentSpacing:(CGFloat)contentSpacing
-{
+- (void)setContentSpacing:(CGFloat)contentSpacing {
   if (ASLockedSelfCompareAssign(_contentSpacing, contentSpacing)) {
     [self updateYogaLayoutIfNeeded];
     [self setNeedsLayout];
   }
 }
 
-- (BOOL)laysOutHorizontally
-{
+- (BOOL)laysOutHorizontally {
   ASLockScopeSelf();
   return _laysOutHorizontally;
 }
 
-- (void)setLaysOutHorizontally:(BOOL)laysOutHorizontally
-{
+- (void)setLaysOutHorizontally:(BOOL)laysOutHorizontally {
   if (ASLockedSelfCompareAssign(_laysOutHorizontally, laysOutHorizontally)) {
     [self updateYogaLayoutIfNeeded];
     [self setNeedsLayout];
   }
 }
 
-- (ASVerticalAlignment)contentVerticalAlignment
-{
+- (ASVerticalAlignment)contentVerticalAlignment {
   ASLockScopeSelf();
   return _contentVerticalAlignment;
 }
 
-- (void)setContentVerticalAlignment:(ASVerticalAlignment)contentVerticalAlignment
-{
+- (void)setContentVerticalAlignment:(ASVerticalAlignment)contentVerticalAlignment {
   ASLockScopeSelf();
   _contentVerticalAlignment = contentVerticalAlignment;
 }
 
-- (ASHorizontalAlignment)contentHorizontalAlignment
-{
+- (ASHorizontalAlignment)contentHorizontalAlignment {
   ASLockScopeSelf();
   return _contentHorizontalAlignment;
 }
 
-- (void)setContentHorizontalAlignment:(ASHorizontalAlignment)contentHorizontalAlignment
-{
+- (void)setContentHorizontalAlignment:(ASHorizontalAlignment)contentHorizontalAlignment {
   ASLockScopeSelf();
   _contentHorizontalAlignment = contentHorizontalAlignment;
 }
 
-- (UIEdgeInsets)contentEdgeInsets
-{
+- (UIEdgeInsets)contentEdgeInsets {
   ASLockScopeSelf();
   return _contentEdgeInsets;
 }
 
-- (void)setContentEdgeInsets:(UIEdgeInsets)contentEdgeInsets
-{
+- (void)setContentEdgeInsets:(UIEdgeInsets)contentEdgeInsets {
   ASLockScopeSelf();
   _contentEdgeInsets = contentEdgeInsets;
 }
 
-- (ASButtonNodeImageAlignment)imageAlignment
-{
+- (ASButtonNodeImageAlignment)imageAlignment {
   ASLockScopeSelf();
   return _imageAlignment;
 }
 
-- (void)setImageAlignment:(ASButtonNodeImageAlignment)imageAlignment
-{
+- (void)setImageAlignment:(ASButtonNodeImageAlignment)imageAlignment {
   ASLockScopeSelf();
   _imageAlignment = imageAlignment;
 }
 
-
 #if TARGET_OS_IOS
-- (void)setTitle:(NSString *)title withFont:(UIFont *)font withColor:(UIColor *)color forState:(UIControlState)state
-{
+- (void)setTitle:(NSString *)title withFont:(UIFont *)font withColor:(UIColor *)color forState:(UIControlState)state {
   NSDictionary *attributes = @{
-    NSFontAttributeName: font ? : [UIFont systemFontOfSize:[UIFont buttonFontSize]],
-    NSForegroundColorAttributeName : color ? : [UIColor blackColor]
+    NSFontAttributeName : font ?: [UIFont systemFontOfSize:[UIFont buttonFontSize]],
+    NSForegroundColorAttributeName : color ?: [UIColor blackColor]
   };
-    
+
   NSAttributedString *string = [[NSAttributedString alloc] initWithString:title attributes:attributes];
   [self setAttributedTitle:string forState:state];
 }
 #endif
 
-- (NSAttributedString *)attributedTitleForState:(UIControlState)state
-{
+- (NSAttributedString *)attributedTitleForState:(UIControlState)state {
   ASLockScopeSelf();
   switch (state) {
     case UIControlStateNormal:
       return _normalAttributedTitle;
-      
+
     case UIControlStateHighlighted:
       return _highlightedAttributedTitle;
-      
+
     case UIControlStateSelected:
       return _selectedAttributedTitle;
-        
+
     case UIControlStateSelected | UIControlStateHighlighted:
       return _selectedHighlightedAttributedTitle;
-      
+
     case UIControlStateDisabled:
       return _disabledAttributedTitle;
-          
+
     default:
       return _normalAttributedTitle;
   }
 }
 
-- (void)setAttributedTitle:(NSAttributedString *)title forState:(UIControlState)state
-{
+- (void)setAttributedTitle:(NSAttributedString *)title forState:(UIControlState)state {
   {
     ASLockScopeSelf();
     switch (state) {
       case UIControlStateNormal:
         _normalAttributedTitle = [title copy];
         break;
-        
+
       case UIControlStateHighlighted:
         _highlightedAttributedTitle = [title copy];
         break;
-        
+
       case UIControlStateSelected:
         _selectedAttributedTitle = [title copy];
         break;
-            
+
       case UIControlStateSelected | UIControlStateHighlighted:
         _selectedHighlightedAttributedTitle = [title copy];
         break;
-        
+
       case UIControlStateDisabled:
         _disabledAttributedTitle = [title copy];
         break;
-        
+
       default:
         break;
     }
@@ -369,55 +341,53 @@
   [self updateTitle];
 }
 
-- (UIImage *)imageForState:(UIControlState)state
-{
+- (UIImage *)imageForState:(UIControlState)state {
   ASLockScopeSelf();
   switch (state) {
     case UIControlStateNormal:
       return _normalImage;
-      
+
     case UIControlStateHighlighted:
       return _highlightedImage;
-      
+
     case UIControlStateSelected:
       return _selectedImage;
-      
+
     case UIControlStateSelected | UIControlStateHighlighted:
       return _selectedHighlightedImage;
-          
+
     case UIControlStateDisabled:
       return _disabledImage;
-      
+
     default:
       return _normalImage;
   }
 }
 
-- (void)setImage:(UIImage *)image forState:(UIControlState)state
-{
+- (void)setImage:(UIImage *)image forState:(UIControlState)state {
   {
     ASLockScopeSelf();
     switch (state) {
       case UIControlStateNormal:
         _normalImage = image;
         break;
-        
+
       case UIControlStateHighlighted:
         _highlightedImage = image;
         break;
-        
+
       case UIControlStateSelected:
         _selectedImage = image;
         break;
-      
+
       case UIControlStateSelected | UIControlStateHighlighted:
         _selectedHighlightedImage = image;
         break;
-            
+
       case UIControlStateDisabled:
         _disabledImage = image;
         break;
-        
+
       default:
         break;
     }
@@ -426,55 +396,53 @@
   [self updateImage];
 }
 
-- (UIImage *)backgroundImageForState:(UIControlState)state
-{
+- (UIImage *)backgroundImageForState:(UIControlState)state {
   ASLockScopeSelf();
   switch (state) {
     case UIControlStateNormal:
       return _normalBackgroundImage;
-    
+
     case UIControlStateHighlighted:
       return _highlightedBackgroundImage;
-    
+
     case UIControlStateSelected:
       return _selectedBackgroundImage;
-    
+
     case UIControlStateSelected | UIControlStateHighlighted:
       return _selectedHighlightedBackgroundImage;
-    
+
     case UIControlStateDisabled:
       return _disabledBackgroundImage;
-    
+
     default:
       return _normalBackgroundImage;
   }
 }
 
-- (void)setBackgroundImage:(UIImage *)image forState:(UIControlState)state
-{
+- (void)setBackgroundImage:(UIImage *)image forState:(UIControlState)state {
   {
     ASLockScopeSelf();
     switch (state) {
       case UIControlStateNormal:
         _normalBackgroundImage = image;
         break;
-        
+
       case UIControlStateHighlighted:
         _highlightedBackgroundImage = image;
         break;
-        
+
       case UIControlStateSelected:
         _selectedBackgroundImage = image;
         break;
-            
+
       case UIControlStateSelected | UIControlStateHighlighted:
         _selectedHighlightedBackgroundImage = image;
         break;
-        
+
       case UIControlStateDisabled:
         _disabledBackgroundImage = image;
         break;
-        
+
       default:
         break;
     }
@@ -483,70 +451,64 @@
   [self updateBackgroundImage];
 }
 
-
-- (NSString *)defaultAccessibilityLabel
-{
+- (NSString *)defaultAccessibilityLabel {
   ASLockScopeSelf();
   return _titleNode.defaultAccessibilityLabel;
 }
 
-- (UIAccessibilityTraits)defaultAccessibilityTraits
-{
-  return self.enabled ? UIAccessibilityTraitButton
-                      : (UIAccessibilityTraitButton | UIAccessibilityTraitNotEnabled);
+- (UIAccessibilityTraits)defaultAccessibilityTraits {
+  return self.enabled ? UIAccessibilityTraitButton : (UIAccessibilityTraitButton | UIAccessibilityTraitNotEnabled);
 }
 
 #pragma mark - Layout
 
 #if !YOGA
-- (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize
-{
-    UIEdgeInsets contentEdgeInsets;
-    ASButtonNodeImageAlignment imageAlignment;
-    ASLayoutSpec *spec;
-    ASStackLayoutSpec *stack = [[ASStackLayoutSpec alloc] init];
-    {
-        ASLockScopeSelf();
-        stack.direction = _laysOutHorizontally ? ASStackLayoutDirectionHorizontal : ASStackLayoutDirectionVertical;
-        stack.spacing = _contentSpacing;
-        stack.horizontalAlignment = _contentHorizontalAlignment;
-        stack.verticalAlignment = _contentVerticalAlignment;
-        
-        contentEdgeInsets = _contentEdgeInsets;
-        imageAlignment = _imageAlignment;
+- (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
+  UIEdgeInsets contentEdgeInsets;
+  ASButtonNodeImageAlignment imageAlignment;
+  ASLayoutSpec *spec;
+  ASStackLayoutSpec *stack = [[ASStackLayoutSpec alloc] init];
+  {
+    ASLockScopeSelf();
+    stack.direction = _laysOutHorizontally ? ASStackLayoutDirectionHorizontal : ASStackLayoutDirectionVertical;
+    stack.spacing = _contentSpacing;
+    stack.horizontalAlignment = _contentHorizontalAlignment;
+    stack.verticalAlignment = _contentVerticalAlignment;
+
+    contentEdgeInsets = _contentEdgeInsets;
+    imageAlignment = _imageAlignment;
+  }
+
+  NSMutableArray *children = [[NSMutableArray alloc] initWithCapacity:2];
+  if (_imageNode.image) {
+    [children addObject:_imageNode];
+  }
+
+  if (_titleNode.attributedText.length > 0) {
+    if (imageAlignment == ASButtonNodeImageAlignmentBeginning) {
+      [children addObject:_titleNode];
+    } else {
+      [children insertObject:_titleNode atIndex:0];
     }
-    
-    NSMutableArray *children = [[NSMutableArray alloc] initWithCapacity:2];
-    if (_imageNode.image) {
-        [children addObject:_imageNode];
-    }
-    
-    if (_titleNode.attributedText.length > 0) {
-        if (imageAlignment == ASButtonNodeImageAlignmentBeginning) {
-            [children addObject:_titleNode];
-        } else {
-            [children insertObject:_titleNode atIndex:0];
-        }
-    }
-    
-    stack.children = children;
-    
-    spec = stack;
-    
-    if (UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, contentEdgeInsets) == NO) {
-        spec = [ASInsetLayoutSpec insetLayoutSpecWithInsets:contentEdgeInsets child:spec];
-    }
-    
-    if (_backgroundImageNode.image) {
-        spec = [ASBackgroundLayoutSpec backgroundLayoutSpecWithChild:spec background:_backgroundImageNode];
-    }
-    
-    return spec;
+  }
+
+  stack.children = children;
+
+  spec = stack;
+
+  if (UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, contentEdgeInsets) == NO) {
+    spec = [ASInsetLayoutSpec insetLayoutSpecWithInsets:contentEdgeInsets child:spec];
+  }
+
+  if (_backgroundImageNode.image) {
+    spec = [ASBackgroundLayoutSpec backgroundLayoutSpecWithChild:spec background:_backgroundImageNode];
+  }
+
+  return spec;
 }
 #endif
 
-- (void)layout
-{
+- (void)layout {
   [super layout];
 
   _backgroundImageNode.hidden = (_backgroundImageNode.image == nil);

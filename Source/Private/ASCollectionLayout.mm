@@ -9,8 +9,8 @@
 
 #import <AsyncDisplayKit/ASCollectionLayout.h>
 
-#import <AsyncDisplayKit/ASAssert.h>
 #import <AsyncDisplayKit/ASAbstractLayoutController.h>
+#import <AsyncDisplayKit/ASAssert.h>
 #import <AsyncDisplayKit/ASCellNode.h>
 #import <AsyncDisplayKit/ASCollectionElement.h>
 #import <AsyncDisplayKit/ASCollectionLayoutCache.h>
@@ -24,19 +24,17 @@
 #import <AsyncDisplayKit/ASEqualityHelpers.h>
 #import <AsyncDisplayKit/ASPageTable.h>
 
-static const ASRangeTuningParameters kASDefaultMeasureRangeTuningParameters = {
-  .leadingBufferScreenfuls = 2.0,
-  .trailingBufferScreenfuls = 2.0
-};
+static const ASRangeTuningParameters kASDefaultMeasureRangeTuningParameters = {.leadingBufferScreenfuls = 2.0,
+                                                                               .trailingBufferScreenfuls = 2.0};
 
 static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRight | ASScrollDirectionDown);
 
 @interface ASCollectionLayout () <ASDataControllerLayoutDelegate> {
   ASCollectionLayoutCache *_layoutCache;
-  ASCollectionLayoutState *_layout; // Main thread only.
+  ASCollectionLayoutState *_layout;  // Main thread only.
 
   struct {
-    unsigned int implementsAdditionalInfoForLayoutWithElements:1;
+    unsigned int implementsAdditionalInfoForLayoutWithElements : 1;
   } _layoutDelegateFlags;
 }
 
@@ -44,13 +42,13 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 
 @implementation ASCollectionLayout
 
-- (instancetype)initWithLayoutDelegate:(id<ASCollectionLayoutDelegate>)layoutDelegate
-{
+- (instancetype)initWithLayoutDelegate:(id<ASCollectionLayoutDelegate>)layoutDelegate {
   self = [super init];
   if (self) {
     ASDisplayNodeAssertNotNil(layoutDelegate, @"Collection layout delegate cannot be nil");
     _layoutDelegate = layoutDelegate;
-    _layoutDelegateFlags.implementsAdditionalInfoForLayoutWithElements = [layoutDelegate respondsToSelector:@selector(additionalInfoForLayoutWithElements:)];
+    _layoutDelegateFlags.implementsAdditionalInfoForLayoutWithElements =
+        [layoutDelegate respondsToSelector:@selector(additionalInfoForLayoutWithElements:)];
     _layoutCache = [[ASCollectionLayoutCache alloc] init];
   }
   return self;
@@ -58,8 +56,7 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 
 #pragma mark - ASDataControllerLayoutDelegate
 
-- (ASCollectionLayoutContext *)layoutContextWithElements:(ASElementMap *)elements
-{
+- (ASCollectionLayoutContext *)layoutContextWithElements:(ASElementMap *)elements {
   ASDisplayNodeAssertMainThread();
 
   Class<ASCollectionLayoutDelegate> layoutDelegateClass = [_layoutDelegate class];
@@ -76,7 +73,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   }
 
   ASScrollDirection scrollableDirections = [_layoutDelegate scrollableDirections];
-  CGSize viewportSize = [ASCollectionLayout _viewportSizeForCollectionNode:collectionNode scrollableDirections:scrollableDirections];
+  CGSize viewportSize = [ASCollectionLayout _viewportSizeForCollectionNode:collectionNode
+                                                      scrollableDirections:scrollableDirections];
   CGPoint contentOffset = collectionNode.contentOffset;
 
   id additionalInfo = nil;
@@ -93,8 +91,7 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
                                                   additionalInfo:additionalInfo];
 }
 
-+ (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context
-{
++ (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context {
   if (context.elements == nil) {
     return [[ASCollectionLayoutState alloc] initWithContext:context];
   }
@@ -106,14 +103,13 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   CGSize viewportSize = context.viewportSize;
   CGPoint contentOffset = context.initialContentOffset;
   CGRect initialRect = CGRectMake(contentOffset.x, contentOffset.y, viewportSize.width, viewportSize.height);
-  CGRect measureRect = CGRectExpandToRangeWithScrollableDirections(initialRect,
-                                                                   kASDefaultMeasureRangeTuningParameters,
-                                                                   context.scrollableDirections,
-                                                                   kASStaticScrollDirection);
+  CGRect measureRect = CGRectExpandToRangeWithScrollableDirections(
+      initialRect, kASDefaultMeasureRangeTuningParameters, context.scrollableDirections, kASStaticScrollDirection);
   // The first call to -layoutAttributesForElementsInRect: will be with a rect that is way bigger than initialRect here.
   // If we only block on initialRect, a few elements that are outside of initialRect but inside measureRect
   // may not be available by the time -layoutAttributesForElementsInRect: is called.
-  // Since this method is usually run off main, let's spawn more threads to measure and block on all elements in measureRect.
+  // Since this method is usually run off main, let's spawn more threads to measure and block on all elements in
+  // measureRect.
   [self _measureElementsInRect:measureRect blockingRect:measureRect layout:layout];
 
   return layout;
@@ -121,8 +117,7 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 
 #pragma mark - UICollectionViewLayout overrides
 
-- (void)prepareLayout
-{
+- (void)prepareLayout {
   ASDisplayNodeAssertMainThread();
   [super prepareLayout];
 
@@ -140,8 +135,7 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   }
 }
 
-- (void)invalidateLayout
-{
+- (void)invalidateLayout {
   ASDisplayNodeAssertMainThread();
   [super invalidateLayout];
   if (_layout != nil) {
@@ -151,42 +145,42 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 }
 
 /**
- * NOTE: It is suggested practice on the Web to override invalidationContextForInteractivelyMovingItems… and call out to the
- * data source to move the item (so that if e.g. the item size depends on the data, you get the data you expect). However, as of iOS 11 this
- * doesn't work, because UICV machinery will also call out to the data source to move the item after the interaction is done. The result is
- * that your data source state will be incorrect due to this last move call. Plus it's just an API violation.
+ * NOTE: It is suggested practice on the Web to override invalidationContextForInteractivelyMovingItems… and call out to
+ * the data source to move the item (so that if e.g. the item size depends on the data, you get the data you expect).
+ * However, as of iOS 11 this doesn't work, because UICV machinery will also call out to the data source to move the
+ * item after the interaction is done. The result is that your data source state will be incorrect due to this last move
+ * call. Plus it's just an API violation.
  *
  * Things tried:
- *   - Doing the speculative data source moves, and then UNDOING the last one in invalidationContextForEndingInteractiveMovementOfItems…
- *     but this does not work because the UICV machinery informs its data source before it calls that method on us, so we are too late.
+ *   - Doing the speculative data source moves, and then UNDOING the last one in
+ * invalidationContextForEndingInteractiveMovementOfItems… but this does not work because the UICV machinery informs its
+ * data source before it calls that method on us, so we are too late.
  *
- * The correct practice is to use the UIDataSourceTranslating API introduced in iOS 11. Currently Texture does not support this API but we can
- * build it if there is demand. We could add an id<UIDataSourceTranslating> field onto the layout context object, and the layout client can
- * use data source index paths when it reads nodes or other data source data.
+ * The correct practice is to use the UIDataSourceTranslating API introduced in iOS 11. Currently Texture does not
+ * support this API but we can build it if there is demand. We could add an id<UIDataSourceTranslating> field onto the
+ * layout context object, and the layout client can use data source index paths when it reads nodes or other data source
+ * data.
  */
 
-- (CGSize)collectionViewContentSize
-{
+- (CGSize)collectionViewContentSize {
   ASDisplayNodeAssertMainThread();
-  // The content size can be queried right after a layout invalidation (https://github.com/TextureGroup/Texture/pull/509).
-  // In that case, return zero.
+  // The content size can be queried right after a layout invalidation
+  // (https://github.com/TextureGroup/Texture/pull/509). In that case, return zero.
   return _layout ? _layout.contentSize : CGSizeZero;
 }
 
-- (NSArray<UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)blockingRect
-{
+- (NSArray<UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)blockingRect {
   ASDisplayNodeAssertMainThread();
   if (CGRectIsEmpty(blockingRect)) {
     return nil;
   }
 
   // Measure elements in the measure range, block on the requested rect
-  CGRect measureRect = CGRectExpandToRangeWithScrollableDirections(blockingRect,
-                                                                   kASDefaultMeasureRangeTuningParameters,
-                                                                   _layout.context.scrollableDirections,
-                                                                   kASStaticScrollDirection);
+  CGRect measureRect =
+      CGRectExpandToRangeWithScrollableDirections(blockingRect, kASDefaultMeasureRangeTuningParameters,
+                                                  _layout.context.scrollableDirections, kASStaticScrollDirection);
   [ASCollectionLayout _measureElementsInRect:measureRect blockingRect:blockingRect layout:_layout];
-  
+
   NSArray<UICollectionViewLayoutAttributes *> *result = [_layout layoutAttributesForElementsInRect:blockingRect];
 
   ASElementMap *elements = _layout.context.elements;
@@ -198,8 +192,7 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   return result;
 }
 
-- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
   ASDisplayNodeAssertMainThread();
 
   ASCollectionElement *element = [_layout.context.elements elementForItemAtIndexPath:indexPath];
@@ -207,7 +200,7 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 
   ASCellNode *node = element.node;
   CGSize elementSize = attrs.frame.size;
-  if (! CGSizeEqualToSize(elementSize, node.calculatedSize)) {
+  if (!CGSizeEqualToSize(elementSize, node.calculatedSize)) {
     [node layoutThatFits:ASCollectionLayoutElementSizeRangeFromSize(elementSize)];
   }
 
@@ -215,14 +208,15 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   return attrs;
 }
 
-- (UICollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath
-{
-  ASCollectionElement *element = [_layout.context.elements supplementaryElementOfKind:elementKind atIndexPath:indexPath];
+- (UICollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)elementKind
+                                                                     atIndexPath:(NSIndexPath *)indexPath {
+  ASCollectionElement *element = [_layout.context.elements supplementaryElementOfKind:elementKind
+                                                                          atIndexPath:indexPath];
   UICollectionViewLayoutAttributes *attrs = [_layout layoutAttributesForElement:element];
 
   ASCellNode *node = element.node;
   CGSize elementSize = attrs.frame.size;
-  if (! CGSizeEqualToSize(elementSize, node.calculatedSize)) {
+  if (!CGSizeEqualToSize(elementSize, node.calculatedSize)) {
     [node layoutThatFits:ASCollectionLayoutElementSizeRangeFromSize(elementSize)];
   }
 
@@ -230,15 +224,13 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   return attrs;
 }
 
-- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
-{
-  return (! CGSizeEqualToSize([ASCollectionLayout _boundsForCollectionNode:_collectionNode], newBounds.size));
+- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
+  return (!CGSizeEqualToSize([ASCollectionLayout _boundsForCollectionNode:_collectionNode], newBounds.size));
 }
 
 #pragma mark - Private methods
 
-+ (CGSize)_boundsForCollectionNode:(nonnull ASCollectionNode *)collectionNode
-{
++ (CGSize)_boundsForCollectionNode:(nonnull ASCollectionNode *)collectionNode {
   if (collectionNode == nil) {
     return CGSizeZero;
   }
@@ -252,8 +244,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   return collectionNode.view.bounds.size;
 }
 
-+ (CGSize)_viewportSizeForCollectionNode:(nonnull ASCollectionNode *)collectionNode scrollableDirections:(ASScrollDirection)scrollableDirections
-{
++ (CGSize)_viewportSizeForCollectionNode:(nonnull ASCollectionNode *)collectionNode
+                    scrollableDirections:(ASScrollDirection)scrollableDirections {
   if (collectionNode == nil) {
     return CGSizeZero;
   }
@@ -272,8 +264,7 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 /**
  * Measures all elements in the specified rect and blocks the calling thread while measuring those in the blocking rect.
  */
-+ (void)_measureElementsInRect:(CGRect)rect blockingRect:(CGRect)blockingRect layout:(ASCollectionLayoutState *)layout
-{
++ (void)_measureElementsInRect:(CGRect)rect blockingRect:(CGRect)blockingRect layout:(ASCollectionLayoutState *)layout {
   if (CGRectIsEmpty(rect) || layout.context.elements == nil) {
     return;
   }
@@ -303,10 +294,12 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   }
 
   // Step 3: Split all those attributes into blocking and non-blocking buckets
-  // Use ordered sets here because some items may span multiple pages, and the sets will be accessed by indexes later on.
+  // Use ordered sets here because some items may span multiple pages, and the sets will be accessed by indexes later
+  // on.
   ASCollectionLayoutContext *context = layout.context;
   CGSize pageSize = context.viewportSize;
-  NSMutableOrderedSet<UICollectionViewLayoutAttributes *> *blockingAttrs = hasBlockingRect ? [NSMutableOrderedSet orderedSet] : nil;
+  NSMutableOrderedSet<UICollectionViewLayoutAttributes *> *blockingAttrs =
+      hasBlockingRect ? [NSMutableOrderedSet orderedSet] : nil;
   NSMutableOrderedSet<UICollectionViewLayoutAttributes *> *nonBlockingAttrs = [NSMutableOrderedSet orderedSet];
   for (id pagePtr in attrsTable) {
     ASPageCoordinate page = (ASPageCoordinate)pagePtr;
@@ -340,7 +333,7 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
       UICollectionViewLayoutAttributes *attrs = blockingAttrs[i];
       ASCellNode *node = [elements elementForItemAtIndexPath:attrs.indexPath].node;
       CGSize expectedSize = attrs.frame.size;
-      if (! CGSizeEqualToSize(expectedSize, node.calculatedSize)) {
+      if (!CGSizeEqualToSize(expectedSize, node.calculatedSize)) {
         [node layoutThatFits:ASCollectionLayoutElementSizeRangeFromSize(expectedSize)];
       }
     });
@@ -355,7 +348,7 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
         UICollectionViewLayoutAttributes *attrs = nonBlockingAttrs[i];
         ASCellNode *node = [elements elementForItemAtIndexPath:attrs.indexPath].node;
         CGSize expectedSize = attrs.frame.size;
-        if (! CGSizeEqualToSize(expectedSize, node.calculatedSize)) {
+        if (!CGSizeEqualToSize(expectedSize, node.calculatedSize)) {
           [node layoutThatFits:ASCollectionLayoutElementSizeRangeFromSize(expectedSize)];
         }
       }
@@ -363,19 +356,17 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   }
 }
 
-# pragma mark - Convenient inline functions
+#pragma mark - Convenient inline functions
 
-ASDISPLAYNODE_INLINE ASSizeRange ASCollectionLayoutElementSizeRangeFromSize(CGSize size)
-{
+ASDISPLAYNODE_INLINE ASSizeRange ASCollectionLayoutElementSizeRangeFromSize(CGSize size) {
   // The layout delegate consulted us that this element must fit within this size,
   // and the only way to achieve that without asking it again is to use an exact size range here.
   return ASSizeRangeMake(size);
 }
 
-ASDISPLAYNODE_INLINE void ASCollectionLayoutSetSizeToElement(CGSize size, ASCollectionElement *element)
-{
+ASDISPLAYNODE_INLINE void ASCollectionLayoutSetSizeToElement(CGSize size, ASCollectionElement *element) {
   if (ASCellNode *node = element.node) {
-    if (! CGSizeEqualToSize(size, node.frame.size)) {
+    if (!CGSizeEqualToSize(size, node.frame.size)) {
       CGRect frame = CGRectZero;
       frame.size = size;
       node.frame = frame;

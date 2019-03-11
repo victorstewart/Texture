@@ -11,10 +11,12 @@
 #import <AsyncDisplayKit/ASTextUtilities.h>
 
 @implementation ASTextLine {
-  CGFloat _firstGlyphPos; // first glyph position for baseline, typically 0.
+  CGFloat _firstGlyphPos;  // first glyph position for baseline, typically 0.
 }
 
-+ (instancetype)lineWithCTLine:(CTLineRef)CTLine position:(CGPoint)position vertical:(BOOL)isVertical NS_RETURNS_RETAINED {
++ (instancetype)lineWithCTLine:(CTLineRef)CTLine
+                      position:(CGPoint)position
+                      vertical:(BOOL)isVertical NS_RETURNS_RETAINED {
   if (!CTLine) return nil;
   ASTextLine *line = [self new];
   line->_position = position;
@@ -67,7 +69,7 @@
     _bounds = CGRectMake(_position.x, _position.y - _ascent, _lineWidth, _ascent + _descent);
     _bounds.origin.x += _firstGlyphPos;
   }
-  
+
   _attachments = nil;
   _attachmentRanges = nil;
   _attachmentRects = nil;
@@ -75,7 +77,7 @@
   CFArrayRef runs = CTLineGetGlyphRuns(_CTLine);
   NSUInteger runCount = CFArrayGetCount(runs);
   if (runCount == 0) return;
-  
+
   NSMutableArray *attachments = [NSMutableArray new];
   NSMutableArray *attachmentRanges = [NSMutableArray new];
   NSMutableArray *attachmentRects = [NSMutableArray new];
@@ -88,21 +90,21 @@
     if (attachment) {
       CGPoint runPosition = CGPointZero;
       CTRunGetPositions(run, CFRangeMake(0, 1), &runPosition);
-      
+
       CGFloat ascent, descent, leading, runWidth;
       CGRect runTypoBounds;
       runWidth = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, &descent, &leading);
-      
+
       if (_vertical) {
         ASTEXT_SWAP(runPosition.x, runPosition.y);
         runPosition.y = _position.y + runPosition.y;
-        runTypoBounds = CGRectMake(_position.x + runPosition.x - descent, runPosition.y , ascent + descent, runWidth);
+        runTypoBounds = CGRectMake(_position.x + runPosition.x - descent, runPosition.y, ascent + descent, runWidth);
       } else {
         runPosition.x += _position.x;
         runPosition.y = _position.y - runPosition.y;
         runTypoBounds = CGRectMake(runPosition.x, runPosition.y - ascent, runWidth, ascent + descent);
       }
-      
+
       NSRange runRange = ASTextNSRangeFromCFRange(CTRunGetStringRange(run));
       [attachments addObject:attachment];
       [attachmentRanges addObject:[NSValue valueWithRange:runRange]];
@@ -146,13 +148,12 @@
   NSMutableString *desc = @"".mutableCopy;
   NSRange range = self.range;
   [desc appendFormat:@"<ASTextLine: %p> row:%ld range:%tu,%tu", self, (long)self.row, range.location, range.length];
-  [desc appendFormat:@" position:%@",NSStringFromCGPoint(self.position)];
-  [desc appendFormat:@" bounds:%@",NSStringFromCGRect(self.bounds)];
+  [desc appendFormat:@" position:%@", NSStringFromCGPoint(self.position)];
+  [desc appendFormat:@" bounds:%@", NSStringFromCGRect(self.bounds)];
   return desc;
 }
 
 @end
-
 
 @implementation ASTextRunGlyphRange
 + (instancetype)rangeWithRange:(NSRange)range drawMode:(ASTextRunGlyphDrawMode)mode NS_RETURNS_RETAINED {

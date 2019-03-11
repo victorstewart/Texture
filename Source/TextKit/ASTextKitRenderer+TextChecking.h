@@ -14,13 +14,13 @@
 /**
  Application extensions to NSTextCheckingType. We're allowed to do this (see NSTextCheckingAllCustomTypes).
  */
-static uint64_t const ASTextKitTextCheckingTypeEntity =               1ULL << 33;
-static uint64_t const ASTextKitTextCheckingTypeTruncation =           1ULL << 34;
+static uint64_t const ASTextKitTextCheckingTypeEntity = 1ULL << 33;
+static uint64_t const ASTextKitTextCheckingTypeTruncation = 1ULL << 34;
 
 @class ASTextKitEntityAttribute;
 
 @interface ASTextKitTextCheckingResult : NSTextCheckingResult
-@property (nonatomic, readonly) ASTextKitEntityAttribute *entityAttribute;
+@property(nonatomic, readonly) ASTextKitEntityAttribute *entityAttribute;
 @end
 
 @interface ASTextKitRenderer (TextChecking)

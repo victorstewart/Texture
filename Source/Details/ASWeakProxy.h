@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 AS_SUBCLASSING_RESTRICTED
 @interface ASWeakProxy : NSProxy
@@ -16,7 +16,7 @@ AS_SUBCLASSING_RESTRICTED
 /**
  * @return target The target which will be forwarded all messages sent to the weak proxy.
  */
-@property (nonatomic, weak, readonly) id target;
+@property(nonatomic, weak, readonly) id target;
 
 /**
  * An object which forwards messages to a target which it weakly references

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ASTableNode (Beta)
 
-@property (nonatomic, weak) id<ASBatchFetchingDelegate> batchFetchingDelegate;
+@property(nonatomic, weak) id<ASBatchFetchingDelegate> batchFetchingDelegate;
 
 @end
 

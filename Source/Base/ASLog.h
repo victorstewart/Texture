@@ -10,11 +10,11 @@
 #import <AsyncDisplayKit/ASAvailability.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
 #import <Foundation/Foundation.h>
-#import <os/log.h>
 #import <os/activity.h>
+#import <os/log.h>
 
 #ifndef ASEnableVerboseLogging
-  #define ASEnableVerboseLogging 0
+#define ASEnableVerboseLogging 0
 #endif
 
 /**
@@ -79,34 +79,34 @@ AS_EXTERN os_log_t ASMainThreadDeallocationLog(void);
  */
 #if OS_LOG_TARGET_HAS_10_12_FEATURES
 
-#define OS_ACTIVITY_NULLABLE                                              nullable
-#define AS_ACTIVITY_CURRENT                                               OS_ACTIVITY_CURRENT
-#define as_activity_scope(activity)                                       os_activity_scope(activity)
-#define as_activity_apply(activity, block)                                os_activity_apply(activity, block)
-#define as_activity_create(description, parent_activity, flags)           os_activity_create(description, parent_activity, flags)
-#define as_activity_scope_enter(activity, statePtr)                       os_activity_scope_enter(activity, statePtr)
-#define as_activity_scope_leave(statePtr)                                 os_activity_scope_leave(statePtr)
-#define as_activity_get_identifier(activity, outParentID)                 os_activity_get_identifier(activity, outParentID)
+#define OS_ACTIVITY_NULLABLE nullable
+#define AS_ACTIVITY_CURRENT OS_ACTIVITY_CURRENT
+#define as_activity_scope(activity) os_activity_scope(activity)
+#define as_activity_apply(activity, block) os_activity_apply(activity, block)
+#define as_activity_create(description, parent_activity, flags) os_activity_create(description, parent_activity, flags)
+#define as_activity_scope_enter(activity, statePtr) os_activity_scope_enter(activity, statePtr)
+#define as_activity_scope_leave(statePtr) os_activity_scope_leave(statePtr)
+#define as_activity_get_identifier(activity, outParentID) os_activity_get_identifier(activity, outParentID)
 
 #else
 
 #define OS_ACTIVITY_NULLABLE
-#define AS_ACTIVITY_CURRENT                                               OS_ACTIVITY_NULL
+#define AS_ACTIVITY_CURRENT OS_ACTIVITY_NULL
 #define as_activity_scope(activity)
 #define as_activity_apply(activity, block)
-#define as_activity_create(description, parent_activity, flags)           OS_ACTIVITY_NULL
+#define as_activity_create(description, parent_activity, flags) OS_ACTIVITY_NULL
 #define as_activity_scope_enter(activity, statePtr)
 #define as_activity_scope_leave(statePtr)
-#define as_activity_get_identifier(activity, outParentID)                 (os_activity_id_t)0
+#define as_activity_get_identifier(activity, outParentID) (os_activity_id_t)0
 
-#endif // OS_LOG_TARGET_HAS_10_12_FEATURES
+#endif  // OS_LOG_TARGET_HAS_10_12_FEATURES
 
 // Create activities only when verbose enabled. Doesn't materially impact performance, but good if we're cluttering up
 // activity scopes and reducing readability.
 #if ASEnableVerboseLogging
-  #define as_activity_scope_verbose(activity)                             as_activity_scope(activity)
+#define as_activity_scope_verbose(activity) as_activity_scope(activity)
 #else
-  #define as_activity_scope_verbose(activity)
+#define as_activity_scope_verbose(activity)
 #endif
 
 // Convenience for: as_activity_scope(as_activity_create(description, AS_ACTIVITY_CURRENT, OS_ACTIVITY_FLAG_DEFAULT))
@@ -118,46 +118,47 @@ AS_EXTERN os_log_t ASMainThreadDeallocationLog(void);
  * only available on iOS >= 9 at runtime, so just make them conditional.
  */
 
-#define as_log_create(subsystem, category) ({     \
-os_log_t __val;                                   \
-if (AS_AVAILABLE_IOS_TVOS(9, 9)) {                \
-  __val = os_log_create(subsystem, category);     \
-} else {                                          \
-  __val = (os_log_t)0;                            \
-}                                                 \
-__val;                                            \
-})
+#define as_log_create(subsystem, category)        \
+  ({                                              \
+    os_log_t __val;                               \
+    if (AS_AVAILABLE_IOS_TVOS(9, 9)) {            \
+      __val = os_log_create(subsystem, category); \
+    } else {                                      \
+      __val = (os_log_t)0;                        \
+    }                                             \
+    __val;                                        \
+  })
 
-#define as_log_debug(log, format, ...)            \
-if (AS_AVAILABLE_IOS_TVOS(9, 9)) {                \
-  os_log_debug(log, format, ##__VA_ARGS__);       \
-} else {                                          \
-  (void)0;                                        \
-}                                                 \
+#define as_log_debug(log, format, ...)        \
+  if (AS_AVAILABLE_IOS_TVOS(9, 9)) {          \
+    os_log_debug(log, format, ##__VA_ARGS__); \
+  } else {                                    \
+    (void)0;                                  \
+  }
 
-#define as_log_info(log, format, ...)             \
-if (AS_AVAILABLE_IOS_TVOS(9, 9)) {                \
-  os_log_info(log, format, ##__VA_ARGS__);        \
-} else {                                          \
-  (void)0;                                        \
-}                                                 \
+#define as_log_info(log, format, ...)        \
+  if (AS_AVAILABLE_IOS_TVOS(9, 9)) {         \
+    os_log_info(log, format, ##__VA_ARGS__); \
+  } else {                                   \
+    (void)0;                                 \
+  }
 
-#define as_log_error(log, format, ...)            \
-if (AS_AVAILABLE_IOS_TVOS(9, 9)) {                \
-  os_log_error(log, format, ##__VA_ARGS__);       \
-} else {                                          \
-  (void)0;                                        \
-}                                                 \
+#define as_log_error(log, format, ...)        \
+  if (AS_AVAILABLE_IOS_TVOS(9, 9)) {          \
+    os_log_error(log, format, ##__VA_ARGS__); \
+  } else {                                    \
+    (void)0;                                  \
+  }
 
-#define as_log_fault(log, format, ...)            \
-if (AS_AVAILABLE_IOS_TVOS(9, 9)) {                \
-  os_log_fault(log, format, ##__VA_ARGS__);       \
-} else {                                          \
-  (void)0;                                        \
-}                                                 \
+#define as_log_fault(log, format, ...)        \
+  if (AS_AVAILABLE_IOS_TVOS(9, 9)) {          \
+    os_log_fault(log, format, ##__VA_ARGS__); \
+  } else {                                    \
+    (void)0;                                  \
+  }
 
 #if ASEnableVerboseLogging
-  #define as_log_verbose(log, format, ...)  as_log_debug(log, format, ##__VA_ARGS__)
+#define as_log_verbose(log, format, ...) as_log_debug(log, format, ##__VA_ARGS__)
 #else
-  #define as_log_verbose(log, format, ...)
+#define as_log_verbose(log, format, ...)
 #endif

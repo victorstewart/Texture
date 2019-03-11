@@ -59,7 +59,8 @@ struct ASTextKitAttributes {
    */
   NSUInteger maximumNumberOfLines;
   /**
-   An array of UIBezierPath objects representing the exclusion paths inside the receiver's bounding rectangle. Default value: nil.
+   An array of UIBezierPath objects representing the exclusion paths inside the receiver's bounding rectangle. Default
+   value: nil.
    */
   NSArray<UIBezierPath *> *exclusionPaths;
   /**
@@ -88,38 +89,34 @@ struct ASTextKitAttributes {
    We provide an explicit copy function so we can use aggregate initializer syntax while providing copy semantics for
    the NSObjects inside.
    */
-  const ASTextKitAttributes copy() const
-  {
+  const ASTextKitAttributes copy() const {
     return {
-      [attributedString copy],
-      [truncationAttributedString copy],
-      [avoidTailTruncationSet copy],
-      lineBreakMode,
-      maximumNumberOfLines,
-      [exclusionPaths copy],
-      shadowOffset,
-      [shadowColor copy],
-      shadowOpacity,
-      shadowRadius,
-      pointSizeScaleFactors,
+        [attributedString copy],
+        [truncationAttributedString copy],
+        [avoidTailTruncationSet copy],
+        lineBreakMode,
+        maximumNumberOfLines,
+        [exclusionPaths copy],
+        shadowOffset,
+        [shadowColor copy],
+        shadowOpacity,
+        shadowRadius,
+        pointSizeScaleFactors,
     };
   };
 
-  bool operator==(const ASTextKitAttributes &other) const
-  {
+  bool operator==(const ASTextKitAttributes &other) const {
     // These comparisons are in a specific order to reduce the overall cost of this function.
-    return lineBreakMode == other.lineBreakMode
-    && maximumNumberOfLines == other.maximumNumberOfLines
-    && shadowOpacity == other.shadowOpacity
-    && shadowRadius == other.shadowRadius
-    && (pointSizeScaleFactors == other.pointSizeScaleFactors
-        || [pointSizeScaleFactors isEqualToArray:other.pointSizeScaleFactors])
-    && CGSizeEqualToSize(shadowOffset, other.shadowOffset)
-    && ASObjectIsEqual(exclusionPaths, other.exclusionPaths)
-    && ASObjectIsEqual(avoidTailTruncationSet, other.avoidTailTruncationSet)
-    && ASObjectIsEqual(shadowColor, other.shadowColor)
-    && ASObjectIsEqual(attributedString, other.attributedString)
-    && ASObjectIsEqual(truncationAttributedString, other.truncationAttributedString);
+    return lineBreakMode == other.lineBreakMode && maximumNumberOfLines == other.maximumNumberOfLines &&
+           shadowOpacity == other.shadowOpacity && shadowRadius == other.shadowRadius &&
+           (pointSizeScaleFactors == other.pointSizeScaleFactors ||
+            [pointSizeScaleFactors isEqualToArray:other.pointSizeScaleFactors]) &&
+           CGSizeEqualToSize(shadowOffset, other.shadowOffset) &&
+           ASObjectIsEqual(exclusionPaths, other.exclusionPaths) &&
+           ASObjectIsEqual(avoidTailTruncationSet, other.avoidTailTruncationSet) &&
+           ASObjectIsEqual(shadowColor, other.shadowColor) &&
+           ASObjectIsEqual(attributedString, other.attributedString) &&
+           ASObjectIsEqual(truncationAttributedString, other.truncationAttributedString);
   }
 
   size_t hash() const;

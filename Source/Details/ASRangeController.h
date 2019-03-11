@@ -7,13 +7,13 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
-#import <AsyncDisplayKit/ASDisplayNode.h>
-#import <AsyncDisplayKit/ASDataController.h>
 #import <AsyncDisplayKit/ASAbstractLayoutController.h>
+#import <AsyncDisplayKit/ASBaseDefines.h>
+#import <AsyncDisplayKit/ASDataController.h>
+#import <AsyncDisplayKit/ASDisplayNode.h>
 #import <AsyncDisplayKit/ASLayoutRangeType.h>
 #import <AsyncDisplayKit/ASRangeControllerUpdateRangeProtocol+Beta.h>
-#import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 #define ASRangeControllerLoggingEnabled 0
 
@@ -33,11 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
  * This includes cancelling those asynchronous operations as cells fall outside of the working ranges.
  */
 AS_SUBCLASSING_RESTRICTED
-@interface ASRangeController : NSObject <ASDataControllerDelegate>
-{
-  id<ASLayoutController>                  _layoutController;
-  __weak id<ASRangeControllerDataSource>  _dataSource;
-  __weak id<ASRangeControllerDelegate>    _delegate;
+@interface ASRangeController : NSObject <ASDataControllerDelegate> {
+  id<ASLayoutController> _layoutController;
+  __weak id<ASRangeControllerDataSource> _dataSource;
+  __weak id<ASRangeControllerDelegate> _delegate;
 }
 
 /**
@@ -70,9 +69,12 @@ AS_SUBCLASSING_RESTRICTED
  */
 - (void)configureContentView:(UIView *)contentView forCellNode:(ASCellNode *)node;
 
-- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeMode:(ASLayoutRangeMode)rangeMode rangeType:(ASLayoutRangeType)rangeType;
+- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters
+               forRangeMode:(ASLayoutRangeMode)rangeMode
+                  rangeType:(ASLayoutRangeType)rangeType;
 
-- (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode rangeType:(ASLayoutRangeType)rangeType;
+- (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode
+                                              rangeType:(ASLayoutRangeType)rangeType;
 
 // These methods call the corresponding method on each node, visiting each one that
 // the range controller has set a non-default interface state on.
@@ -85,30 +87,29 @@ AS_SUBCLASSING_RESTRICTED
  * Used primarily for providing the current range of index paths and identifying when the
  * range controller should invalidate its range.
  */
-@property (nonatomic) id<ASLayoutController> layoutController;
+@property(nonatomic) id<ASLayoutController> layoutController;
 
 /**
  * The underlying data source for the range controller
  */
-@property (nonatomic, weak) id<ASRangeControllerDataSource> dataSource;
+@property(nonatomic, weak) id<ASRangeControllerDataSource> dataSource;
 
 /**
  * Delegate for handling range controller events. Must not be nil.
  */
-@property (nonatomic, weak) id<ASRangeControllerDelegate> delegate;
+@property(nonatomic, weak) id<ASRangeControllerDelegate> delegate;
 
 /**
  * Property that indicates whether the scroll view for this range controller has ever changed its contentOffset.
  */
-@property (nonatomic) BOOL contentHasBeenScrolled;
+@property(nonatomic) BOOL contentHasBeenScrolled;
 
 @end
-
 
 /**
  * Data source for ASRangeController.
  *
- * Allows the range controller to perform external queries on the range. 
+ * Allows the range controller to perform external queries on the range.
  * Ex. range nodes, visible index paths, and viewport size.
  */
 @protocol ASRangeControllerDataSource <NSObject>
@@ -132,7 +133,8 @@ AS_SUBCLASSING_RESTRICTED
  *
  * @return the ASInterfaceState of the node that this controller is powering.  This allows nested range controllers
  * to collaborate with one another, as an outer controller may set bits in .interfaceState such as Visible.
- * If this controller is an orthogonally scrolling element, it waits until it is visible to preload outside the viewport.
+ * If this controller is an orthogonally scrolling element, it waits until it is visible to preload outside the
+ * viewport.
  */
 - (ASInterfaceState)interfaceStateForRangeController:(ASRangeController *)rangeController;
 
@@ -156,9 +158,12 @@ AS_SUBCLASSING_RESTRICTED
  *
  * @discussion The updates block must always be executed or the data controller will get into a bad state.
  * It should be called at the time the backing view is ready to process the updates,
- * i.e inside the updates block of `-[UICollectionView performBatchUpdates:completion:] or after calling `-[UITableView beginUpdates]`.
+ * i.e inside the updates block of `-[UICollectionView performBatchUpdates:completion:] or after calling `-[UITableView
+ * beginUpdates]`.
  */
-- (void)rangeController:(ASRangeController *)rangeController updateWithChangeSet:(_ASHierarchyChangeSet *)changeSet updates:(dispatch_block_t)updates;
+- (void)rangeController:(ASRangeController *)rangeController
+    updateWithChangeSet:(_ASHierarchyChangeSet *)changeSet
+                updates:(dispatch_block_t)updates;
 
 - (BOOL)rangeControllerShouldUpdateRanges:(ASRangeController *)rangeController;
 

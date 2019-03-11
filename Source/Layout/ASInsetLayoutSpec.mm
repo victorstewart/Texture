@@ -14,29 +14,19 @@
 #import <AsyncDisplayKit/ASAssert.h>
 #import <AsyncDisplayKit/ASInternalHelpers.h>
 
-@interface ASInsetLayoutSpec ()
-{
+@interface ASInsetLayoutSpec () {
   UIEdgeInsets _insets;
 }
 @end
 
 /* Returns f if f is finite, substitute otherwise */
-static CGFloat finite(CGFloat f, CGFloat substitute)
-{
-  return isinf(f) ? substitute : f;
-}
+static CGFloat finite(CGFloat f, CGFloat substitute) { return isinf(f) ? substitute : f; }
 
 /* Returns f if f is finite, 0 otherwise */
-static CGFloat finiteOrZero(CGFloat f)
-{
-  return finite(f, 0);
-}
+static CGFloat finiteOrZero(CGFloat f) { return finite(f, 0); }
 
 /* Returns the inset required to center 'inner' in 'outer' */
-static CGFloat centerInset(CGFloat outer, CGFloat inner)
-{
-  return ASRoundPixelValue((outer - inner) / 2);
-}
+static CGFloat centerInset(CGFloat outer, CGFloat inner) { return ASRoundPixelValue((outer - inner) / 2); }
 
 @implementation ASInsetLayoutSpec
 
@@ -51,13 +41,11 @@ static CGFloat centerInset(CGFloat outer, CGFloat inner)
   return self;
 }
 
-+ (instancetype)insetLayoutSpecWithInsets:(UIEdgeInsets)insets child:(id<ASLayoutElement>)child NS_RETURNS_RETAINED
-{
++ (instancetype)insetLayoutSpecWithInsets:(UIEdgeInsets)insets child:(id<ASLayoutElement>)child NS_RETURNS_RETAINED {
   return [[self alloc] initWithInsets:insets child:child];
 }
 
-- (void)setInsets:(UIEdgeInsets)insets
-{
+- (void)setInsets:(UIEdgeInsets)insets {
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
   _insets = insets;
 }
@@ -68,13 +56,12 @@ static CGFloat centerInset(CGFloat outer, CGFloat inner)
  */
 - (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize
                      restrictedToSize:(ASLayoutElementSize)size
-                 relativeToParentSize:(CGSize)parentSize
-{
+                 relativeToParentSize:(CGSize)parentSize {
   if (self.child == nil) {
     ASDisplayNodeAssert(NO, @"Inset spec measured without a child. The spec will do nothing.");
     return [ASLayout layoutWithLayoutElement:self size:CGSizeZero];
   }
-  
+
   const CGFloat insetsX = (finiteOrZero(_insets.left) + finiteOrZero(_insets.right));
   const CGFloat insetsY = (finiteOrZero(_insets.top) + finiteOrZero(_insets.bottom));
 
@@ -83,41 +70,38 @@ static CGFloat centerInset(CGFloat outer, CGFloat inner)
   // if either y-axis inset is infinite, let child be intrinsic height
   const CGFloat minHeight = (isinf(_insets.top) || isinf(_insets.bottom)) ? 0 : constrainedSize.min.height;
 
-  const ASSizeRange insetConstrainedSize = {
-    {
-      MAX(0, minWidth - insetsX),
-      MAX(0, minHeight - insetsY),
-    },
-    {
-      MAX(0, constrainedSize.max.width - insetsX),
-      MAX(0, constrainedSize.max.height - insetsY),
-    }
-  };
-  
-  const CGSize insetParentSize = {
-    MAX(0, parentSize.width - insetsX),
-    MAX(0, parentSize.height - insetsY)
-  };
-  
+  const ASSizeRange insetConstrainedSize = {{
+                                                MAX(0, minWidth - insetsX),
+                                                MAX(0, minHeight - insetsY),
+                                            },
+                                            {
+                                                MAX(0, constrainedSize.max.width - insetsX),
+                                                MAX(0, constrainedSize.max.height - insetsY),
+                                            }};
+
+  const CGSize insetParentSize = {MAX(0, parentSize.width - insetsX), MAX(0, parentSize.height - insetsY)};
+
   ASLayout *sublayout = [self.child layoutThatFits:insetConstrainedSize parentSize:insetParentSize];
 
-  const CGSize computedSize = ASSizeRangeClamp(constrainedSize, {
-    finite(sublayout.size.width + _insets.left + _insets.right, constrainedSize.max.width),
-    finite(sublayout.size.height + _insets.top + _insets.bottom, constrainedSize.max.height),
-  });
+  const CGSize computedSize = ASSizeRangeClamp(
+      constrainedSize, {
+                           finite(sublayout.size.width + _insets.left + _insets.right, constrainedSize.max.width),
+                           finite(sublayout.size.height + _insets.top + _insets.bottom, constrainedSize.max.height),
+                       });
 
-  const CGFloat x = finite(_insets.left, constrainedSize.max.width -
-                           (finite(_insets.right,
-                                   centerInset(constrainedSize.max.width, sublayout.size.width)) + sublayout.size.width));
+  const CGFloat x = finite(
+      _insets.left,
+      constrainedSize.max.width -
+          (finite(_insets.right, centerInset(constrainedSize.max.width, sublayout.size.width)) + sublayout.size.width));
 
-  const CGFloat y = finite(_insets.top,
-                           constrainedSize.max.height -
-                           (finite(_insets.bottom,
-                                   centerInset(constrainedSize.max.height, sublayout.size.height)) + sublayout.size.height));
-  
+  const CGFloat y =
+      finite(_insets.top, constrainedSize.max.height -
+                              (finite(_insets.bottom, centerInset(constrainedSize.max.height, sublayout.size.height)) +
+                               sublayout.size.height));
+
   sublayout.position = CGPointMake(x, y);
-  
-  return [ASLayout layoutWithLayoutElement:self size:computedSize sublayouts:@[sublayout]];
+
+  return [ASLayout layoutWithLayoutElement:self size:computedSize sublayouts:@[ sublayout ]];
 }
 
 @end

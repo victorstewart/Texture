@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,10 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
  * that is, it uses shifted pointer for hashing, and identity comparison for equality.
  */
 AS_SUBCLASSING_RESTRICTED
-@interface ASWeakSet<__covariant ObjectType> : NSObject<NSFastEnumeration>
+@interface ASWeakSet<__covariant ObjectType> : NSObject <NSFastEnumeration>
 
 /// Returns YES if the receiver is empty, NO otherwise.
-@property (nonatomic, readonly, getter=isEmpty) BOOL empty;
+@property(nonatomic, readonly, getter=isEmpty) BOOL empty;
 
 /// Returns YES if `object` is in the receiver, NO otherwise.
 - (BOOL)containsObject:(ObjectType)object AS_WARN_UNUSED_RESULT;
@@ -40,10 +40,10 @@ AS_SUBCLASSING_RESTRICTED
 
 /**
  * How many objects are contained in this set.
- 
+
  * NOTE: This computed property is O(N). Consider using the `empty` property.
  */
-@property (nonatomic, readonly) NSUInteger count;
+@property(nonatomic, readonly) NSUInteger count;
 
 @end
 

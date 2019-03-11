@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @abstract Name that is printed by ascii art string and displayed in description.
  */
-@property (nullable, nonatomic, copy) NSString *debugName;
+@property(nullable, nonatomic, copy) NSString *debugName;
 
 @end
 
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Your base class should conform to this and override `-description`
  * to call `[self propertiesForDescription]` and use `ASObjectDescriptionMake`
- * to return a string. Subclasses of this base class just need to override 
+ * to return a string. Subclasses of this base class just need to override
  * `propertiesForDescription`, call super, and modify the result as needed.
  */
 @protocol ASDescriptionProvider
@@ -47,10 +47,11 @@ NS_ASSUME_NONNULL_BEGIN
 AS_EXTERN NSString *ASGetDescriptionValueString(id object);
 
 /// Useful for structs etc. Returns e.g. { position = (0 0); frame = (0 0; 50 50) }
-AS_EXTERN NSString *ASObjectDescriptionMakeWithoutObject(NSArray<NSDictionary *> * _Nullable propertyGroups);
+AS_EXTERN NSString *ASObjectDescriptionMakeWithoutObject(NSArray<NSDictionary *> *_Nullable propertyGroups);
 
 /// Returns e.g. <MYObject: 0xFFFFFFFF; name = "Object Name"; frame = (0 0; 50 50)>
-AS_EXTERN NSString *ASObjectDescriptionMake(__autoreleasing id object, NSArray<NSDictionary *> * _Nullable propertyGroups);
+AS_EXTERN NSString *ASObjectDescriptionMake(__autoreleasing id object,
+                                            NSArray<NSDictionary *> *_Nullable propertyGroups);
 
 /**
  * Returns e.g. <MYObject: 0xFFFFFFFF>
@@ -60,6 +61,6 @@ AS_EXTERN NSString *ASObjectDescriptionMake(__autoreleasing id object, NSArray<N
  */
 AS_EXTERN NSString *ASObjectDescriptionMakeTiny(__autoreleasing id _Nullable object);
 
-AS_EXTERN NSString * _Nullable ASStringWithQuotesIfMultiword(NSString * _Nullable string);
+AS_EXTERN NSString *_Nullable ASStringWithQuotesIfMultiword(NSString *_Nullable string);
 
 NS_ASSUME_NONNULL_END

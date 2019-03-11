@@ -11,16 +11,16 @@
 #import <AsyncDisplayKit/ASThread.h>
 
 #if DEBUG
-  #define AS_DEDUPE_LAYOUT_SPEC_TREE 1
+#define AS_DEDUPE_LAYOUT_SPEC_TREE 1
 #else
-  #define AS_DEDUPE_LAYOUT_SPEC_TREE 0
+#define AS_DEDUPE_LAYOUT_SPEC_TREE 0
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ASLayoutSpec() {
+@interface ASLayoutSpec () {
   AS::RecursiveMutex __instanceLock__;
-  std::atomic <ASPrimitiveTraitCollection> _primitiveTraitCollection;
+  std::atomic<ASPrimitiveTraitCollection> _primitiveTraitCollection;
   ASLayoutElementStyle *_style;
   NSMutableArray *_childrenArray;
 }

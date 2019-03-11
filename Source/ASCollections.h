@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSArray<__covariant ObjectType> (ASCollections)
+@interface NSArray <__covariant ObjectType>(ASCollections)
 
 /**
  * Create an immutable NSArray from a C-array of strong pointers.
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * See the private __CFArrayCreateTransfer function.
  */
-+ (NSArray<ObjectType> *)arrayByTransferring:(ObjectType _Nonnull __strong * _Nonnull)pointers
++ (NSArray<ObjectType> *)arrayByTransferring:(ObjectType _Nonnull __strong *_Nonnull)pointers
                                        count:(NSUInteger)count NS_RETURNS_RETAINED;
 
 @end

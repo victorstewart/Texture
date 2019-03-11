@@ -11,10 +11,10 @@
 
 #if AS_IG_LIST_KIT
 
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 #import <IGListKit/IGListKit.h>
+#import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,7 +33,8 @@ AS_SUBCLASSING_RESTRICTED
 /**
  * Call this for your section controller's @c cellForItemAtIndex: method.
  */
-+ (__kindof UICollectionViewCell *)cellForItemAtIndex:(NSInteger)index sectionController:(IGListSectionController *)sectionController;
++ (__kindof UICollectionViewCell *)cellForItemAtIndex:(NSInteger)index
+                                    sectionController:(IGListSectionController *)sectionController;
 
 /**
  * Call this for your section controller's @c sizeForItemAtIndex: method.

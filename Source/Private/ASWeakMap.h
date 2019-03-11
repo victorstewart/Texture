@@ -7,11 +7,10 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
 
 /**
  * This class is used in conjunction with ASWeakMap.  Instances of this type are returned by an ASWeakMap,
@@ -20,10 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 AS_SUBCLASSING_RESTRICTED
 @interface ASWeakMapEntry<Value> : NSObject
 
-@property (readonly) Value value;
+@property(readonly) Value value;
 
 @end
-
 
 /**
  * This is not a full-featured map.  It does not support features like `count` and FastEnumeration because there
@@ -49,11 +47,11 @@ AS_SUBCLASSING_RESTRICTED
 - (nullable ASWeakMapEntry<Value> *)entryForKey:(Key)key AS_WARN_UNUSED_RESULT;
 
 /**
- * Put a value into the cache.  If an entry with an equal key already exists, then the value is updated on the existing entry.
+ * Put a value into the cache.  If an entry with an equal key already exists, then the value is updated on the existing
+ * entry.
  */
 - (ASWeakMapEntry<Value> *)setObject:(Value)value forKey:(Key)key AS_WARN_UNUSED_RESULT;
 
 @end
-
 
 NS_ASSUME_NONNULL_END

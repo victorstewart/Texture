@@ -7,14 +7,18 @@
 //
 
 #import <AsyncDisplayKit/ASAvailability.h>
-#import "ASButtonNode+Yoga.h"
 #import <AsyncDisplayKit/ASButtonNode+Private.h>
 #import <AsyncDisplayKit/ASDisplayNodeInternal.h>
 #import <AsyncDisplayKit/ASStackLayoutSpecUtilities.h>
 #import <AsyncDisplayKit/ASThread.h>
+#import "ASButtonNode+Yoga.h"
 
 #if YOGA
-static void ASButtonNodeResolveHorizontalAlignmentForStyle(ASLayoutElementStyle *style, ASStackLayoutDirection _direction, ASHorizontalAlignment _horizontalAlignment, ASStackLayoutJustifyContent _justifyContent, ASStackLayoutAlignItems _alignItems) {
+static void ASButtonNodeResolveHorizontalAlignmentForStyle(ASLayoutElementStyle *style,
+                                                           ASStackLayoutDirection _direction,
+                                                           ASHorizontalAlignment _horizontalAlignment,
+                                                           ASStackLayoutJustifyContent _justifyContent,
+                                                           ASStackLayoutAlignItems _alignItems) {
   if (_direction == ASStackLayoutDirectionHorizontal) {
     style.justifyContent = justifyContent(_horizontalAlignment, _justifyContent);
   } else {
@@ -22,7 +26,11 @@ static void ASButtonNodeResolveHorizontalAlignmentForStyle(ASLayoutElementStyle 
   }
 }
 
-static void ASButtonNodeResolveVerticalAlignmentForStyle(ASLayoutElementStyle *style, ASStackLayoutDirection _direction, ASVerticalAlignment _verticalAlignment, ASStackLayoutJustifyContent _justifyContent, ASStackLayoutAlignItems _alignItems) {
+static void ASButtonNodeResolveVerticalAlignmentForStyle(ASLayoutElementStyle *style,
+                                                         ASStackLayoutDirection _direction,
+                                                         ASVerticalAlignment _verticalAlignment,
+                                                         ASStackLayoutJustifyContent _justifyContent,
+                                                         ASStackLayoutAlignItems _alignItems) {
   if (_direction == ASStackLayoutDirectionHorizontal) {
     style.alignItems = alignment(_verticalAlignment, _alignItems);
   } else {
@@ -32,8 +40,7 @@ static void ASButtonNodeResolveVerticalAlignmentForStyle(ASLayoutElementStyle *s
 
 @implementation ASButtonNode (Yoga)
 
-- (void)updateYogaLayoutIfNeeded
-{
+- (void)updateYogaLayoutIfNeeded {
   NSMutableArray<ASDisplayNode *> *children = [[NSMutableArray alloc] initWithCapacity:2];
   {
     ASLockScopeSelf();
@@ -46,8 +53,10 @@ static void ASButtonNodeResolveVerticalAlignmentForStyle(ASLayoutElementStyle *s
     style.flexDirection = _laysOutHorizontally ? ASStackLayoutDirectionHorizontal : ASStackLayoutDirectionVertical;
 
     // Resolve horizontal and vertical alignment
-    ASButtonNodeResolveHorizontalAlignmentForStyle(style, style.flexDirection, _contentHorizontalAlignment, style.justifyContent, style.alignItems);
-    ASButtonNodeResolveVerticalAlignmentForStyle(style, style.flexDirection, _contentVerticalAlignment, style.justifyContent, style.alignItems);
+    ASButtonNodeResolveHorizontalAlignmentForStyle(style, style.flexDirection, _contentHorizontalAlignment,
+                                                   style.justifyContent, style.alignItems);
+    ASButtonNodeResolveVerticalAlignmentForStyle(style, style.flexDirection, _contentVerticalAlignment,
+                                                 style.justifyContent, style.alignItems);
 
     // Setup new yoga children
     if (_imageNode.image != nil) {
@@ -99,7 +108,8 @@ static void ASButtonNodeResolveVerticalAlignmentForStyle(ASLayoutElementStyle *s
 
 @implementation ASButtonNode (Yoga)
 
-- (void)updateYogaLayoutIfNeeded {}
+- (void)updateYogaLayoutIfNeeded {
+}
 
 @end
 

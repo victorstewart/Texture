@@ -21,8 +21,7 @@
 #import <AsyncDisplayKit/ASLayout.h>
 #import <AsyncDisplayKit/ASThread.h>
 
-@interface ASMapNode()
-{
+@interface ASMapNode () {
   MKMapSnapshotter *_snapshotter;
   BOOL _snapshotAfterLayout;
   NSArray *_annotations;
@@ -38,15 +37,14 @@
 @synthesize showAnnotationsOptions = _showAnnotationsOptions;
 
 #pragma mark - Lifecycle
-- (instancetype)init
-{
+- (instancetype)init {
   if (!(self = [super init])) {
     return nil;
   }
   self.backgroundColor = ASDisplayNodeDefaultPlaceholderColor();
   self.clipsToBounds = YES;
   self.userInteractionEnabled = YES;
-  
+
   _needsMapReloadOnBoundsChange = YES;
   _liveMap = NO;
   _annotations = @[];
@@ -54,27 +52,25 @@
   return self;
 }
 
-- (void)didLoad
-{
+- (void)didLoad {
   [super didLoad];
   if (self.isLiveMap) {
     [self addLiveMap];
   }
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
   [self destroySnapshotter];
 }
 
-- (void)setLayerBacked:(BOOL)layerBacked
-{
-  ASDisplayNodeAssert(!self.isLiveMap, @"ASMapNode can not be layer backed whilst .liveMap = YES, set .liveMap = NO to use layer backing.");
+- (void)setLayerBacked:(BOOL)layerBacked {
+  ASDisplayNodeAssert(
+      !self.isLiveMap,
+      @"ASMapNode can not be layer backed whilst .liveMap = YES, set .liveMap = NO to use layer backing.");
   [super setLayerBacked:layerBacked];
 }
 
-- (void)didEnterPreloadState
-{
+- (void)didEnterPreloadState {
   [super didEnterPreloadState];
   ASPerformBlockOnMainThread(^{
     if (self.isLiveMap) {
@@ -85,8 +81,7 @@
   });
 }
 
-- (void)didExitPreloadState
-{
+- (void)didExitPreloadState {
   [super didExitPreloadState];
   ASPerformBlockOnMainThread(^{
     if (self.isLiveMap) {
@@ -97,15 +92,14 @@
 
 #pragma mark - Settings
 
-- (BOOL)isLiveMap
-{
+- (BOOL)isLiveMap {
   ASLockScopeSelf();
   return _liveMap;
 }
 
-- (void)setLiveMap:(BOOL)liveMap
-{
-  ASDisplayNodeAssert(!self.isLayerBacked, @"ASMapNode can not use the interactive map feature whilst .isLayerBacked = YES, set .layerBacked = NO to use the interactive map feature.");
+- (void)setLiveMap:(BOOL)liveMap {
+  ASDisplayNodeAssert(!self.isLayerBacked, @"ASMapNode can not use the interactive map feature whilst .isLayerBacked = "
+                                           @"YES, set .layerBacked = NO to use the interactive map feature.");
   ASLockScopeSelf();
   if (liveMap == _liveMap) {
     return;
@@ -116,20 +110,17 @@
   }
 }
 
-- (BOOL)needsMapReloadOnBoundsChange
-{
+- (BOOL)needsMapReloadOnBoundsChange {
   ASLockScopeSelf();
   return _needsMapReloadOnBoundsChange;
 }
 
-- (void)setNeedsMapReloadOnBoundsChange:(BOOL)needsMapReloadOnBoundsChange
-{
+- (void)setNeedsMapReloadOnBoundsChange:(BOOL)needsMapReloadOnBoundsChange {
   ASLockScopeSelf();
   _needsMapReloadOnBoundsChange = needsMapReloadOnBoundsChange;
 }
 
-- (MKMapSnapshotOptions *)options
-{
+- (MKMapSnapshotOptions *)options {
   ASLockScopeSelf();
   if (!_options) {
     _options = [[MKMapSnapshotOptions alloc] init];
@@ -142,8 +133,7 @@
   return _options;
 }
 
-- (void)setOptions:(MKMapSnapshotOptions *)options
-{
+- (void)setOptions:(MKMapSnapshotOptions *)options {
   ASLockScopeSelf();
   if (!_options || ![options isEqual:_options]) {
     _options = options;
@@ -156,27 +146,24 @@
   }
 }
 
-- (MKCoordinateRegion)region
-{
+- (MKCoordinateRegion)region {
   return self.options.region;
 }
 
-- (void)setRegion:(MKCoordinateRegion)region
-{
-  MKMapSnapshotOptions * options = [self.options copy];
+- (void)setRegion:(MKCoordinateRegion)region {
+  MKMapSnapshotOptions *options = [self.options copy];
   options.region = region;
   self.options = options;
 }
 
-- (id<MKMapViewDelegate>)mapDelegate
-{
+- (id<MKMapViewDelegate>)mapDelegate {
   return ASLockedSelf(_mapDelegate);
 }
 
 - (void)setMapDelegate:(id<MKMapViewDelegate>)mapDelegate {
   ASLockScopeSelf();
   _mapDelegate = mapDelegate;
-  
+
   if (_mapView) {
     ASDisplayNodeAssertMainThread();
     _mapView.delegate = mapDelegate;
@@ -185,8 +172,7 @@
 
 #pragma mark - Snapshotter
 
-- (void)takeSnapshot
-{
+- (void)takeSnapshot {
   // If our size is zero, we want to avoid calling a default sized snapshot. Set _snapshotAfterLayout to YES
   // so if layout changes in the future, we'll try snapshotting again.
   ASLayout *layout = self.calculatedLayout;
@@ -194,13 +180,13 @@
     _snapshotAfterLayout = YES;
     return;
   }
-  
+
   _snapshotAfterLayout = NO;
-  
+
   if (!_snapshotter) {
     [self setUpSnapshotter];
   }
-  
+
   if (_snapshotter.isLoading) {
     return;
   }
@@ -208,62 +194,61 @@
   __weak __typeof__(self) weakSelf = self;
   [_snapshotter startWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
              completionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
-                 __typeof__(self) strongSelf = weakSelf;
-                if (!strongSelf) {
-                  return;
-                }
-                 
-                if (!error) {
-                  UIImage *image = snapshot.image;
-                  NSArray *annotations = strongSelf.annotations;
-                  if (annotations.count > 0) {
-                    // Only create a graphics context if we have annotations to draw.
-                    // The MKMapSnapshotter is currently not capable of rendering annotations automatically.
-                    
-                    CGRect finalImageRect = CGRectMake(0, 0, image.size.width, image.size.height);
-                    
-                    ASGraphicsBeginImageContextWithOptions(image.size, YES, image.scale);
-                    [image drawAtPoint:CGPointZero];
-                    
-                    UIImage *pinImage;
-                    CGPoint pinCenterOffset = CGPointZero;
-                    
-                    // Get a standard annotation view pin if there is no custom annotation block.
-                    if (!strongSelf.imageForStaticMapAnnotationBlock) {
-                      pinImage = [strongSelf.class defaultPinImageWithCenterOffset:&pinCenterOffset];
-                    }
-                    
-                    for (id<MKAnnotation> annotation in annotations) {
-                      if (strongSelf.imageForStaticMapAnnotationBlock) {
-                        // Get custom annotation image from custom annotation block.
-                        pinImage = strongSelf.imageForStaticMapAnnotationBlock(annotation, &pinCenterOffset);
-                        if (!pinImage) {
-                          // just for case block returned nil, which can happen
-                          pinImage = [strongSelf.class defaultPinImageWithCenterOffset:&pinCenterOffset];
-                        }
-                      }
-                      
-                      CGPoint point = [snapshot pointForCoordinate:annotation.coordinate];
-                      if (CGRectContainsPoint(finalImageRect, point)) {
-                        CGSize pinSize = pinImage.size;
-                        point.x -= pinSize.width / 2.0;
-                        point.y -= pinSize.height / 2.0;
-                        point.x += pinCenterOffset.x;
-                        point.y += pinCenterOffset.y;
-                        [pinImage drawAtPoint:point];
-                      }
-                    }
-                    
-                    image = ASGraphicsGetImageAndEndCurrentContext();
-                  }
-                  
-                  strongSelf.image = image;
-                }
-  }];
+               __typeof__(self) strongSelf = weakSelf;
+               if (!strongSelf) {
+                 return;
+               }
+
+               if (!error) {
+                 UIImage *image = snapshot.image;
+                 NSArray *annotations = strongSelf.annotations;
+                 if (annotations.count > 0) {
+                   // Only create a graphics context if we have annotations to draw.
+                   // The MKMapSnapshotter is currently not capable of rendering annotations automatically.
+
+                   CGRect finalImageRect = CGRectMake(0, 0, image.size.width, image.size.height);
+
+                   ASGraphicsBeginImageContextWithOptions(image.size, YES, image.scale);
+                   [image drawAtPoint:CGPointZero];
+
+                   UIImage *pinImage;
+                   CGPoint pinCenterOffset = CGPointZero;
+
+                   // Get a standard annotation view pin if there is no custom annotation block.
+                   if (!strongSelf.imageForStaticMapAnnotationBlock) {
+                     pinImage = [strongSelf.class defaultPinImageWithCenterOffset:&pinCenterOffset];
+                   }
+
+                   for (id<MKAnnotation> annotation in annotations) {
+                     if (strongSelf.imageForStaticMapAnnotationBlock) {
+                       // Get custom annotation image from custom annotation block.
+                       pinImage = strongSelf.imageForStaticMapAnnotationBlock(annotation, &pinCenterOffset);
+                       if (!pinImage) {
+                         // just for case block returned nil, which can happen
+                         pinImage = [strongSelf.class defaultPinImageWithCenterOffset:&pinCenterOffset];
+                       }
+                     }
+
+                     CGPoint point = [snapshot pointForCoordinate:annotation.coordinate];
+                     if (CGRectContainsPoint(finalImageRect, point)) {
+                       CGSize pinSize = pinImage.size;
+                       point.x -= pinSize.width / 2.0;
+                       point.y -= pinSize.height / 2.0;
+                       point.x += pinCenterOffset.x;
+                       point.y += pinCenterOffset.y;
+                       [pinImage drawAtPoint:point];
+                     }
+                   }
+
+                   image = ASGraphicsGetImageAndEndCurrentContext();
+                 }
+
+                 strongSelf.image = image;
+               }
+             }];
 }
 
-+ (UIImage *)defaultPinImageWithCenterOffset:(CGPoint *)centerOffset NS_RETURNS_RETAINED
-{
++ (UIImage *)defaultPinImageWithCenterOffset:(CGPoint *)centerOffset NS_RETURNS_RETAINED {
   static MKAnnotationView *pin;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -273,19 +258,16 @@
   return pin.image;
 }
 
-- (void)setUpSnapshotter
-{
+- (void)setUpSnapshotter {
   _snapshotter = [[MKMapSnapshotter alloc] initWithOptions:self.options];
 }
 
-- (void)destroySnapshotter
-{
+- (void)destroySnapshotter {
   [_snapshotter cancel];
   _snapshotter = nil;
 }
 
-- (void)applySnapshotOptions
-{
+- (void)applySnapshotOptions {
   MKMapSnapshotOptions *options = self.options;
   [_mapView setCamera:options.camera animated:YES];
   [_mapView setRegion:options.region animated:YES];
@@ -295,8 +277,7 @@
 }
 
 #pragma mark - Actions
-- (void)addLiveMap
-{
+- (void)addLiveMap {
   ASDisplayNodeAssertMainThread();
   if (!_mapView) {
     __weak ASMapNode *weakSelf = self;
@@ -315,21 +296,18 @@
   }
 }
 
-- (void)removeLiveMap
-{
+- (void)removeLiveMap {
   [_mapView removeFromSuperview];
   _mapView = nil;
 }
 
-- (NSArray *)annotations
-{
+- (NSArray *)annotations {
   ASLockScopeSelf();
   return _annotations;
 }
 
-- (void)setAnnotations:(NSArray *)annotations
-{
-  annotations = [annotations copy] ? : @[];
+- (void)setAnnotations:(NSArray *)annotations {
+  annotations = [annotations copy] ?: @[];
 
   ASLockScopeSelf();
   _annotations = annotations;
@@ -345,17 +323,14 @@
   } else {
     if (showAnnotationsOptions & ASMapNodeShowAnnotationsOptionsZoomed) {
       self.region = [self regionToFitAnnotations:annotations];
-    }
-    else {
+    } else {
       [self takeSnapshot];
     }
   }
 }
 
-- (MKCoordinateRegion)regionToFitAnnotations:(NSArray<id<MKAnnotation>> *)annotations
-{
-  if([annotations count] == 0)
-    return MKCoordinateRegionForMapRect(MKMapRectWorld);
+- (MKCoordinateRegion)regionToFitAnnotations:(NSArray<id<MKAnnotation>> *)annotations {
+  if ([annotations count] == 0) return MKCoordinateRegionForMapRect(MKMapRectWorld);
 
   CLLocationCoordinate2D topLeftCoord = CLLocationCoordinate2DMake(-90, 180);
   CLLocationCoordinate2D bottomRightCoord = CLLocationCoordinate2DMake(90, -180);
@@ -363,30 +338,31 @@
   for (id<MKAnnotation> annotation in annotations) {
     topLeftCoord = CLLocationCoordinate2DMake(std::fmax(topLeftCoord.latitude, annotation.coordinate.latitude),
                                               std::fmin(topLeftCoord.longitude, annotation.coordinate.longitude));
-    bottomRightCoord = CLLocationCoordinate2DMake(std::fmin(bottomRightCoord.latitude, annotation.coordinate.latitude),
-                                                  std::fmax(bottomRightCoord.longitude, annotation.coordinate.longitude));
+    bottomRightCoord =
+        CLLocationCoordinate2DMake(std::fmin(bottomRightCoord.latitude, annotation.coordinate.latitude),
+                                   std::fmax(bottomRightCoord.longitude, annotation.coordinate.longitude));
   }
 
-  MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(topLeftCoord.latitude - (topLeftCoord.latitude - bottomRightCoord.latitude) * 0.5,
-                                                                                topLeftCoord.longitude + (bottomRightCoord.longitude - topLeftCoord.longitude) * 0.5),
-                                                     MKCoordinateSpanMake(std::fabs(topLeftCoord.latitude - bottomRightCoord.latitude) * 2,
-                                                                          std::fabs(bottomRightCoord.longitude - topLeftCoord.longitude) * 2));
+  MKCoordinateRegion region = MKCoordinateRegionMake(
+      CLLocationCoordinate2DMake(topLeftCoord.latitude - (topLeftCoord.latitude - bottomRightCoord.latitude) * 0.5,
+                                 topLeftCoord.longitude + (bottomRightCoord.longitude - topLeftCoord.longitude) * 0.5),
+      MKCoordinateSpanMake(std::fabs(topLeftCoord.latitude - bottomRightCoord.latitude) * 2,
+                           std::fabs(bottomRightCoord.longitude - topLeftCoord.longitude) * 2));
 
   return region;
 }
 
--(ASMapNodeShowAnnotationsOptions)showAnnotationsOptions {
+- (ASMapNodeShowAnnotationsOptions)showAnnotationsOptions {
   return ASLockedSelf(_showAnnotationsOptions);
 }
 
--(void)setShowAnnotationsOptions:(ASMapNodeShowAnnotationsOptions)showAnnotationsOptions {
+- (void)setShowAnnotationsOptions:(ASMapNodeShowAnnotationsOptions)showAnnotationsOptions {
   ASLockScopeSelf();
   _showAnnotationsOptions = showAnnotationsOptions;
 }
 
 #pragma mark - Layout
-- (void)setSnapshotSizeWithReloadIfNeeded:(CGSize)snapshotSize
-{
+- (void)setSnapshotSizeWithReloadIfNeeded:(CGSize)snapshotSize {
   if (snapshotSize.height > 0 && snapshotSize.width > 0 && !CGSizeEqualToSize(self.options.size, snapshotSize)) {
     _options.size = snapshotSize;
     if (_snapshotter) {
@@ -396,35 +372,34 @@
   }
 }
 
-- (CGSize)calculateSizeThatFits:(CGSize)constrainedSize
-{
+- (CGSize)calculateSizeThatFits:(CGSize)constrainedSize {
   // FIXME: Need a better way to allow maps to take up the right amount of space in a layout (sizeRange, etc)
   // These fallbacks protect against inheriting a constrainedSize that contains a CGFLOAT_MAX value.
   if (!ASIsCGSizeValidForLayout(constrainedSize)) {
-    //ASDisplayNodeAssert(NO, @"Invalid width or height in ASMapNode");
+    // ASDisplayNodeAssert(NO, @"Invalid width or height in ASMapNode");
     constrainedSize = CGSizeZero;
   }
   [self setSnapshotSizeWithReloadIfNeeded:constrainedSize];
   return constrainedSize;
 }
 
-- (void)calculatedLayoutDidChange
-{
+- (void)calculatedLayoutDidChange {
   [super calculatedLayoutDidChange];
-  
+
   if (_snapshotAfterLayout) {
     [self takeSnapshot];
   }
 }
 
-// -layout isn't usually needed over -layoutSpecThatFits, but this way we can avoid a needless node wrapper for MKMapView.
-- (void)layout
-{
+// -layout isn't usually needed over -layoutSpecThatFits, but this way we can avoid a needless node wrapper for
+// MKMapView.
+- (void)layout {
   [super layout];
   if (self.isLiveMap) {
     _mapView.frame = CGRectMake(0.0f, 0.0f, self.calculatedSize.width, self.calculatedSize.height);
   } else {
-    // If our bounds.size is different from our current snapshot size, then let's request a new image from MKMapSnapshotter.
+    // If our bounds.size is different from our current snapshot size, then let's request a new image from
+    // MKMapSnapshotter.
     if (_needsMapReloadOnBoundsChange) {
       [self setSnapshotSizeWithReloadIfNeeded:self.bounds.size];
       // FIXME: Adding a check for Preload here seems to cause intermittent map load failures, but shouldn't.
@@ -433,10 +408,9 @@
   }
 }
 
-- (BOOL)supportsLayerBacking
-{
+- (BOOL)supportsLayerBacking {
   return NO;
 }
 
 @end
-#endif // TARGET_OS_IOS && AS_USE_MAPKIT
+#endif  // TARGET_OS_IOS && AS_USE_MAPKIT

@@ -7,9 +7,9 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <UIKit/UIKit.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
 #import <AsyncDisplayKit/ASScrollDirection.h>
+#import <UIKit/UIKit.h>
 
 @class ASElementMap;
 
@@ -18,11 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 AS_SUBCLASSING_RESTRICTED
 @interface ASCollectionLayoutContext : NSObject
 
-@property (nonatomic, readonly) CGSize viewportSize;
-@property (nonatomic, readonly) CGPoint initialContentOffset;
-@property (nonatomic, readonly) ASScrollDirection scrollableDirections;
-@property (nonatomic, weak, readonly) ASElementMap *elements;
-@property (nullable, nonatomic, readonly) id additionalInfo;
+@property(nonatomic, readonly) CGSize viewportSize;
+@property(nonatomic, readonly) CGPoint initialContentOffset;
+@property(nonatomic, readonly) ASScrollDirection scrollableDirections;
+@property(nonatomic, weak, readonly) ASElementMap *elements;
+@property(nullable, nonatomic, readonly) id additionalInfo;
 
 - (instancetype)init NS_UNAVAILABLE;
 

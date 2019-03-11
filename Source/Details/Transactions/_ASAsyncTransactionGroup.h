@@ -7,20 +7,21 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol ASAsyncTransactionContainer;
 
-/// A group of transaction containers, for which the current transactions are committed together at the end of the next runloop tick.
+/// A group of transaction containers, for which the current transactions are committed together at the end of the next
+/// runloop tick.
 AS_SUBCLASSING_RESTRICTED
 @interface _ASAsyncTransactionGroup : NSObject
 
 /// The main transaction group is scheduled to commit on every tick of the main runloop.
 /// Access from the main thread only.
-@property (class, nonatomic, readonly) _ASAsyncTransactionGroup *mainTransactionGroup;
+@property(class, nonatomic, readonly) _ASAsyncTransactionGroup *mainTransactionGroup;
 
 - (void)commit;
 

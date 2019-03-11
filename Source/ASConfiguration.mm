@@ -13,14 +13,14 @@
 
 @implementation ASConfiguration
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary
-{
+- (instancetype)initWithDictionary:(NSDictionary *)dictionary {
   if (self = [super init]) {
     if (dictionary != nil) {
       const auto featureStrings = ASDynamicCast(dictionary[@"experimental_features"], NSArray);
       const auto version = ASDynamicCast(dictionary[@"version"], NSNumber).integerValue;
       if (version != ASConfigurationSchemaCurrentVersion) {
-        NSLog(@"Texture warning: configuration schema is old version (%ld vs %ld)", (long)version, (long)ASConfigurationSchemaCurrentVersion);
+        NSLog(@"Texture warning: configuration schema is old version (%ld vs %ld)", (long)version,
+              (long)ASConfigurationSchemaCurrentVersion);
       }
       self.experimentalFeatures = ASExperimentalFeaturesFromArray(featureStrings);
     } else {
@@ -30,8 +30,7 @@
   return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone
-{
+- (id)copyWithZone:(NSZone *)zone {
   ASConfiguration *config = [[ASConfiguration alloc] initWithDictionary:nil];
   config.experimentalFeatures = self.experimentalFeatures;
   config.delegate = self.delegate;
@@ -46,8 +45,7 @@
 
 @implementation ASConfiguration (UserProvided)
 
-+ (ASConfiguration *)textureConfiguration NS_RETURNS_RETAINED
-{
++ (ASConfiguration *)textureConfiguration NS_RETURNS_RETAINED {
   NSData *data = [@AS_FIXED_CONFIG_JSON dataUsingEncoding:NSUTF8StringEncoding];
   NSError *error;
   NSDictionary *d = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
@@ -61,4 +59,4 @@
 
 @end
 
-#endif // AS_FIXED_CONFIG_JSON
+#endif  // AS_FIXED_CONFIG_JSON

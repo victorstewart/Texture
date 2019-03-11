@@ -16,10 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// The attribute type
 typedef NS_OPTIONS(NSInteger, ASTextAttributeType) {
-  ASTextAttributeTypeNone     = 0,
-  ASTextAttributeTypeUIKit    = 1 << 0, ///< UIKit attributes, such as UILabel/UITextField/drawInRect.
-  ASTextAttributeTypeCoreText = 1 << 1, ///< CoreText attributes, used by CoreText.
-  ASTextAttributeTypeASText   = 1 << 2, ///< ASText attributes, used by ASText.
+  ASTextAttributeTypeNone = 0,
+  ASTextAttributeTypeUIKit = 1 << 0,     ///< UIKit attributes, such as UILabel/UITextField/drawInRect.
+  ASTextAttributeTypeCoreText = 1 << 1,  ///< CoreText attributes, used by CoreText.
+  ASTextAttributeTypeASText = 1 << 2,    ///< ASText attributes, used by ASText.
 };
 
 /// Get the attribute type from an attribute name.
@@ -28,60 +28,58 @@ AS_EXTERN ASTextAttributeType ASTextAttributeGetType(NSString *attributeName);
 /**
  Line style in ASText (similar to NSUnderlineStyle).
  */
-typedef NS_OPTIONS (NSInteger, ASTextLineStyle) {
+typedef NS_OPTIONS(NSInteger, ASTextLineStyle) {
   // basic style (bitmask:0xFF)
-  ASTextLineStyleNone       = 0x00, ///< (        ) Do not draw a line (Default).
-  ASTextLineStyleSingle     = 0x01, ///< (──────) Draw a single line.
-  ASTextLineStyleThick      = 0x02, ///< (━━━━━━━) Draw a thick line.
-  ASTextLineStyleDouble     = 0x09, ///< (══════) Draw a double line.
-  
+  ASTextLineStyleNone = 0x00,    ///< (        ) Do not draw a line (Default).
+  ASTextLineStyleSingle = 0x01,  ///< (──────) Draw a single line.
+  ASTextLineStyleThick = 0x02,   ///< (━━━━━━━) Draw a thick line.
+  ASTextLineStyleDouble = 0x09,  ///< (══════) Draw a double line.
+
   // style pattern (bitmask:0xF00)
-  ASTextLineStylePatternSolid      = 0x000, ///< (────────) Draw a solid line (Default).
-  ASTextLineStylePatternDot        = 0x100, ///< (‑ ‑ ‑ ‑ ‑ ‑) Draw a line of dots.
-  ASTextLineStylePatternDash       = 0x200, ///< (— — — —) Draw a line of dashes.
-  ASTextLineStylePatternDashDot    = 0x300, ///< (— ‑ — ‑ — ‑) Draw a line of alternating dashes and dots.
-  ASTextLineStylePatternDashDotDot = 0x400, ///< (— ‑ ‑ — ‑ ‑) Draw a line of alternating dashes and two dots.
-  ASTextLineStylePatternCircleDot  = 0x900, ///< (••••••••••••) Draw a line of small circle dots.
+  ASTextLineStylePatternSolid = 0x000,       ///< (────────) Draw a solid line (Default).
+  ASTextLineStylePatternDot = 0x100,         ///< (‑ ‑ ‑ ‑ ‑ ‑) Draw a line of dots.
+  ASTextLineStylePatternDash = 0x200,        ///< (— — — —) Draw a line of dashes.
+  ASTextLineStylePatternDashDot = 0x300,     ///< (— ‑ — ‑ — ‑) Draw a line of alternating dashes and dots.
+  ASTextLineStylePatternDashDotDot = 0x400,  ///< (— ‑ ‑ — ‑ ‑) Draw a line of alternating dashes and two dots.
+  ASTextLineStylePatternCircleDot = 0x900,  ///< (••••••••••••) Draw a line of small circle dots.
 };
 
 /**
  Text vertical alignment.
  */
 typedef NS_ENUM(NSInteger, ASTextVerticalAlignment) {
-  ASTextVerticalAlignmentTop =    0, ///< Top alignment.
-  ASTextVerticalAlignmentCenter = 1, ///< Center alignment.
-  ASTextVerticalAlignmentBottom = 2, ///< Bottom alignment.
+  ASTextVerticalAlignmentTop = 0,     ///< Top alignment.
+  ASTextVerticalAlignmentCenter = 1,  ///< Center alignment.
+  ASTextVerticalAlignmentBottom = 2,  ///< Bottom alignment.
 };
 
 /**
  The direction define in ASText.
  */
 typedef NS_OPTIONS(NSUInteger, ASTextDirection) {
-  ASTextDirectionNone   = 0,
-  ASTextDirectionTop    = 1 << 0,
-  ASTextDirectionRight  = 1 << 1,
+  ASTextDirectionNone = 0,
+  ASTextDirectionTop = 1 << 0,
+  ASTextDirectionRight = 1 << 1,
   ASTextDirectionBottom = 1 << 2,
-  ASTextDirectionLeft   = 1 << 3,
+  ASTextDirectionLeft = 1 << 3,
 };
 
 /**
  The trunction type, tells the truncation engine which type of truncation is being requested.
  */
-typedef NS_ENUM (NSUInteger, ASTextTruncationType) {
+typedef NS_ENUM(NSUInteger, ASTextTruncationType) {
   /// No truncate.
-  ASTextTruncationTypeNone   = 0,
-  
+  ASTextTruncationTypeNone = 0,
+
   /// Truncate at the beginning of the line, leaving the end portion visible.
-  ASTextTruncationTypeStart  = 1,
-  
+  ASTextTruncationTypeStart = 1,
+
   /// Truncate at the end of the line, leaving the start portion visible.
-  ASTextTruncationTypeEnd    = 2,
-  
+  ASTextTruncationTypeEnd = 2,
+
   /// Truncate in the middle of the line, leaving both the start and the end portions visible.
   ASTextTruncationTypeMiddle = 3,
 };
-
-
 
 #pragma mark - Attribute Name Defined in ASText
 
@@ -141,147 +139,143 @@ UIKIT_EXTERN NSString *const ASTextHighlightAttributeName;
 /// Use this attribute to add transform to each glyph in a range of text.
 UIKIT_EXTERN NSString *const ASTextGlyphTransformAttributeName;
 
-
-
 #pragma mark - String Token Define
 
-UIKIT_EXTERN NSString *const ASTextAttachmentToken; ///< Object replacement character (U+FFFC), used for text attachment.
-UIKIT_EXTERN NSString *const ASTextTruncationToken; ///< Horizontal ellipsis (U+2026), used for text truncation  "…".
-
-
+UIKIT_EXTERN NSString
+    *const ASTextAttachmentToken;  ///< Object replacement character (U+FFFC), used for text attachment.
+UIKIT_EXTERN NSString *const ASTextTruncationToken;  ///< Horizontal ellipsis (U+2026), used for text truncation  "…".
 
 #pragma mark - Attribute Value Define
 
 /**
  The tap/long press action callback defined in ASText.
- 
+
  @param containerView The text container view (such as ASLabel/ASTextView).
  @param text          The whole text.
  @param range         The text range in `text` (if no range, the range.location is NSNotFound).
  @param rect          The text frame in `containerView` (if no data, the rect is CGRectNull).
  */
-typedef void(^ASTextAction)(UIView *containerView, NSAttributedString *text, NSRange range, CGRect rect);
-
+typedef void (^ASTextAction)(UIView *containerView, NSAttributedString *text, NSRange range, CGRect rect);
 
 /**
  ASTextBackedString objects are used by the NSAttributedString class cluster
  as the values for text backed string attributes (stored in the attributed
  string under the key named ASTextBackedStringAttributeName).
- 
+
  It may used for copy/paste plain text from attributed string.
  Example: If :) is replace by a custom emoji (such as😊), the backed string can be set to @":)".
  */
 @interface ASTextBackedString : NSObject <NSCoding, NSCopying>
 + (instancetype)stringWithString:(nullable NSString *)string NS_RETURNS_RETAINED;
-@property (nullable, nonatomic, copy) NSString *string; ///< backed string
+@property(nullable, nonatomic, copy) NSString *string;  ///< backed string
 @end
-
 
 /**
  ASTextBinding objects are used by the NSAttributedString class cluster
  as the values for shadow attributes (stored in the attributed string under
  the key named ASTextBindingAttributeName).
- 
+
  Add this to a range of text will make the specified characters 'binding together'.
  ASTextView will treat the range of text as a single character during text
  selection and edit.
  */
 @interface ASTextBinding : NSObject <NSCoding, NSCopying>
 + (instancetype)bindingWithDeleteConfirm:(BOOL)deleteConfirm NS_RETURNS_RETAINED;
-@property (nonatomic) BOOL deleteConfirm; ///< confirm the range when delete in ASTextView
+@property(nonatomic) BOOL deleteConfirm;  ///< confirm the range when delete in ASTextView
 @end
-
 
 /**
  ASTextShadow objects are used by the NSAttributedString class cluster
  as the values for shadow attributes (stored in the attributed string under
  the key named ASTextShadowAttributeName or ASTextInnerShadowAttributeName).
- 
+
  It's similar to `NSShadow`, but offers more options.
  */
 @interface ASTextShadow : NSObject <NSCoding, NSCopying>
-+ (instancetype)shadowWithColor:(nullable UIColor *)color offset:(CGSize)offset radius:(CGFloat)radius NS_RETURNS_RETAINED;
++ (instancetype)shadowWithColor:(nullable UIColor *)color
+                         offset:(CGSize)offset
+                         radius:(CGFloat)radius NS_RETURNS_RETAINED;
 
-@property (nullable, nonatomic) UIColor *color; ///< shadow color
-@property (nonatomic) CGSize offset;                    ///< shadow offset
-@property (nonatomic) CGFloat radius;                   ///< shadow blur radius
-@property (nonatomic) CGBlendMode blendMode;            ///< shadow blend mode
-@property (nullable, nonatomic) ASTextShadow *subShadow;  ///< a sub shadow which will be added above the parent shadow
+@property(nullable, nonatomic) UIColor *color;           ///< shadow color
+@property(nonatomic) CGSize offset;                      ///< shadow offset
+@property(nonatomic) CGFloat radius;                     ///< shadow blur radius
+@property(nonatomic) CGBlendMode blendMode;              ///< shadow blend mode
+@property(nullable, nonatomic) ASTextShadow *subShadow;  ///< a sub shadow which will be added above the parent shadow
 
-+ (instancetype)shadowWithNSShadow:(NSShadow *)nsShadow NS_RETURNS_RETAINED; ///< convert NSShadow to ASTextShadow
-- (NSShadow *)nsShadow; ///< convert ASTextShadow to NSShadow
++ (instancetype)shadowWithNSShadow:(NSShadow *)nsShadow NS_RETURNS_RETAINED;  ///< convert NSShadow to ASTextShadow
+- (NSShadow *)nsShadow;                                                       ///< convert ASTextShadow to NSShadow
 @end
-
 
 /**
  ASTextDecorationLine objects are used by the NSAttributedString class cluster
  as the values for decoration line attributes (stored in the attributed string under
  the key named ASTextUnderlineAttributeName or ASTextStrikethroughAttributeName).
- 
+
  When it's used as underline, the line is drawn below text glyphs;
  when it's used as strikethrough, the line is drawn above text glyphs.
  */
 @interface ASTextDecoration : NSObject <NSCoding, NSCopying>
 + (instancetype)decorationWithStyle:(ASTextLineStyle)style NS_RETURNS_RETAINED;
-+ (instancetype)decorationWithStyle:(ASTextLineStyle)style width:(nullable NSNumber *)width color:(nullable UIColor *)color NS_RETURNS_RETAINED;
-@property (nonatomic) ASTextLineStyle style;                   ///< line style
-@property (nullable, nonatomic) NSNumber *width;       ///< line width (nil means automatic width)
-@property (nullable, nonatomic) UIColor *color;        ///< line color (nil means automatic color)
-@property (nullable, nonatomic) ASTextShadow *shadow;  ///< line shadow
++ (instancetype)decorationWithStyle:(ASTextLineStyle)style
+                              width:(nullable NSNumber *)width
+                              color:(nullable UIColor *)color NS_RETURNS_RETAINED;
+@property(nonatomic) ASTextLineStyle style;           ///< line style
+@property(nullable, nonatomic) NSNumber *width;       ///< line width (nil means automatic width)
+@property(nullable, nonatomic) UIColor *color;        ///< line color (nil means automatic color)
+@property(nullable, nonatomic) ASTextShadow *shadow;  ///< line shadow
 @end
-
 
 /**
  ASTextBorder objects are used by the NSAttributedString class cluster
  as the values for border attributes (stored in the attributed string under
  the key named ASTextBorderAttributeName or ASTextBackgroundBorderAttributeName).
- 
+
  It can be used to draw a border around a range of text, or draw a background
  to a range of text.
- 
+
  Example:
  ╭──────╮
  │ Text │
  ╰──────╯
  */
 @interface ASTextBorder : NSObject <NSCoding, NSCopying>
-+ (instancetype)borderWithLineStyle:(ASTextLineStyle)lineStyle lineWidth:(CGFloat)width strokeColor:(nullable UIColor *)color NS_RETURNS_RETAINED;
++ (instancetype)borderWithLineStyle:(ASTextLineStyle)lineStyle
+                          lineWidth:(CGFloat)width
+                        strokeColor:(nullable UIColor *)color NS_RETURNS_RETAINED;
 + (instancetype)borderWithFillColor:(nullable UIColor *)color cornerRadius:(CGFloat)cornerRadius NS_RETURNS_RETAINED;
-@property (nonatomic) ASTextLineStyle lineStyle;              ///< border line style
-@property (nonatomic) CGFloat strokeWidth;                    ///< border line width
-@property (nullable, nonatomic) UIColor *strokeColor; ///< border line color
-@property (nonatomic) CGLineJoin lineJoin;                    ///< border line join
-@property (nonatomic) UIEdgeInsets insets;                    ///< border insets for text bounds
-@property (nonatomic) CGFloat cornerRadius;                   ///< border corder radius
-@property (nullable, nonatomic) ASTextShadow *shadow; ///< border shadow
-@property (nullable, nonatomic) UIColor *fillColor;   ///< inner fill color
+@property(nonatomic) ASTextLineStyle lineStyle;       ///< border line style
+@property(nonatomic) CGFloat strokeWidth;             ///< border line width
+@property(nullable, nonatomic) UIColor *strokeColor;  ///< border line color
+@property(nonatomic) CGLineJoin lineJoin;             ///< border line join
+@property(nonatomic) UIEdgeInsets insets;             ///< border insets for text bounds
+@property(nonatomic) CGFloat cornerRadius;            ///< border corder radius
+@property(nullable, nonatomic) ASTextShadow *shadow;  ///< border shadow
+@property(nullable, nonatomic) UIColor *fillColor;    ///< inner fill color
 @end
-
 
 /**
  ASTextAttachment objects are used by the NSAttributedString class cluster
  as the values for attachment attributes (stored in the attributed string under
  the key named ASTextAttachmentAttributeName).
- 
+
  When display an attributed string which contains `ASTextAttachment` object,
  the content will be placed in text metric. If the content is `UIImage`,
  then it will be drawn to CGContext; if the content is `UIView` or `CALayer`,
  then it will be added to the text container's view or layer.
  */
-@interface ASTextAttachment : NSObject<NSCoding, NSCopying>
+@interface ASTextAttachment : NSObject <NSCoding, NSCopying>
 + (instancetype)attachmentWithContent:(nullable id)content NS_RETURNS_RETAINED;
-@property (nullable, nonatomic) id content;             ///< Supported type: UIImage, UIView, CALayer
-@property (nonatomic) UIViewContentMode contentMode;            ///< Content display mode.
-@property (nonatomic) UIEdgeInsets contentInsets;               ///< The insets when drawing content.
-@property (nullable, nonatomic) NSDictionary *userInfo; ///< The user information dictionary.
+@property(nullable, nonatomic) id content;              ///< Supported type: UIImage, UIView, CALayer
+@property(nonatomic) UIViewContentMode contentMode;     ///< Content display mode.
+@property(nonatomic) UIEdgeInsets contentInsets;        ///< The insets when drawing content.
+@property(nullable, nonatomic) NSDictionary *userInfo;  ///< The user information dictionary.
 @end
-
 
 /**
  ASTextHighlight objects are used by the NSAttributedString class cluster
  as the values for touchable highlight attributes (stored in the attributed string
  under the key named ASTextHighlightAttributeName).
- 
+
  When display an attributed string in `ASLabel` or `ASTextView`, the range of
  highlight text can be toucheds down by users. If a range of text is turned into
  highlighted state, the `attributes` in `ASTextHighlight` will be used to modify
@@ -294,11 +288,11 @@ typedef void(^ASTextAction)(UIView *containerView, NSAttributedString *text, NSR
  Key:   Same as CoreText/ASText Attribute Name.
  Value: Modify attribute value when highlight (NSNull for remove attribute).
  */
-@property (nullable, nonatomic, copy) NSDictionary<NSString *, id> *attributes;
+@property(nullable, nonatomic, copy) NSDictionary<NSString *, id> *attributes;
 
 /**
  Creates a highlight object with specified attributes.
- 
+
  @param attributes The attributes which will replace original attributes when highlight,
  If the value is NSNull, it will removed when highlight.
  */
@@ -306,7 +300,7 @@ typedef void(^ASTextAction)(UIView *containerView, NSAttributedString *text, NSR
 
 /**
  Convenience methods to create a default highlight with the specifeid background color.
- 
+
  @param color The background border color.
  */
 + (instancetype)highlightWithBackgroundColor:(nullable UIColor *)color NS_RETURNS_RETAINED;
@@ -327,19 +321,19 @@ typedef void(^ASTextAction)(UIView *containerView, NSAttributedString *text, NSR
 /**
  The user information dictionary, default is nil.
  */
-@property (nullable, nonatomic, copy) NSDictionary *userInfo;
+@property(nullable, nonatomic, copy) NSDictionary *userInfo;
 
 /**
  Tap action when user tap the highlight, default is nil.
  If the value is nil, ASTextView or ASLabel will ask it's delegate to handle the tap action.
  */
-@property (nullable, nonatomic) ASTextAction tapAction;
+@property(nullable, nonatomic) ASTextAction tapAction;
 
 /**
  Long press action when user long press the highlight, default is nil.
  If the value is nil, ASTextView or ASLabel will ask it's delegate to handle the long press action.
  */
-@property (nullable, nonatomic) ASTextAction longPressAction;
+@property(nullable, nonatomic) ASTextAction longPressAction;
 
 @end
 

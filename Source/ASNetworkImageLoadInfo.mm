@@ -6,13 +6,15 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASNetworkImageLoadInfo.h>
 #import <AsyncDisplayKit/ASNetworkImageLoadInfo+Private.h>
+#import <AsyncDisplayKit/ASNetworkImageLoadInfo.h>
 
 @implementation ASNetworkImageLoadInfo
 
-- (instancetype)initWithURL:(NSURL *)url sourceType:(ASNetworkImageSourceType)sourceType downloadIdentifier:(id)downloadIdentifier userInfo:(id)userInfo
-{
+- (instancetype)initWithURL:(NSURL *)url
+                 sourceType:(ASNetworkImageSourceType)sourceType
+         downloadIdentifier:(id)downloadIdentifier
+                   userInfo:(id)userInfo {
   if (self = [super init]) {
     _url = [url copy];
     _sourceType = sourceType;
@@ -24,8 +26,7 @@
 
 #pragma mark - NSCopying
 
-- (id)copyWithZone:(NSZone *)zone
-{
+- (id)copyWithZone:(NSZone *)zone {
   return self;
 }
 

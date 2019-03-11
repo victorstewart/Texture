@@ -7,29 +7,29 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASControlNode.h>
 #import <AsyncDisplayKit/ASControlNode+Private.h>
 #import <AsyncDisplayKit/ASControlNode+Subclasses.h>
-#import <AsyncDisplayKit/ASDisplayNode+Subclasses.h>
-#import <AsyncDisplayKit/ASImageNode.h>
-#import <AsyncDisplayKit/AsyncDisplayKit+Debug.h>
-#import <AsyncDisplayKit/ASInternalHelpers.h>
+#import <AsyncDisplayKit/ASControlNode.h>
 #import <AsyncDisplayKit/ASControlTargetAction.h>
 #import <AsyncDisplayKit/ASDisplayNode+FrameworkPrivate.h>
+#import <AsyncDisplayKit/ASDisplayNode+Subclasses.h>
+#import <AsyncDisplayKit/ASImageNode.h>
+#import <AsyncDisplayKit/ASInternalHelpers.h>
 #import <AsyncDisplayKit/ASThread.h>
+#import <AsyncDisplayKit/AsyncDisplayKit+Debug.h>
 
 // UIControl allows dragging some distance outside of the control itself during
 // tracking. This value depends on the device idiom (25 or 70 points), so
 // so replicate that effect with the same values here for our own controls.
-#define kASControlNodeExpandedInset (([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) ? -25.0f : -70.0f)
+#define kASControlNodeExpandedInset \
+  (([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) ? -25.0f : -70.0f)
 
 // Initial capacities for dispatch tables.
 #define kASControlNodeEventDispatchTableInitialCapacity 4
 #define kASControlNodeActionDispatchTableInitialCapacity 4
 
-@interface ASControlNode ()
-{
-@private
+@interface ASControlNode () {
+ @private
   // Control Attributes
   BOOL _enabled;
   BOOL _highlighted;
@@ -44,8 +44,8 @@
 }
 
 // Read-write overrides.
-@property (getter=isTracking) BOOL tracking;
-@property (getter=isTouchInside) BOOL touchInside;
+@property(getter=isTracking) BOOL tracking;
+@property(getter=isTouchInside) BOOL touchInside;
 
 /**
   @abstract Returns a key to be used in _controlEventDispatchTable that identifies the control event.
@@ -59,7 +59,8 @@ id<NSCopying> _ASControlNodeEventKeyForControlEvent(ASControlNodeEvent controlEv
   @param mask An ASControlNodeEvent mask.
   @param block The block to be invoked for each ASControlNodeEvent included in mask.
  */
-void _ASEnumerateControlEventsIncludedInMaskWithBlock(ASControlNodeEvent mask, void (^block)(ASControlNodeEvent anEvent));
+void _ASEnumerateControlEventsIncludedInMaskWithBlock(ASControlNodeEvent mask,
+                                                      void (^block)(ASControlNodeEvent anEvent));
 
 /**
  @abstract Returns the expanded bounds used to determine if a touch is considered 'inside' during tracking.
@@ -68,53 +69,48 @@ void _ASEnumerateControlEventsIncludedInMaskWithBlock(ASControlNodeEvent mask, v
  */
 CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
 
-
 @end
 
-@implementation ASControlNode
-{
+@implementation ASControlNode {
   ASImageNode *_debugHighlightOverlay;
 }
 
 #pragma mark - Lifecycle
 
-- (instancetype)init
-{
-  if (!(self = [super init]))
-    return nil;
+- (instancetype)init {
+  if (!(self = [super init])) return nil;
 
   _enabled = YES;
 
-  // As we have no targets yet, we start off with user interaction off. When a target is added, it'll get turned back on.
+  // As we have no targets yet, we start off with user interaction off. When a target is added, it'll get turned back
+  // on.
   self.userInteractionEnabled = NO;
-  
+
   return self;
 }
 
 #if TARGET_OS_TV
-- (void)didLoad
-{
+- (void)didLoad {
   [super didLoad];
-  
+
   // On tvOS all controls, such as buttons, interact with the focus system even if they don't have a target set on them.
   // Here we add our own internal tap gesture to handle this behaviour.
   self.userInteractionEnabled = YES;
-  UITapGestureRecognizer *tapGestureRec = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_pressDown)];
-  tapGestureRec.allowedPressTypes = @[@(UIPressTypeSelect)];
+  UITapGestureRecognizer *tapGestureRec = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                  action:@selector(_pressDown)];
+  tapGestureRec.allowedPressTypes = @[ @(UIPressTypeSelect) ];
   [self.view addGestureRecognizer:tapGestureRec];
 }
 #endif
 
-- (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled
-{
+- (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled {
   [super setUserInteractionEnabled:userInteractionEnabled];
   self.isAccessibilityElement = userInteractionEnabled;
 }
 
-- (void)__exitHierarchy
-{
+- (void)__exitHierarchy {
   [super __exitHierarchy];
-  
+
   // If a control node is exit the hierarchy and is tracking we have to cancel it
   if (self.tracking) {
     [self _cancelTrackingWithEvent:nil];
@@ -126,13 +122,12 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
 
 #pragma mark - ASDisplayNode Overrides
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
   // If we're not interested in touches, we have nothing to do.
   if (!self.enabled) {
     return;
   }
-  
+
   // Check if the tracking should start
   UITouch *theTouch = [touches anyObject];
   if (![self beginTrackingWithTouch:theTouch withEvent:event]) {
@@ -152,13 +147,13 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
     self.highlighted = YES;
 
     // Send the appropriate touch-down control event depending on how many times we've been tapped.
-    ASControlNodeEvent controlEventMask = (theTouch.tapCount == 1) ? ASControlNodeEventTouchDown : ASControlNodeEventTouchDownRepeat;
+    ASControlNodeEvent controlEventMask =
+        (theTouch.tapCount == 1) ? ASControlNodeEventTouchDown : ASControlNodeEventTouchDownRepeat;
     [self sendActionsForControlEvents:controlEventMask withEvent:event];
   }
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
   // If we're not interested in touches, we have nothing to do.
   if (!self.enabled) {
     return;
@@ -166,13 +161,13 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
 
   NSParameterAssert(touches.count == 1);
   UITouch *theTouch = [touches anyObject];
-  
+
   // Check if tracking should continue
   if (!self.tracking || ![self continueTrackingWithTouch:theTouch withEvent:event]) {
     self.tracking = NO;
     return;
   }
-  
+
   CGPoint touchLocation = [theTouch locationInView:self.view];
 
   // Update our touchInside state.
@@ -184,12 +179,12 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
   self.touchInside = dragIsInsideExpandedBounds;
   self.highlighted = dragIsInsideExpandedBounds;
 
-  [self sendActionsForControlEvents:(dragIsInsideBounds ? ASControlNodeEventTouchDragInside : ASControlNodeEventTouchDragOutside)
+  [self sendActionsForControlEvents:(dragIsInsideBounds ? ASControlNodeEventTouchDragInside
+                                                        : ASControlNodeEventTouchDragOutside)
                           withEvent:event];
 }
 
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
-{
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
   // If we're not interested in touches, we have nothing to do.
   if (!self.enabled) {
     return;
@@ -199,8 +194,7 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
   [self _cancelTrackingWithEvent:event];
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
   // If we're not interested in touches, we have nothing to do.
   if (!self.enabled) {
     return;
@@ -231,39 +225,39 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
   CGRect expandedBounds = _ASControlNodeGetExpandedBounds(self);
   BOOL touchUpIsInsideExpandedBounds = CGRectContainsPoint(expandedBounds, touchLocation);
 
-  [self sendActionsForControlEvents:(touchUpIsInsideExpandedBounds ? ASControlNodeEventTouchUpInside : ASControlNodeEventTouchUpOutside)
+  [self sendActionsForControlEvents:(touchUpIsInsideExpandedBounds ? ASControlNodeEventTouchUpInside
+                                                                   : ASControlNodeEventTouchUpOutside)
                           withEvent:event];
 }
 
-- (void)_cancelTrackingWithEvent:(UIEvent *)event
-{
+- (void)_cancelTrackingWithEvent:(UIEvent *)event {
   // We're no longer tracking and there is no touch to be inside.
   self.tracking = NO;
   self.touchInside = NO;
   self.highlighted = NO;
-  
+
   // Send the cancel event.
   [self sendActionsForControlEvents:ASControlNodeEventTouchCancel withEvent:event];
 }
 
 #pragma clang diagnostic pop
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
   ASDisplayNodeAssertMainThread();
 
   // If not enabled we should not care about receving touches
-  if (! self.enabled) {
+  if (!self.enabled) {
     return nil;
   }
 
   return [super hitTest:point withEvent:event];
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
-  // If we're interested in touches, this is a tap (the only gesture we care about) and passed -hitTest for us, then no, you may not begin. Sir.
-  if (self.enabled && [gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] && gestureRecognizer.view != self.view) {
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+  // If we're interested in touches, this is a tap (the only gesture we care about) and passed -hitTest for us, then no,
+  // you may not begin. Sir.
+  if (self.enabled && [gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] &&
+      gestureRecognizer.view != self.view) {
     UITapGestureRecognizer *tapRecognizer = (UITapGestureRecognizer *)gestureRecognizer;
     // Allow double-tap gestures
     return tapRecognizer.numberOfTapsRequired != 1;
@@ -273,26 +267,28 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
   return YES;
 }
 
-- (BOOL)supportsLayerBacking
-{
+- (BOOL)supportsLayerBacking {
   return super.supportsLayerBacking && !self.userInteractionEnabled;
 }
 
 #pragma mark - Action Messages
 
-- (void)addTarget:(id)target action:(SEL)action forControlEvents:(ASControlNodeEvent)controlEventMask
-{
+- (void)addTarget:(id)target action:(SEL)action forControlEvents:(ASControlNodeEvent)controlEventMask {
   NSParameterAssert(action);
   NSParameterAssert(controlEventMask != 0);
-  
+
   // ASControlNode cannot be layer backed if adding a target
-  ASDisplayNodeAssert(!self.isLayerBacked, @"ASControlNode is layer backed, will never be able to call target in target:action: pair.");
-  
+  ASDisplayNodeAssert(!self.isLayerBacked,
+                      @"ASControlNode is layer backed, will never be able to call target in target:action: pair.");
+
   ASLockScopeSelf();
 
   if (!_controlEventDispatchTable) {
-    _controlEventDispatchTable = [[NSMutableDictionary alloc] initWithCapacity:kASControlNodeEventDispatchTableInitialCapacity]; // enough to handle common types without re-hashing the dictionary when adding entries.
-    
+    _controlEventDispatchTable = [[NSMutableDictionary alloc]
+        initWithCapacity:kASControlNodeEventDispatchTableInitialCapacity];  // enough to handle common types without
+                                                                            // re-hashing the dictionary when adding
+                                                                            // entries.
+
     // only show tap-able areas for views with 1 or more addTarget:action: pairs
     if ([ASControlNode enableHitTestDebug] && _debugHighlightOverlay == nil) {
       // do not use ASPerformBlockOnMainThread here, if it performs the block synchronously it will continue
@@ -307,67 +303,64 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
       });
     }
   }
-  
+
   // Create new target action pair
   ASControlTargetAction *targetAction = [[ASControlTargetAction alloc] init];
   targetAction.action = action;
   targetAction.target = target;
 
   // Enumerate the events in the mask, adding the target-action pair for each control event included in controlEventMask
-  _ASEnumerateControlEventsIncludedInMaskWithBlock(controlEventMask, ^
-    (ASControlNodeEvent controlEvent)
-    {
-      // Do we already have an event table for this control event?
-      id<NSCopying> eventKey = _ASControlNodeEventKeyForControlEvent(controlEvent);
-      NSMutableArray *eventTargetActionArray = _controlEventDispatchTable[eventKey];
-      
-      if (!eventTargetActionArray) {
-        eventTargetActionArray = [[NSMutableArray alloc] init];
-      }
-      
-      // Remove any prior target-action pair for this event, as UIKit does.
-      [eventTargetActionArray removeObject:targetAction];
-      
-      // Register the new target-action as the last one to be sent.
-      [eventTargetActionArray addObject:targetAction];
-      
-      if (eventKey) {
-        [_controlEventDispatchTable setObject:eventTargetActionArray forKey:eventKey];
-      }
-    });
+  _ASEnumerateControlEventsIncludedInMaskWithBlock(controlEventMask, ^(ASControlNodeEvent controlEvent) {
+    // Do we already have an event table for this control event?
+    id<NSCopying> eventKey = _ASControlNodeEventKeyForControlEvent(controlEvent);
+    NSMutableArray *eventTargetActionArray = _controlEventDispatchTable[eventKey];
+
+    if (!eventTargetActionArray) {
+      eventTargetActionArray = [[NSMutableArray alloc] init];
+    }
+
+    // Remove any prior target-action pair for this event, as UIKit does.
+    [eventTargetActionArray removeObject:targetAction];
+
+    // Register the new target-action as the last one to be sent.
+    [eventTargetActionArray addObject:targetAction];
+
+    if (eventKey) {
+      [_controlEventDispatchTable setObject:eventTargetActionArray forKey:eventKey];
+    }
+  });
 
   self.userInteractionEnabled = YES;
 }
 
-- (NSArray *)actionsForTarget:(id)target forControlEvent:(ASControlNodeEvent)controlEvent
-{
+- (NSArray *)actionsForTarget:(id)target forControlEvent:(ASControlNodeEvent)controlEvent {
   NSParameterAssert(target);
   NSParameterAssert(controlEvent != 0 && controlEvent != ASControlNodeEventAllEvents);
 
   ASLockScopeSelf();
-  
+
   // Grab the event target action array for this event.
-  NSMutableArray *eventTargetActionArray = _controlEventDispatchTable[_ASControlNodeEventKeyForControlEvent(controlEvent)];
+  NSMutableArray *eventTargetActionArray =
+      _controlEventDispatchTable[_ASControlNodeEventKeyForControlEvent(controlEvent)];
   if (!eventTargetActionArray) {
     return nil;
   }
 
   NSMutableArray *actions = [[NSMutableArray alloc] init];
-  
+
   // Collect all actions for this target.
   for (ASControlTargetAction *targetAction in eventTargetActionArray) {
     if ((target == nil && targetAction.createdWithNoTarget) || (target != nil && target == targetAction.target)) {
       [actions addObject:NSStringFromSelector(targetAction.action)];
     }
   }
-  
+
   return actions;
 }
 
-- (NSSet *)allTargets
-{
+- (NSSet *)allTargets {
   ASLockScopeSelf();
-  
+
   NSMutableSet *targets = [[NSMutableSet alloc] init];
 
   // Look at each event...
@@ -381,79 +374,78 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
   return targets;
 }
 
-- (void)removeTarget:(id)target action:(SEL)action forControlEvents:(ASControlNodeEvent)controlEventMask
-{
+- (void)removeTarget:(id)target action:(SEL)action forControlEvents:(ASControlNodeEvent)controlEventMask {
   NSParameterAssert(controlEventMask != 0);
-  
+
   ASLockScopeSelf();
 
-  // Enumerate the events in the mask, removing the target-action pair for each control event included in controlEventMask.
-  _ASEnumerateControlEventsIncludedInMaskWithBlock(controlEventMask, ^
-    (ASControlNodeEvent controlEvent)
-    {
-      // Grab the dispatch table for this event (if we have it).
-      id<NSCopying> eventKey = _ASControlNodeEventKeyForControlEvent(controlEvent);
-      NSMutableArray *eventTargetActionArray = _controlEventDispatchTable[eventKey];
-      if (!eventTargetActionArray) {
-        return;
-      }
-      
-      NSPredicate *filterPredicate = [NSPredicate predicateWithBlock:^BOOL(ASControlTargetAction *_Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
-        if (!target || evaluatedObject.target == target) {
-          if (!action) {
-            return NO;
-          } else if (evaluatedObject.action == action) {
-            return NO;
+  // Enumerate the events in the mask, removing the target-action pair for each control event included in
+  // controlEventMask.
+  _ASEnumerateControlEventsIncludedInMaskWithBlock(controlEventMask, ^(ASControlNodeEvent controlEvent) {
+    // Grab the dispatch table for this event (if we have it).
+    id<NSCopying> eventKey = _ASControlNodeEventKeyForControlEvent(controlEvent);
+    NSMutableArray *eventTargetActionArray = _controlEventDispatchTable[eventKey];
+    if (!eventTargetActionArray) {
+      return;
+    }
+
+    NSPredicate *filterPredicate =
+        [NSPredicate predicateWithBlock:^BOOL(ASControlTargetAction *_Nullable evaluatedObject,
+                                              NSDictionary<NSString *, id> *_Nullable bindings) {
+          if (!target || evaluatedObject.target == target) {
+            if (!action) {
+              return NO;
+            } else if (evaluatedObject.action == action) {
+              return NO;
+            }
           }
-        }
-        
-        return YES;
-      }];
-      [eventTargetActionArray filterUsingPredicate:filterPredicate];
-      
-      if (eventTargetActionArray.count == 0) {
-        // If there are no targets for this event anymore, remove it.
-        [_controlEventDispatchTable removeObjectForKey:eventKey];
-      }
-    });
+
+          return YES;
+        }];
+    [eventTargetActionArray filterUsingPredicate:filterPredicate];
+
+    if (eventTargetActionArray.count == 0) {
+      // If there are no targets for this event anymore, remove it.
+      [_controlEventDispatchTable removeObjectForKey:eventKey];
+    }
+  });
 }
 
 #pragma mark -
 
-- (void)sendActionsForControlEvents:(ASControlNodeEvent)controlEvents withEvent:(UIEvent *)event
-{
-  ASDisplayNodeAssertMainThread(); //We access self.view below, it's not safe to call this off of main.
+- (void)sendActionsForControlEvents:(ASControlNodeEvent)controlEvents withEvent:(UIEvent *)event {
+  ASDisplayNodeAssertMainThread();  // We access self.view below, it's not safe to call this off of main.
   NSParameterAssert(controlEvents != 0);
-  
+
   NSMutableArray *resolvedEventTargetActionArray = [[NSMutableArray<ASControlTargetAction *> alloc] init];
-  
+
   {
     ASLockScopeSelf();
-    
+
     // Enumerate the events in the mask, invoking the target-action pairs for each.
-    _ASEnumerateControlEventsIncludedInMaskWithBlock(controlEvents, ^
-      (ASControlNodeEvent controlEvent)
-      {
-        // Iterate on each target action pair
-        for (ASControlTargetAction *targetAction in _controlEventDispatchTable[_ASControlNodeEventKeyForControlEvent(controlEvent)]) {
-          ASControlTargetAction *resolvedTargetAction = [[ASControlTargetAction alloc] init];
-          resolvedTargetAction.action = targetAction.action;
-          resolvedTargetAction.target = targetAction.target;
-          
-          // NSNull means that a nil target was set, so start at self and travel the responder chain
-          if (!resolvedTargetAction.target && targetAction.createdWithNoTarget) {
-            // if the target cannot perform the action, travel the responder chain to try to find something that does
-            resolvedTargetAction.target = [self.view targetForAction:resolvedTargetAction.action withSender:self];
-          }
-          
-          if (resolvedTargetAction.target) {
-            [resolvedEventTargetActionArray addObject:resolvedTargetAction];
-          }
+    _ASEnumerateControlEventsIncludedInMaskWithBlock(controlEvents, ^(ASControlNodeEvent controlEvent) {
+      // Iterate on each target action pair
+      for (ASControlTargetAction
+               *targetAction in _controlEventDispatchTable[_ASControlNodeEventKeyForControlEvent(controlEvent)]) {
+        ASControlTargetAction *resolvedTargetAction = [[ASControlTargetAction alloc] init];
+        resolvedTargetAction.action = targetAction.action;
+        resolvedTargetAction.target = targetAction.target;
+
+        // NSNull means that a nil target was set, so start at self and travel the responder chain
+        if (!resolvedTargetAction.target && targetAction.createdWithNoTarget) {
+          // if the target cannot perform the action, travel the responder chain to try to find something that does
+          resolvedTargetAction.target = [self.view targetForAction:resolvedTargetAction.action withSender:self];
         }
-      });
+
+        if (resolvedTargetAction.target) {
+          [resolvedEventTargetActionArray addObject:resolvedTargetAction];
+        }
+      }
+    });
   }
-  
-  //We don't want to hold the lock while calling out, we could potentially walk up the ownership tree causing a deadlock.
+
+  // We don't want to hold the lock while calling out, we could potentially walk up the ownership tree causing a
+  // deadlock.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
   for (ASControlTargetAction *targetAction in resolvedEventTargetActionArray) {
@@ -464,53 +456,46 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
 
 #pragma mark - Convenience
 
-id<NSCopying> _ASControlNodeEventKeyForControlEvent(ASControlNodeEvent controlEvent)
-{
-  return @(controlEvent);
-}
+id<NSCopying> _ASControlNodeEventKeyForControlEvent(ASControlNodeEvent controlEvent) { return @(controlEvent); }
 
-void _ASEnumerateControlEventsIncludedInMaskWithBlock(ASControlNodeEvent mask, void (^block)(ASControlNodeEvent anEvent))
-{
+void _ASEnumerateControlEventsIncludedInMaskWithBlock(ASControlNodeEvent mask,
+                                                      void (^block)(ASControlNodeEvent anEvent)) {
   if (block == nil) {
     return;
   }
   // Start with our first event (touch down) and work our way up to the last event (PrimaryActionTriggered)
-  for (ASControlNodeEvent thisEvent = ASControlNodeEventTouchDown; thisEvent <= ASControlNodeEventPrimaryActionTriggered; thisEvent <<= 1) {
+  for (ASControlNodeEvent thisEvent = ASControlNodeEventTouchDown;
+       thisEvent <= ASControlNodeEventPrimaryActionTriggered; thisEvent <<= 1) {
     // If it's included in the mask, invoke the block.
-    if ((mask & thisEvent) == thisEvent)
-      block(thisEvent);
+    if ((mask & thisEvent) == thisEvent) block(thisEvent);
   }
 }
 
 CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode) {
-  return CGRectInset(UIEdgeInsetsInsetRect(controlNode.view.bounds, controlNode.hitTestSlop), kASControlNodeExpandedInset, kASControlNodeExpandedInset);
+  return CGRectInset(UIEdgeInsetsInsetRect(controlNode.view.bounds, controlNode.hitTestSlop),
+                     kASControlNodeExpandedInset, kASControlNodeExpandedInset);
 }
 
 #pragma mark - For Subclasses
 
-- (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)touchEvent
-{
+- (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)touchEvent {
   return YES;
 }
 
-- (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)touchEvent
-{
+- (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)touchEvent {
   return YES;
 }
 
-- (void)cancelTrackingWithEvent:(UIEvent *)touchEvent
-{
+- (void)cancelTrackingWithEvent:(UIEvent *)touchEvent {
   // Subclass hook
 }
 
-- (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)touchEvent
-{
+- (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)touchEvent {
   // Subclass hook
 }
 
 #pragma mark - Debug
-- (ASImageNode *)debugHighlightOverlay
-{
+- (ASImageNode *)debugHighlightOverlay {
   return _debugHighlightOverlay;
 }
 @end

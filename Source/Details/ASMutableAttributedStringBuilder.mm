@@ -22,8 +22,7 @@
   NSString *_initString;
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
   if (self = [super init]) {
     _attrStr = [[NSMutableAttributedString alloc] init];
     _pendingRange.location = NSNotFound;
@@ -31,13 +30,11 @@
   return self;
 }
 
-- (instancetype)initWithString:(NSString *)str
-{
+- (instancetype)initWithString:(NSString *)str {
   return [self initWithString:str attributes:@{}];
 }
 
-- (instancetype)initWithString:(NSString *)str attributes:(NSDictionary *)attrs
-{
+- (instancetype)initWithString:(NSString *)str attributes:(NSDictionary *)attrs {
   if (self = [super init]) {
     // We cache this in an ivar that we can lazily construct the attributed
     // string with when we get to a forced commit point.
@@ -51,8 +48,7 @@
   return self;
 }
 
-- (instancetype)initWithAttributedString:(NSAttributedString *)attrStr
-{
+- (instancetype)initWithAttributedString:(NSAttributedString *)attrStr {
   if (self = [super init]) {
     _attrStr = [[NSMutableAttributedString alloc] initWithAttributedString:attrStr];
     _pendingRange.location = NSNotFound;
@@ -60,8 +56,7 @@
   return self;
 }
 
-- (NSMutableAttributedString *)_attributedString
-{
+- (NSMutableAttributedString *)_attributedString {
   if (_attrStr == nil && _initString != nil) {
     // We can lazily construct the attributed string if it hasn't already been
     // created with the existing pending attributes.  This is significantly
@@ -78,8 +73,7 @@
 
 #pragma mark - Pending attribution
 
-- (NSMutableDictionary *)_pendingRangeAttributes
-{
+- (NSMutableDictionary *)_pendingRangeAttributes {
   // Lazy dictionary creation.  Call this if you want to force initialization,
   // otherwise just use the ivar.
   if (_pendingRangeAttributes == nil) {
@@ -88,8 +82,7 @@
   return _pendingRangeAttributes;
 }
 
-- (void)_applyPendingRangeAttributions
-{
+- (void)_applyPendingRangeAttributions {
   if (_attrStr == nil) {
     // Trigger its creation if it doesn't exist.
     [self _attributedString];
@@ -114,20 +107,17 @@
 
 #pragma mark - Editing
 
-- (void)replaceCharactersInRange:(NSRange)range withString:(NSString *)str
-{
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString *)str {
   [self _applyPendingRangeAttributions];
   [[self _attributedString] replaceCharactersInRange:range withString:str];
 }
 
-- (void)replaceCharactersInRange:(NSRange)range withAttributedString:(NSAttributedString *)attrString
-{
+- (void)replaceCharactersInRange:(NSRange)range withAttributedString:(NSAttributedString *)attrString {
   [self _applyPendingRangeAttributions];
   [[self _attributedString] replaceCharactersInRange:range withAttributedString:attrString];
 }
 
-- (void)addAttribute:(NSString *)name value:(id)value range:(NSRange)range
-{
+- (void)addAttribute:(NSString *)name value:(id)value range:(NSRange)range {
   if (_setRange) {
     [self _applyPendingRangeAttributions];
     _setRange = NO;
@@ -142,8 +132,7 @@
   pendingAttributes[name] = value;
 }
 
-- (void)addAttributes:(NSDictionary *)attrs range:(NSRange)range
-{
+- (void)addAttributes:(NSDictionary *)attrs range:(NSRange)range {
   if (_setRange) {
     [self _applyPendingRangeAttributions];
     _setRange = NO;
@@ -158,32 +147,27 @@
   [pendingAttributes addEntriesFromDictionary:attrs];
 }
 
-- (void)insertAttributedString:(NSAttributedString *)attrString atIndex:(NSUInteger)loc
-{
+- (void)insertAttributedString:(NSAttributedString *)attrString atIndex:(NSUInteger)loc {
   [self _applyPendingRangeAttributions];
   [[self _attributedString] insertAttributedString:attrString atIndex:loc];
 }
 
-- (void)appendAttributedString:(NSAttributedString *)attrString
-{
+- (void)appendAttributedString:(NSAttributedString *)attrString {
   [self _applyPendingRangeAttributions];
   [[self _attributedString] appendAttributedString:attrString];
 }
 
-- (void)deleteCharactersInRange:(NSRange)range
-{
+- (void)deleteCharactersInRange:(NSRange)range {
   [self _applyPendingRangeAttributions];
   [[self _attributedString] deleteCharactersInRange:range];
 }
 
-- (void)setAttributedString:(NSAttributedString *)attrString
-{
+- (void)setAttributedString:(NSAttributedString *)attrString {
   [self _applyPendingRangeAttributions];
   [[self _attributedString] setAttributedString:attrString];
 }
 
-- (void)setAttributes:(NSDictionary *)attrs range:(NSRange)range
-{
+- (void)setAttributes:(NSDictionary *)attrs range:(NSRange)range {
   if (!_setRange) {
     [self _applyPendingRangeAttributions];
     _setRange = YES;
@@ -198,8 +182,7 @@
   [pendingAttributes addEntriesFromDictionary:attrs];
 }
 
-- (void)removeAttribute:(NSString *)name range:(NSRange)range
-{
+- (void)removeAttribute:(NSString *)name range:(NSRange)range {
   // This call looks like the other set/add functions, but in order for this
   // function to perform as advertised we MUST first add the attributes we
   // currently have pending.
@@ -210,8 +193,7 @@
 
 #pragma mark - Output
 
-- (NSMutableAttributedString *)composedAttributedString
-{
+- (NSMutableAttributedString *)composedAttributedString {
   if (_pendingRangeAttributes.count > 0) {
     [self _applyPendingRangeAttributions];
   }
@@ -220,34 +202,28 @@
 
 #pragma mark - Forwarding
 
-- (NSUInteger)length
-{
+- (NSUInteger)length {
   // If we just want a length call, no need to lazily construct the attributed string
   return _attrStr ? _attrStr.length : _initString.length;
 }
 
-- (NSDictionary *)attributesAtIndex:(NSUInteger)location effectiveRange:(NSRangePointer)range
-{
+- (NSDictionary *)attributesAtIndex:(NSUInteger)location effectiveRange:(NSRangePointer)range {
   return [[self _attributedString] attributesAtIndex:location effectiveRange:range];
 }
 
-- (NSString *)string
-{
+- (NSString *)string {
   return _attrStr ? _attrStr.string : _initString;
 }
 
-- (NSMutableString *)mutableString
-{
+- (NSMutableString *)mutableString {
   return [[self _attributedString] mutableString];
 }
 
-- (void)beginEditing
-{
+- (void)beginEditing {
   [[self _attributedString] beginEditing];
 }
 
-- (void)endEditing
-{
+- (void)endEditing {
   [[self _attributedString] endEditing];
 }
 

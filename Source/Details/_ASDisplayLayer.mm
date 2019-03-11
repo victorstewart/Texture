@@ -11,20 +11,19 @@
 
 #import <objc/runtime.h>
 
-#import <AsyncDisplayKit/_ASAsyncTransactionContainer.h>
 #import <AsyncDisplayKit/ASAssert.h>
+#import <AsyncDisplayKit/ASDisplayNode+FrameworkPrivate.h>
 #import <AsyncDisplayKit/ASDisplayNode.h>
 #import <AsyncDisplayKit/ASDisplayNodeInternal.h>
-#import <AsyncDisplayKit/ASDisplayNode+FrameworkPrivate.h>
-#import <AsyncDisplayKit/ASObjectDescriptionHelpers.h>
 #import <AsyncDisplayKit/ASLog.h>
+#import <AsyncDisplayKit/ASObjectDescriptionHelpers.h>
+#import <AsyncDisplayKit/_ASAsyncTransactionContainer.h>
 
-@implementation _ASDisplayLayer
-{
+@implementation _ASDisplayLayer {
   BOOL _attemptedDisplayWhileZeroSized;
 
   struct {
-    BOOL delegateDidChangeBounds:1;
+    BOOL delegateDidChangeBounds : 1;
   } _delegateFlags;
 }
 
@@ -32,14 +31,13 @@
 
 #pragma mark - Properties
 
-- (void)setDelegate:(id)delegate
-{
+- (void)setDelegate:(id)delegate {
   [super setDelegate:delegate];
-  _delegateFlags.delegateDidChangeBounds = [delegate respondsToSelector:@selector(layer:didChangeBoundsWithOldValue:newValue:)];
+  _delegateFlags.delegateDidChangeBounds = [delegate respondsToSelector:@selector(layer:
+                                                                            didChangeBoundsWithOldValue:newValue:)];
 }
 
-- (void)setDisplaySuspended:(BOOL)displaySuspended
-{
+- (void)setDisplaySuspended:(BOOL)displaySuspended {
   ASDisplayNodeAssertMainThread();
   if (_displaySuspended != displaySuspended) {
     _displaySuspended = displaySuspended;
@@ -47,15 +45,17 @@
       // If resuming display, trigger a display now.
       [self setNeedsDisplay];
     } else {
-      // If suspending display, cancel any current async display so that we don't have contents set on us when it's finished.
+      // If suspending display, cancel any current async display so that we don't have contents set on us when it's
+      // finished.
       [self cancelAsyncDisplay];
     }
   }
 }
 
-- (void)setBounds:(CGRect)bounds
-{
-  BOOL valid = ASDisplayNodeAssertNonFatal(ASIsCGRectValidForLayout(bounds), @"Caught attempt to set invalid bounds %@ on %@.", NSStringFromCGRect(bounds), self);
+- (void)setBounds:(CGRect)bounds {
+  BOOL valid =
+      ASDisplayNodeAssertNonFatal(ASIsCGRectValidForLayout(bounds), @"Caught attempt to set invalid bounds %@ on %@.",
+                                  NSStringFromCGRect(bounds), self);
   if (!valid) {
     return;
   }
@@ -64,7 +64,7 @@
     [super setBounds:bounds];
     self.asyncdisplaykit_node.threadSafeBounds = bounds;
     [(id<ASCALayerExtendedDelegate>)self.delegate layer:self didChangeBoundsWithOldValue:oldBounds newValue:bounds];
-    
+
   } else {
     [super setBounds:bounds];
     self.asyncdisplaykit_node.threadSafeBounds = bounds;
@@ -76,33 +76,30 @@
   }
 }
 
-#if DEBUG // These override is strictly to help detect application-level threading errors.  Avoid method overhead in release.
-- (void)setContents:(id)contents
-{
+#if DEBUG  // These override is strictly to help detect application-level threading errors.  Avoid method overhead in
+           // release.
+- (void)setContents:(id)contents {
   ASDisplayNodeAssertMainThread();
   [super setContents:contents];
 }
 
-- (void)setNeedsLayout
-{
+- (void)setNeedsLayout {
   ASDisplayNodeAssertMainThread();
   as_log_verbose(ASNodeLog(), "%s on %@", sel_getName(_cmd), self);
   [super setNeedsLayout];
 }
 #endif
 
-- (void)layoutSublayers
-{
+- (void)layoutSublayers {
   ASDisplayNodeAssertMainThread();
   [super layoutSublayers];
 
   [self.asyncdisplaykit_node __layout];
 }
 
-- (void)setNeedsDisplay
-{
+- (void)setNeedsDisplay {
   ASDisplayNodeAssertMainThread();
-  
+
   // FIXME: Reconsider whether we should cancel a display in progress.
   // We should definitely cancel a display that is scheduled, but unstarted display.
   [self cancelAsyncDisplay];
@@ -115,8 +112,7 @@
 
 #pragma mark -
 
-+ (dispatch_queue_t)displayQueue
-{
++ (dispatch_queue_t)displayQueue {
   static dispatch_queue_t displayQueue = NULL;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -128,8 +124,7 @@
   return displayQueue;
 }
 
-+ (id)defaultValueForKey:(NSString *)key
-{
++ (id)defaultValueForKey:(NSString *)key {
   if ([key isEqualToString:@"displaysAsynchronously"]) {
     return @YES;
   } else if ([key isEqualToString:@"opaque"]) {
@@ -141,8 +136,7 @@
 
 #pragma mark - Display
 
-- (void)displayImmediately
-{
+- (void)displayImmediately {
   // This method is a low-level bypass that avoids touching CA, including any reset of the
   // needsDisplay flag, until the .contents property is set with the result.
   // It is designed to be able to block the thread of any caller and fully execute the display.
@@ -151,15 +145,13 @@
   [self display:NO];
 }
 
-- (void)_hackResetNeedsDisplay
-{
+- (void)_hackResetNeedsDisplay {
   ASDisplayNodeAssertMainThread();
   // Don't listen to our subclasses crazy ideas about setContents by going through super
   super.contents = super.contents;
 }
 
-- (void)display
-{
+- (void)display {
   ASDisplayNodeAssertMainThread();
   [self _hackResetNeedsDisplay];
 
@@ -170,30 +162,30 @@
   [self display:self.displaysAsynchronously];
 }
 
-- (void)display:(BOOL)asynchronously
-{
+- (void)display:(BOOL)asynchronously {
   if (CGRectIsEmpty(self.bounds)) {
     _attemptedDisplayWhileZeroSized = YES;
   }
-  
+
   [self.asyncDelegate displayAsyncLayer:self asynchronously:asynchronously];
 }
 
-- (void)cancelAsyncDisplay
-{
+- (void)cancelAsyncDisplay {
   ASDisplayNodeAssertMainThread();
 
   [self.asyncDelegate cancelDisplayAsyncLayer:self];
 }
 
 // e.g. <MYTextNodeLayer: 0xFFFFFF; node = <MYTextNode: 0xFFFFFFE; name = "Username node for user 179">>
-- (NSString *)description
-{
+- (NSString *)description {
   NSMutableString *description = [[super description] mutableCopy];
   ASDisplayNode *node = self.asyncdisplaykit_node;
   if (node != nil) {
     NSString *classString = [NSString stringWithFormat:@"%s-", object_getClassName(node)];
-    [description replaceOccurrencesOfString:@"_ASDisplay" withString:classString options:kNilOptions range:NSMakeRange(0, description.length)];
+    [description replaceOccurrencesOfString:@"_ASDisplay"
+                                 withString:classString
+                                    options:kNilOptions
+                                      range:NSMakeRange(0, description.length)];
     NSUInteger insertionIndex = [description rangeOfString:@">"].location;
     if (insertionIndex != NSNotFound) {
       NSString *nodeString = [NSString stringWithFormat:@"; node = %@", node];

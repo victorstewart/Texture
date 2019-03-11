@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 #if AS_ENABLE_TIPS
 
@@ -33,10 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ASTipProvider (Lookup)
 
-@property (class, nonatomic, copy, readonly) NSArray<__kindof ASTipProvider *> *all;
+@property(class, nonatomic, copy, readonly) NSArray<__kindof ASTipProvider *> *all;
 
 @end
 
 NS_ASSUME_NONNULL_END
 
-#endif // AS_ENABLE_TIPS
+#endif  // AS_ENABLE_TIPS

@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-typedef void(^ASImageCacherCompletion)(id <ASImageContainerProtocol> _Nullable imageFromCache);
+typedef void (^ASImageCacherCompletion)(id<ASImageContainerProtocol> _Nullable imageFromCache);
 
 @protocol ASImageCacheProtocol <NSObject>
 
@@ -44,12 +44,12 @@ typedef void(^ASImageCacherCompletion)(id <ASImageContainerProtocol> _Nullable i
  @discussion This method exists to support synchronous rendering of nodes. Before the layer is drawn, this method
  is called to attempt to get the image out of the cache synchronously. This allows drawing to occur on the main thread
  if displaysAsynchronously is set to NO or recursivelyEnsureDisplaySynchronously: has been called.
- 
+
  This method *should* block the calling thread to fetch the image from a fast memory cache. It is OK to return nil from
  this method and instead support only cachedImageWithURL:callbackQueue:completion: however, synchronous rendering will
  not be possible.
  */
-- (nullable id <ASImageContainerProtocol>)synchronouslyFetchedCachedImageWithURL:(NSURL *)URL;
+- (nullable id<ASImageContainerProtocol>)synchronouslyFetchedCachedImageWithURL:(NSURL *)URL;
 
 /**
  @abstract Called during clearPreloadedData. Allows the cache to optionally trim items.
@@ -66,13 +66,18 @@ typedef void(^ASImageCacherCompletion)(id <ASImageContainerProtocol> _Nullable i
  @param downloadIdentifier The identifier for the download task that completed.
  @param userInfo Any additional info that your downloader would like to communicate through Texture.
  */
-typedef void(^ASImageDownloaderCompletion)(id <ASImageContainerProtocol> _Nullable image, NSError * _Nullable error, id _Nullable downloadIdentifier, id _Nullable userInfo);
+typedef void (^ASImageDownloaderCompletion)(id<ASImageContainerProtocol> _Nullable image,
+                                            NSError *_Nullable error,
+                                            id _Nullable downloadIdentifier,
+                                            id _Nullable userInfo);
 
 /**
  @param progress The progress of the download, in the range of (0.0, 1.0), inclusive.
  */
-typedef void(^ASImageDownloaderProgress)(CGFloat progress);
-typedef void(^ASImageDownloaderProgressImage)(UIImage *progressImage, CGFloat progress, id _Nullable downloadIdentifier);
+typedef void (^ASImageDownloaderProgress)(CGFloat progress);
+typedef void (^ASImageDownloaderProgressImage)(UIImage *progressImage,
+                                               CGFloat progress,
+                                               id _Nullable downloadIdentifier);
 
 typedef NS_ENUM(NSUInteger, ASImageDownloaderPriority) {
   ASImageDownloaderPriorityPreload = 0,
@@ -90,7 +95,8 @@ typedef NS_ENUM(NSUInteger, ASImageDownloaderPriority) {
  @param callbackQueue The queue to call `downloadProgressBlock` and `completion` on.
  @param downloadProgress The block to be invoked when the download of `URL` progresses.
  @param completion The block to be invoked when the download has completed, or has failed.
- @discussion This method is likely to be called on the main thread, so any custom implementations should make sure to background any expensive download operations.
+ @discussion This method is likely to be called on the main thread, so any custom implementations should make sure to
+ background any expensive download operations.
  @result An opaque identifier to be used in canceling the download, via `cancelImageDownloadForIdentifier:`. You must
  retain the identifier if you wish to use it later.
  */
@@ -101,7 +107,7 @@ typedef NS_ENUM(NSUInteger, ASImageDownloaderPriority) {
 
 /**
   @abstract Cancels an image download.
-  @param downloadIdentifier The opaque download identifier object returned from 
+  @param downloadIdentifier The opaque download identifier object returned from
       `downloadImageWithURL:callbackQueue:downloadProgress:completion:`.
   @discussion This method has no effect if `downloadIdentifier` is nil.
  */
@@ -116,8 +122,10 @@ typedef NS_ENUM(NSUInteger, ASImageDownloaderPriority) {
  @param callbackQueue The queue to call `downloadProgressBlock` and `completion` on.
  @param downloadProgress The block to be invoked when the download of `URL` progresses.
  @param completion The block to be invoked when the download has completed, or has failed.
- @discussion This method is likely to be called on the main thread, so any custom implementations should make sure to background any expensive download operations.
- @note If this method is implemented, it will be called instead of the required method (`downloadImageWithURL:callbackQueue:downloadProgress:completion:`).
+ @discussion This method is likely to be called on the main thread, so any custom implementations should make sure to
+ background any expensive download operations.
+ @note If this method is implemented, it will be called instead of the required method
+ (`downloadImageWithURL:callbackQueue:downloadProgress:completion:`).
  @result An opaque identifier to be used in canceling the download, via `cancelImageDownloadForIdentifier:`. You must
  retain the identifier if you wish to use it later.
  */
@@ -142,8 +150,7 @@ typedef NS_ENUM(NSUInteger, ASImageDownloaderPriority) {
  @abstract Return an object that conforms to ASAnimatedImageProtocol
  @param animatedImageData Data that represents an animated image.
  */
-- (nullable id <ASAnimatedImageProtocol>)animatedImageWithData:(NSData *)animatedImageData;
-
+- (nullable id<ASAnimatedImageProtocol>)animatedImageWithData:(NSData *)animatedImageData;
 
 /**
  @abstract Sets block to be called when a progress image is available.
@@ -162,8 +169,7 @@ typedef NS_ENUM(NSUInteger, ASImageDownloaderPriority) {
  @param downloadIdentifier The opaque download identifier object returned from
  `downloadImageWithURL:callbackQueue:downloadProgressBlock:completion:`.
  */
-- (void)setPriority:(ASImageDownloaderPriority)priority
-withDownloadIdentifier:(id)downloadIdentifier;
+- (void)setPriority:(ASImageDownloaderPriority)priority withDownloadIdentifier:(id)downloadIdentifier;
 
 @end
 
@@ -174,7 +180,7 @@ withDownloadIdentifier:(id)downloadIdentifier;
 /**
  @abstract A block which receives the cover image. Should be called when the objects cover image is ready.
  */
-@property (nonatomic) void (^coverImageReadyCallback)(UIImage *coverImage);
+@property(nonatomic) void (^coverImageReadyCallback)(UIImage *coverImage);
 
 /**
  @abstract Returns whether the supplied data contains a supported animated image format.
@@ -182,45 +188,44 @@ withDownloadIdentifier:(id)downloadIdentifier;
  */
 - (BOOL)isDataSupported:(NSData *)data;
 
-
 @required
 
 /**
  @abstract Return the objects's cover image.
  */
-@property (nonatomic, readonly) UIImage *coverImage;
+@property(nonatomic, readonly) UIImage *coverImage;
 /**
  @abstract Return a boolean to indicate that the cover image is ready.
  */
-@property (nonatomic, readonly) BOOL coverImageReady;
+@property(nonatomic, readonly) BOOL coverImageReady;
 /**
  @abstract Return the total duration of the animated image's playback.
  */
-@property (nonatomic, readonly) CFTimeInterval totalDuration;
+@property(nonatomic, readonly) CFTimeInterval totalDuration;
 /**
  @abstract Return the interval at which playback should occur. Will be set to a CADisplayLink's frame interval.
  */
-@property (nonatomic, readonly) NSUInteger frameInterval;
+@property(nonatomic, readonly) NSUInteger frameInterval;
 /**
  @abstract Return the total number of loops the animated image should play or 0 to loop infinitely.
  */
-@property (nonatomic, readonly) size_t loopCount;
+@property(nonatomic, readonly) size_t loopCount;
 /**
  @abstract Return the total number of frames in the animated image.
  */
-@property (nonatomic, readonly) size_t frameCount;
+@property(nonatomic, readonly) size_t frameCount;
 /**
  @abstract Return YES when playback is ready to occur.
  */
-@property (nonatomic, readonly) BOOL playbackReady;
+@property(nonatomic, readonly) BOOL playbackReady;
 /**
  @abstract Return any error that has occured. Playback will be paused if this returns non-nil.
  */
-@property (nonatomic, readonly) NSError *error;
+@property(nonatomic, readonly) NSError *error;
 /**
  @abstract Should be called when playback is ready.
  */
-@property (nonatomic) dispatch_block_t playbackReadyCallback;
+@property(nonatomic) dispatch_block_t playbackReadyCallback;
 
 /**
  @abstract Return the image at a given index.

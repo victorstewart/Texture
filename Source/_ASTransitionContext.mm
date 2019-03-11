@@ -7,18 +7,17 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/_ASTransitionContext.h>
 #import <AsyncDisplayKit/ASDisplayNode.h>
 #import <AsyncDisplayKit/ASLayout.h>
+#import <AsyncDisplayKit/_ASTransitionContext.h>
 
-
-NSString * const ASTransitionContextFromLayoutKey = @"org.asyncdisplaykit.ASTransitionContextFromLayoutKey";
-NSString * const ASTransitionContextToLayoutKey = @"org.asyncdisplaykit.ASTransitionContextToLayoutKey";
+NSString *const ASTransitionContextFromLayoutKey = @"org.asyncdisplaykit.ASTransitionContextFromLayoutKey";
+NSString *const ASTransitionContextToLayoutKey = @"org.asyncdisplaykit.ASTransitionContextToLayoutKey";
 
 @interface _ASTransitionContext ()
 
-@property (weak, nonatomic) id<_ASTransitionContextLayoutDelegate> layoutDelegate;
-@property (weak, nonatomic) id<_ASTransitionContextCompletionDelegate> completionDelegate;
+@property(weak, nonatomic) id<_ASTransitionContextLayoutDelegate> layoutDelegate;
+@property(weak, nonatomic) id<_ASTransitionContextCompletionDelegate> completionDelegate;
 
 @end
 
@@ -26,8 +25,7 @@ NSString * const ASTransitionContextToLayoutKey = @"org.asyncdisplaykit.ASTransi
 
 - (instancetype)initWithAnimation:(BOOL)animated
                    layoutDelegate:(id<_ASTransitionContextLayoutDelegate>)layoutDelegate
-               completionDelegate:(id<_ASTransitionContextCompletionDelegate>)completionDelegate
-{
+               completionDelegate:(id<_ASTransitionContextCompletionDelegate>)completionDelegate {
   self = [super init];
   if (self) {
     _animated = animated;
@@ -39,28 +37,23 @@ NSString * const ASTransitionContextToLayoutKey = @"org.asyncdisplaykit.ASTransi
 
 #pragma mark - ASContextTransitioning Protocol Implementation
 
-- (ASLayout *)layoutForKey:(NSString *)key
-{
+- (ASLayout *)layoutForKey:(NSString *)key {
   return [_layoutDelegate transitionContext:self layoutForKey:key];
 }
 
-- (ASSizeRange)constrainedSizeForKey:(NSString *)key
-{
+- (ASSizeRange)constrainedSizeForKey:(NSString *)key {
   return [_layoutDelegate transitionContext:self constrainedSizeForKey:key];
 }
 
-- (CGRect)initialFrameForNode:(ASDisplayNode *)node
-{
+- (CGRect)initialFrameForNode:(ASDisplayNode *)node {
   return [[self layoutForKey:ASTransitionContextFromLayoutKey] frameForElement:node];
 }
 
-- (CGRect)finalFrameForNode:(ASDisplayNode *)node
-{
+- (CGRect)finalFrameForNode:(ASDisplayNode *)node {
   return [[self layoutForKey:ASTransitionContextToLayoutKey] frameForElement:node];
 }
 
-- (NSArray<ASDisplayNode *> *)subnodesForKey:(NSString *)key
-{
+- (NSArray<ASDisplayNode *> *)subnodesForKey:(NSString *)key {
   NSMutableArray<ASDisplayNode *> *subnodes = [[NSMutableArray alloc] init];
   for (ASLayout *sublayout in [self layoutForKey:key].sublayouts) {
     [subnodes addObject:(ASDisplayNode *)sublayout.layoutElement];
@@ -68,33 +61,28 @@ NSString * const ASTransitionContextToLayoutKey = @"org.asyncdisplaykit.ASTransi
   return subnodes;
 }
 
-- (NSArray<ASDisplayNode *> *)insertedSubnodes
-{
+- (NSArray<ASDisplayNode *> *)insertedSubnodes {
   return [_layoutDelegate insertedSubnodesWithTransitionContext:self];
 }
 
-- (NSArray<ASDisplayNode *> *)removedSubnodes
-{
+- (NSArray<ASDisplayNode *> *)removedSubnodes {
   return [_layoutDelegate removedSubnodesWithTransitionContext:self];
 }
 
-- (void)completeTransition:(BOOL)didComplete
-{
+- (void)completeTransition:(BOOL)didComplete {
   [_completionDelegate transitionContext:self didComplete:didComplete];
 }
 
 @end
 
-
 @interface _ASAnimatedTransitionContext ()
-@property (nonatomic) ASDisplayNode *node;
-@property (nonatomic) CGFloat alpha;
+@property(nonatomic) ASDisplayNode *node;
+@property(nonatomic) CGFloat alpha;
 @end
 
 @implementation _ASAnimatedTransitionContext
 
-+ (instancetype)contextForNode:(ASDisplayNode *)node alpha:(CGFloat)alpha NS_RETURNS_RETAINED
-{
++ (instancetype)contextForNode:(ASDisplayNode *)node alpha:(CGFloat)alpha NS_RETURNS_RETAINED {
   _ASAnimatedTransitionContext *context = [[_ASAnimatedTransitionContext alloc] init];
   context.node = node;
   context.alpha = alpha;

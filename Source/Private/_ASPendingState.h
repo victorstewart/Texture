@@ -31,10 +31,10 @@
 + (_ASPendingState *)pendingViewStateFromLayer:(CALayer *)layer;
 + (_ASPendingState *)pendingViewStateFromView:(UIView *)view;
 
-@property (nonatomic, readonly) BOOL hasSetNeedsLayout;
-@property (nonatomic, readonly) BOOL hasSetNeedsDisplay;
+@property(nonatomic, readonly) BOOL hasSetNeedsLayout;
+@property(nonatomic, readonly) BOOL hasSetNeedsDisplay;
 
-@property (nonatomic, readonly) BOOL hasChanges;
+@property(nonatomic, readonly) BOOL hasChanges;
 
 - (void)clearChanges;
 

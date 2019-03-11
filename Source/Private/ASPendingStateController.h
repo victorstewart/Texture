@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 @class ASDisplayNode;
 
@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
  A singleton that is responsible for applying changes to
  UIView/CALayer properties of display nodes when they
  have been set on background threads.
- 
+
  This controller will enqueue run-loop events to flush changes
  but if you need them flushed now you can call `flush` from the main thread.
  */
@@ -27,13 +27,13 @@ AS_SUBCLASSING_RESTRICTED
 
 + (ASPendingStateController *)sharedInstance;
 
-@property (nonatomic, readonly) BOOL hasChanges;
+@property(nonatomic, readonly) BOOL hasChanges;
 
 /**
  Flush all pending states for nodes now. Any UIView/CALayer properties
  that have been set in the background will be applied to their
  corresponding views/layers before this method returns.
- 
+
  You must call this method on the main thread.
  */
 - (void)flush;

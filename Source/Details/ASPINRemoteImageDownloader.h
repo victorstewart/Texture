@@ -53,11 +53,12 @@ NS_ASSUME_NONNULL_BEGIN
                                     imageCache:(nullable id<PINRemoteImageCaching>)imageCache;
 
 /**
- * Sets a custom preconfigured PINRemoteImageManager that will be used by @c ASNetworkImageNodes and @c ASMultiplexImageNodes
- * while loading images off the network. This must be specified early in the application lifecycle before
- * `sharedDownloader` is accessed.
+ * Sets a custom preconfigured PINRemoteImageManager that will be used by @c ASNetworkImageNodes and @c
+ * ASMultiplexImageNodes while loading images off the network. This must be specified early in the application lifecycle
+ * before `sharedDownloader` is accessed.
  *
- * @param preconfiguredPINRemoteImageManager The preconfigured remote image manager that will be used by `sharedDownloader`
+ * @param preconfiguredPINRemoteImageManager The preconfigured remote image manager that will be used by
+ * `sharedDownloader`
  */
 + (void)setSharedPreconfiguredRemoteImageManager:(PINRemoteImageManager *)preconfiguredPINRemoteImageManager;
 
@@ -65,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
  * The shared instance of a @c PINRemoteImageManager used by all @c ASPINRemoteImageDownloaders
  *
  * @discussion you can use this method to access the shared manager. This is useful to share a cache
- * and resources if you need to download images outside of an @c ASNetworkImageNode or 
+ * and resources if you need to download images outside of an @c ASNetworkImageNode or
  * @c ASMultiplexImageNode. It's also useful to access the memoryCache and diskCache to set limits
  * or handle authentication challenges.
  *

@@ -11,9 +11,9 @@
 
 #if AS_IG_LIST_KIT
 
-#import "ASIGListAdapterBasedDataSource.h"
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
 #import <objc/runtime.h>
+#import "ASIGListAdapterBasedDataSource.h"
 
 typedef IGListSectionController<ASSectionController> ASIGSectionController;
 
@@ -35,10 +35,10 @@ typedef struct {
 @end
 
 @interface ASIGListAdapterBasedDataSource ()
-@property (nonatomic, weak, readonly) IGListAdapter *listAdapter;
-@property (nonatomic, readonly) id<UICollectionViewDelegateFlowLayout> delegate;
-@property (nonatomic, readonly) id<UICollectionViewDataSource> dataSource;
-@property (nonatomic, weak, readonly) id<ASCollectionDelegate> collectionDelegate;
+@property(nonatomic, weak, readonly) IGListAdapter *listAdapter;
+@property(nonatomic, readonly) id<UICollectionViewDelegateFlowLayout> delegate;
+@property(nonatomic, readonly) id<UICollectionViewDataSource> dataSource;
+@property(nonatomic, weak, readonly) id<ASCollectionDelegate> collectionDelegate;
 
 /**
  * The section controller that we will forward beginBatchFetchWithContext: to.
@@ -48,74 +48,70 @@ typedef struct {
  * It is safe to use it without a lock in this limited way, since those two methods will
  * never execute in parallel.
  */
-@property (nonatomic, weak) ASIGSectionController *sectionControllerForBatchFetching;
+@property(nonatomic, weak) ASIGSectionController *sectionControllerForBatchFetching;
 @end
 
 @implementation ASIGListAdapterBasedDataSource
 
-- (instancetype)initWithListAdapter:(IGListAdapter *)listAdapter collectionDelegate:(nullable id<ASCollectionDelegate>)collectionDelegate
-{
+- (instancetype)initWithListAdapter:(IGListAdapter *)listAdapter
+                 collectionDelegate:(nullable id<ASCollectionDelegate>)collectionDelegate {
   if (self = [super init]) {
 #if IG_LIST_COLLECTION_VIEW
     [ASIGListAdapterBasedDataSource setASCollectionViewSuperclass];
 #endif
     [ASIGListAdapterBasedDataSource configureUpdater:listAdapter.updater];
 
-    ASDisplayNodeAssert([listAdapter conformsToProtocol:@protocol(UICollectionViewDataSource)], @"Expected IGListAdapter to conform to UICollectionViewDataSource.");
-    ASDisplayNodeAssert([listAdapter conformsToProtocol:@protocol(UICollectionViewDelegateFlowLayout)], @"Expected IGListAdapter to conform to UICollectionViewDelegateFlowLayout.");
+    ASDisplayNodeAssert([listAdapter conformsToProtocol:@protocol(UICollectionViewDataSource)],
+                        @"Expected IGListAdapter to conform to UICollectionViewDataSource.");
+    ASDisplayNodeAssert([listAdapter conformsToProtocol:@protocol(UICollectionViewDelegateFlowLayout)],
+                        @"Expected IGListAdapter to conform to UICollectionViewDelegateFlowLayout.");
     _listAdapter = listAdapter;
     _collectionDelegate = collectionDelegate;
   }
   return self;
 }
 
-- (id<UICollectionViewDataSource>)dataSource
-{
+- (id<UICollectionViewDataSource>)dataSource {
   return (id<UICollectionViewDataSource>)_listAdapter;
 }
 
-- (id<UICollectionViewDelegateFlowLayout>)delegate
-{
+- (id<UICollectionViewDelegateFlowLayout>)delegate {
   return (id<UICollectionViewDelegateFlowLayout>)_listAdapter;
 }
 
 #pragma mark - ASCollectionDelegate
 
-- (void)collectionNode:(ASCollectionNode *)collectionNode didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)collectionNode:(ASCollectionNode *)collectionNode didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
   [self.delegate collectionView:collectionNode.view didSelectItemAtIndexPath:indexPath];
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
   [self.delegate scrollViewDidScroll:scrollView];
 }
 
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
   [self.delegate scrollViewWillBeginDragging:scrollView];
 }
 
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
-{
-  // IGListAdapter doesn't implement scrollViewWillEndDragging yet (pending pull request), so we need this check for now. Doesn't hurt to have it anyways :)
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint *)targetContentOffset {
+  // IGListAdapter doesn't implement scrollViewWillEndDragging yet (pending pull request), so we need this check for
+  // now. Doesn't hurt to have it anyways :)
   if ([self.delegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
     [self.delegate scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
   }
 }
 
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
   [self.delegate scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
 }
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
   [self.delegate scrollViewDidEndDecelerating:scrollView];
 }
 
-- (BOOL)shouldBatchFetchForCollectionNode:(ASCollectionNode *)collectionNode
-{
+- (BOOL)shouldBatchFetchForCollectionNode:(ASCollectionNode *)collectionNode {
   if ([_collectionDelegate respondsToSelector:@selector(shouldBatchFetchForCollectionNode:)]) {
     return [_collectionDelegate shouldBatchFetchForCollectionNode:collectionNode];
   }
@@ -135,13 +131,12 @@ typedef struct {
   return result;
 }
 
-- (void)collectionNode:(ASCollectionNode *)collectionNode willBeginBatchFetchWithContext:(ASBatchContext *)context
-{
+- (void)collectionNode:(ASCollectionNode *)collectionNode willBeginBatchFetchWithContext:(ASBatchContext *)context {
   if ([_collectionDelegate respondsToSelector:@selector(collectionNode:willBeginBatchFetchWithContext:)]) {
     [_collectionDelegate collectionNode:collectionNode willBeginBatchFetchWithContext:context];
     return;
   }
-  
+
   ASIGSectionController *ctrl = self.sectionControllerForBatchFetching;
   self.sectionControllerForBatchFetching = nil;
   [ctrl beginBatchFetchWithContext:context];
@@ -154,20 +149,21 @@ typedef struct {
  */
 #pragma mark - ASCollectionDelegateInterop
 
-- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)collectionView:(UICollectionView *)collectionView
+       willDisplayCell:(UICollectionViewCell *)cell
+    forItemAtIndexPath:(NSIndexPath *)indexPath {
   [self.delegate collectionView:collectionView willDisplayCell:cell forItemAtIndexPath:indexPath];
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)collectionView:(UICollectionView *)collectionView
+    didEndDisplayingCell:(UICollectionViewCell *)cell
+      forItemAtIndexPath:(NSIndexPath *)indexPath {
   [self.delegate collectionView:collectionView didEndDisplayingCell:cell forItemAtIndexPath:indexPath];
 }
 
 #pragma mark - ASCollectionDelegateFlowLayout
 
-- (ASSizeRange)collectionNode:(ASCollectionNode *)collectionNode sizeRangeForHeaderInSection:(NSInteger)section
-{
+- (ASSizeRange)collectionNode:(ASCollectionNode *)collectionNode sizeRangeForHeaderInSection:(NSInteger)section {
   id<ASIGSupplementaryNodeSource> src = [self supplementaryElementSourceForSection:section];
   if ([ASIGListAdapterBasedDataSource overridesForSupplementarySourceClass:[src class]].sizeRangeForSupplementary) {
     return [src sizeRangeForSupplementaryElementOfKind:UICollectionElementKindSectionHeader atIndex:0];
@@ -176,8 +172,7 @@ typedef struct {
   }
 }
 
-- (ASSizeRange)collectionNode:(ASCollectionNode *)collectionNode sizeRangeForFooterInSection:(NSInteger)section
-{
+- (ASSizeRange)collectionNode:(ASCollectionNode *)collectionNode sizeRangeForFooterInSection:(NSInteger)section {
   id<ASIGSupplementaryNodeSource> src = [self supplementaryElementSourceForSection:section];
   if ([ASIGListAdapterBasedDataSource overridesForSupplementarySourceClass:[src class]].sizeRangeForSupplementary) {
     return [src sizeRangeForSupplementaryElementOfKind:UICollectionElementKindSectionFooter atIndex:0];
@@ -186,49 +181,57 @@ typedef struct {
   }
 }
 
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
-{
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView
+                        layout:(UICollectionViewLayout *)collectionViewLayout
+        insetForSectionAtIndex:(NSInteger)section {
   return [self.delegate collectionView:collectionView layout:collectionViewLayout insetForSectionAtIndex:section];
 }
 
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
-{
-  return [self.delegate collectionView:collectionView layout:collectionViewLayout minimumLineSpacingForSectionAtIndex:section];
+- (CGFloat)collectionView:(UICollectionView *)collectionView
+                                 layout:(UICollectionViewLayout *)collectionViewLayout
+    minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+  return [self.delegate collectionView:collectionView
+                                   layout:collectionViewLayout
+      minimumLineSpacingForSectionAtIndex:section];
 }
 
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
-{
-  return [self.delegate collectionView:collectionView layout:collectionViewLayout minimumInteritemSpacingForSectionAtIndex:section];
+- (CGFloat)collectionView:(UICollectionView *)collectionView
+                                      layout:(UICollectionViewLayout *)collectionViewLayout
+    minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+  return [self.delegate collectionView:collectionView
+                                        layout:collectionViewLayout
+      minimumInteritemSpacingForSectionAtIndex:section];
 }
 
 #pragma mark - ASCollectionDataSource
 
-- (NSInteger)collectionNode:(ASCollectionNode *)collectionNode numberOfItemsInSection:(NSInteger)section
-{
+- (NSInteger)collectionNode:(ASCollectionNode *)collectionNode numberOfItemsInSection:(NSInteger)section {
   return [self.dataSource collectionView:collectionNode.view numberOfItemsInSection:section];
 }
 
-- (NSInteger)numberOfSectionsInCollectionNode:(ASCollectionNode *)collectionNode
-{
+- (NSInteger)numberOfSectionsInCollectionNode:(ASCollectionNode *)collectionNode {
   return [self.dataSource numberOfSectionsInCollectionView:collectionNode.view];
 }
 
-- (ASCellNodeBlock)collectionNode:(ASCollectionNode *)collectionNode nodeBlockForItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (ASCellNodeBlock)collectionNode:(ASCollectionNode *)collectionNode
+      nodeBlockForItemAtIndexPath:(NSIndexPath *)indexPath {
   ASIGSectionController *ctrl = [self sectionControllerForSection:indexPath.section];
-  ASDisplayNodeAssert([ctrl respondsToSelector:@selector(nodeBlockForItemAtIndex:)], @"Expected section controller to respond to to %@. Controller: %@", NSStringFromSelector(@selector(nodeBlockForItemAtIndex:)), ctrl);
+  ASDisplayNodeAssert([ctrl respondsToSelector:@selector(nodeBlockForItemAtIndex:)],
+                      @"Expected section controller to respond to to %@. Controller: %@",
+                      NSStringFromSelector(@selector(nodeBlockForItemAtIndex:)), ctrl);
   return [ctrl nodeBlockForItemAtIndex:indexPath.item];
 }
 
-- (ASCellNode *)collectionNode:(ASCollectionNode *)collectionNode nodeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (ASCellNode *)collectionNode:(ASCollectionNode *)collectionNode nodeForItemAtIndexPath:(NSIndexPath *)indexPath {
   ASIGSectionController *ctrl = [self sectionControllerForSection:indexPath.section];
-  ASDisplayNodeAssert([ctrl respondsToSelector:@selector(nodeForItemAtIndex:)], @"Expected section controller to respond to to %@. Controller: %@", NSStringFromSelector(@selector(nodeForItemAtIndex:)), ctrl);
+  ASDisplayNodeAssert([ctrl respondsToSelector:@selector(nodeForItemAtIndex:)],
+                      @"Expected section controller to respond to to %@. Controller: %@",
+                      NSStringFromSelector(@selector(nodeForItemAtIndex:)), ctrl);
   return [ctrl nodeForItemAtIndex:indexPath.item];
 }
 
-- (ASSizeRange)collectionNode:(ASCollectionNode *)collectionNode constrainedSizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (ASSizeRange)collectionNode:(ASCollectionNode *)collectionNode
+    constrainedSizeForItemAtIndexPath:(NSIndexPath *)indexPath {
   ASIGSectionController *ctrl = [self sectionControllerForSection:indexPath.section];
   if ([ASIGListAdapterBasedDataSource overridesForSectionControllerClass:ctrl.class].sizeRangeForItem) {
     return [ctrl sizeRangeForItemAtIndex:indexPath.item];
@@ -237,64 +240,71 @@ typedef struct {
   }
 }
 
-- (ASCellNodeBlock)collectionNode:(ASCollectionNode *)collectionNode nodeBlockForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
-{
+- (ASCellNodeBlock)collectionNode:(ASCollectionNode *)collectionNode
+    nodeBlockForSupplementaryElementOfKind:(NSString *)kind
+                               atIndexPath:(NSIndexPath *)indexPath {
   id<ASSupplementaryNodeSource> ctrl = [self supplementaryElementSourceForSection:indexPath.section];
-  ASDisplayNodeAssert([ctrl respondsToSelector:@selector(nodeBlockForSupplementaryElementOfKind:atIndex:)], @"Expected section controller to respond to to %@. Controller: %@", NSStringFromSelector(@selector(nodeBlockForSupplementaryElementOfKind:atIndex:)), ctrl);
+  ASDisplayNodeAssert([ctrl respondsToSelector:@selector(nodeBlockForSupplementaryElementOfKind:atIndex:)],
+                      @"Expected section controller to respond to to %@. Controller: %@",
+                      NSStringFromSelector(@selector(nodeBlockForSupplementaryElementOfKind:atIndex:)), ctrl);
   return [ctrl nodeBlockForSupplementaryElementOfKind:kind atIndex:indexPath.item];
 }
 
-- (ASCellNode *)collectionNode:(ASCollectionNode *)collectionNode nodeForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
-{
+- (ASCellNode *)collectionNode:(ASCollectionNode *)collectionNode
+    nodeForSupplementaryElementOfKind:(NSString *)kind
+                          atIndexPath:(NSIndexPath *)indexPath {
   id<ASSupplementaryNodeSource> ctrl = [self supplementaryElementSourceForSection:indexPath.section];
-  ASDisplayNodeAssert([ctrl respondsToSelector:@selector(nodeForSupplementaryElementOfKind:atIndex:)], @"Expected section controller to respond to to %@. Controller: %@", NSStringFromSelector(@selector(nodeForSupplementaryElementOfKind:atIndex:)), ctrl);
+  ASDisplayNodeAssert([ctrl respondsToSelector:@selector(nodeForSupplementaryElementOfKind:atIndex:)],
+                      @"Expected section controller to respond to to %@. Controller: %@",
+                      NSStringFromSelector(@selector(nodeForSupplementaryElementOfKind:atIndex:)), ctrl);
   return [ctrl nodeForSupplementaryElementOfKind:kind atIndex:indexPath.item];
 }
 
-- (NSArray<NSString *> *)collectionNode:(ASCollectionNode *)collectionNode supplementaryElementKindsInSection:(NSInteger)section
-{
+- (NSArray<NSString *> *)collectionNode:(ASCollectionNode *)collectionNode
+     supplementaryElementKindsInSection:(NSInteger)section {
   return [[self supplementaryElementSourceForSection:section] supportedElementKinds];
 }
 
 #pragma mark - ASCollectionDataSourceInterop
 
-- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath
-{
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
+                           cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
   return [self.dataSource collectionView:collectionView cellForItemAtIndexPath:indexPath];
 }
 
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
-{
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
+           viewForSupplementaryElementOfKind:(NSString *)kind
+                                 atIndexPath:(NSIndexPath *)indexPath {
   return [self.dataSource collectionView:collectionView viewForSupplementaryElementOfKind:kind atIndexPath:indexPath];
 }
 
-+ (BOOL)dequeuesCellsForNodeBackedItems
-{
++ (BOOL)dequeuesCellsForNodeBackedItems {
   return YES;
 }
 
 #pragma mark - Helpers
 
-- (id<ASIGSupplementaryNodeSource>)supplementaryElementSourceForSection:(NSInteger)section
-{
+- (id<ASIGSupplementaryNodeSource>)supplementaryElementSourceForSection:(NSInteger)section {
   ASIGSectionController *ctrl = [self sectionControllerForSection:section];
   id<ASIGSupplementaryNodeSource> src = (id<ASIGSupplementaryNodeSource>)ctrl.supplementaryViewSource;
-  ASDisplayNodeAssert(src == nil || [src conformsToProtocol:@protocol(ASSupplementaryNodeSource)], @"Supplementary view source should conform to %@", NSStringFromProtocol(@protocol(ASSupplementaryNodeSource)));
+  ASDisplayNodeAssert(src == nil || [src conformsToProtocol:@protocol(ASSupplementaryNodeSource)],
+                      @"Supplementary view source should conform to %@",
+                      NSStringFromProtocol(@protocol(ASSupplementaryNodeSource)));
   return src;
 }
 
-- (ASIGSectionController *)sectionControllerForSection:(NSInteger)section
-{
+- (ASIGSectionController *)sectionControllerForSection:(NSInteger)section {
   id object = [_listAdapter objectAtSection:section];
   ASIGSectionController *ctrl = (ASIGSectionController *)[_listAdapter sectionControllerForObject:object];
-  ASDisplayNodeAssert([ctrl conformsToProtocol:@protocol(ASSectionController)], @"Expected section controller to conform to %@. Controller: %@", NSStringFromProtocol(@protocol(ASSectionController)), ctrl);
+  ASDisplayNodeAssert([ctrl conformsToProtocol:@protocol(ASSectionController)],
+                      @"Expected section controller to conform to %@. Controller: %@",
+                      NSStringFromProtocol(@protocol(ASSectionController)), ctrl);
   return ctrl;
 }
 
 /// If needed, set ASCollectionView's superclass to IGListCollectionView (IGListKit < 3.0).
 #if IG_LIST_COLLECTION_VIEW
-+ (void)setASCollectionViewSuperclass
-{
++ (void)setASCollectionViewSuperclass {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   static dispatch_once_t onceToken;
@@ -306,21 +316,20 @@ typedef struct {
 #endif
 
 /// Ensure updater won't call reloadData on us.
-+ (void)configureUpdater:(id<IGListUpdatingDelegate>)updater
-{
++ (void)configureUpdater:(id<IGListUpdatingDelegate>)updater {
   // Cast to NSObject will be removed after https://github.com/Instagram/IGListKit/pull/435
   if ([(id<NSObject>)updater isKindOfClass:[IGListAdapterUpdater class]]) {
     [(IGListAdapterUpdater *)updater setAllowsBackgroundReloading:NO];
   } else {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      NSLog(@"WARNING: Use of non-%@ updater with AsyncDisplayKit is discouraged. Updater: %@", NSStringFromClass([IGListAdapterUpdater class]), updater);
+      NSLog(@"WARNING: Use of non-%@ updater with AsyncDisplayKit is discouraged. Updater: %@",
+            NSStringFromClass([IGListAdapterUpdater class]), updater);
     });
   }
 }
 
-+ (ASSupplementarySourceOverrides)overridesForSupplementarySourceClass:(Class)c
-{
++ (ASSupplementarySourceOverrides)overridesForSupplementarySourceClass:(Class)c {
   static NSCache<Class, NSValue *> *cache;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -329,7 +338,8 @@ typedef struct {
   NSValue *obj = [cache objectForKey:c];
   ASSupplementarySourceOverrides o;
   if (obj == nil) {
-    o.sizeRangeForSupplementary = [c instancesRespondToSelector:@selector(sizeRangeForSupplementaryElementOfKind:atIndex:)];
+    o.sizeRangeForSupplementary = [c instancesRespondToSelector:@selector(sizeRangeForSupplementaryElementOfKind:
+                                                                                                         atIndex:)];
     obj = [NSValue valueWithBytes:&o objCType:@encode(ASSupplementarySourceOverrides)];
     [cache setObject:obj forKey:c];
   } else {
@@ -338,8 +348,7 @@ typedef struct {
   return o;
 }
 
-+ (ASSectionControllerOverrides)overridesForSectionControllerClass:(Class)c
-{
++ (ASSectionControllerOverrides)overridesForSectionControllerClass:(Class)c {
   static NSCache<Class, NSValue *> *cache;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -361,4 +370,4 @@ typedef struct {
 
 @end
 
-#endif // AS_IG_LIST_KIT
+#endif  // AS_IG_LIST_KIT

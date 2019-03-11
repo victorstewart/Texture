@@ -20,13 +20,13 @@
 
 /**
  * Stand-in for delegates like UITableView or UICollectionView's delegate / dataSource.
- * Any selectors flagged by "interceptsSelector" are routed to the interceptor object and are not delivered to the target.
- * Everything else leaves AsyncDisplayKit safely and arrives at the original target object.
+ * Any selectors flagged by "interceptsSelector" are routed to the interceptor object and are not delivered to the
+ * target. Everything else leaves AsyncDisplayKit safely and arrives at the original target object.
  */
 
 @interface ASDelegateProxy : NSProxy
 
-- (instancetype)initWithTarget:(id)target interceptor:(id <ASDelegateProxyInterceptor>)interceptor;
+- (instancetype)initWithTarget:(id)target interceptor:(id<ASDelegateProxyInterceptor>)interceptor;
 
 // This method must be overridden by a subclass.
 - (BOOL)interceptsSelector:(SEL)selector;
@@ -53,4 +53,3 @@
 
 @interface ASPagerNodeProxy : ASDelegateProxy
 @end
-

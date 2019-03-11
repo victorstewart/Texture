@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,12 +20,12 @@ AS_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithBacktrace:(nullable NSArray<NSString *> *)backtrace
                            format:(NSString *)format
-                        arguments:(va_list)arguments NS_FORMAT_FUNCTION(2,0);
+                        arguments:(va_list)arguments NS_FORMAT_FUNCTION(2, 0);
 
 // Will be nil unless AS_SAVE_EVENT_BACKTRACES=1 (default=0)
-@property (nonatomic, nullable, readonly) NSArray<NSString *> *backtrace;
-@property (nonatomic, readonly) NSString *message;
-@property (nonatomic, readonly) NSTimeInterval timestamp;
+@property(nonatomic, nullable, readonly) NSArray<NSString *> *backtrace;
+@property(nonatomic, readonly) NSString *message;
+@property(nonatomic, readonly) NSTimeInterval timestamp;
 
 @end
 

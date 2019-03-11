@@ -6,9 +6,9 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <UIKit/UIKit.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
 #import <AsyncDisplayKit/ASLayoutElement.h>
+#import <UIKit/UIKit.h>
 
 @class ASCollectionElement;
 
@@ -23,8 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 AS_SUBCLASSING_RESTRICTED
 @interface _ASGalleryLayoutItem : NSObject <ASLayoutElement>
 
-@property (nonatomic, readonly) CGSize itemSize;
-@property (nonatomic, weak, readonly) ASCollectionElement *collectionElement;
+@property(nonatomic, readonly) CGSize itemSize;
+@property(nonatomic, weak, readonly) ASCollectionElement *collectionElement;
 
 - (instancetype)initWithItemSize:(CGSize)itemSize collectionElement:(ASCollectionElement *)collectionElement;
 - (instancetype)init __unavailable;

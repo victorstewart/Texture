@@ -9,15 +9,14 @@
 
 #import <AsyncDisplayKit/ASControlTargetAction.h>
 
-@implementation ASControlTargetAction
-{
+@implementation ASControlTargetAction {
   __weak id _target;
   BOOL _createdWithNoTarget;
 }
 
 - (void)setTarget:(id)target {
   _target = target;
-  
+
   if (!target) {
     _createdWithNoTarget = YES;
   }
@@ -31,29 +30,27 @@
   if (![object isKindOfClass:[ASControlTargetAction class]]) {
     return NO;
   }
-  
+
   ASControlTargetAction *otherObject = (ASControlTargetAction *)object;
-  
+
   BOOL areTargetsEqual;
-  
+
   if (self.target != nil && otherObject.target != nil && self.target == otherObject.target) {
     areTargetsEqual = YES;
-  }
-  else if (self.target == nil && otherObject.target == nil && self.createdWithNoTarget && otherObject.createdWithNoTarget) {
+  } else if (self.target == nil && otherObject.target == nil && self.createdWithNoTarget &&
+             otherObject.createdWithNoTarget) {
     areTargetsEqual = YES;
-  }
-  else {
+  } else {
     areTargetsEqual = NO;
   }
-  
+
   if (!areTargetsEqual) {
     return NO;
   }
-  
+
   if (self.action && otherObject.action && self.action == otherObject.action) {
     return YES;
-  }
-  else {
+  } else {
     return NO;
   }
 }

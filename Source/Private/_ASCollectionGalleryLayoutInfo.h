@@ -11,10 +11,10 @@
 @interface _ASCollectionGalleryLayoutInfo : NSObject
 
 // Read-only properties
-@property (nonatomic, readonly) CGSize itemSize;
-@property (nonatomic, readonly) CGFloat minimumLineSpacing;
-@property (nonatomic, readonly) CGFloat minimumInteritemSpacing;
-@property (nonatomic, readonly) UIEdgeInsets sectionInset;
+@property(nonatomic, readonly) CGSize itemSize;
+@property(nonatomic, readonly) CGFloat minimumLineSpacing;
+@property(nonatomic, readonly) CGFloat minimumInteritemSpacing;
+@property(nonatomic, readonly) UIEdgeInsets sectionInset;
 
 - (instancetype)initWithItemSize:(CGSize)itemSize
               minimumLineSpacing:(CGFloat)minimumLineSpacing

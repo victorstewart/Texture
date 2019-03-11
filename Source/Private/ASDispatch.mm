@@ -6,9 +6,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASDispatch.h>
 #import <AsyncDisplayKit/ASConfigurationInternal.h>
-
+#import <AsyncDisplayKit/ASDispatch.h>
 
 // Prefer C atomics in this file because ObjC blocks can't capture C++ atomics well.
 #import <stdatomic.h>
@@ -19,7 +18,10 @@
  * Note: The actual number of threads may be lower than threadCount, if libdispatch
  * decides the system can't handle it. In reality this rarely happens.
  */
-void ASDispatchApply(size_t iterationCount, dispatch_queue_t queue, NSUInteger threadCount, NS_NOESCAPE void(^work)(size_t i)) {
+void ASDispatchApply(size_t iterationCount,
+                     dispatch_queue_t queue,
+                     NSUInteger threadCount,
+                     NS_NOESCAPE void (^work)(size_t i)) {
   if (threadCount == 0) {
     if (ASActivateExperimentalFeature(ASExperimentalDispatchApply)) {
       dispatch_apply(iterationCount, queue, work);
@@ -46,7 +48,10 @@ void ASDispatchApply(size_t iterationCount, dispatch_queue_t queue, NSUInteger t
  * Note: The actual number of threads may be lower than threadCount, if libdispatch
  * decides the system can't handle it. In reality this rarely happens.
  */
-void ASDispatchAsync(size_t iterationCount, dispatch_queue_t queue, NSUInteger threadCount, NS_NOESCAPE void(^work)(size_t i)) {
+void ASDispatchAsync(size_t iterationCount,
+                     dispatch_queue_t queue,
+                     NSUInteger threadCount,
+                     NS_NOESCAPE void (^work)(size_t i)) {
   if (threadCount == 0) {
     threadCount = NSProcessInfo.processInfo.activeProcessorCount * 2;
   }
@@ -60,4 +65,3 @@ void ASDispatchAsync(size_t iterationCount, dispatch_queue_t queue, NSUInteger t
     });
   }
 };
-

@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 AS_SUBCLASSING_RESTRICTED
 @interface ASLayoutElementContext : NSObject
-@property (nonatomic) int32_t transitionID;
+@property(nonatomic) int32_t transitionID;
 @end
 
 AS_EXTERN int32_t const ASLayoutElementContextInvalidTransitionID;
@@ -27,9 +27,9 @@ AS_EXTERN int32_t const ASLayoutElementContextInvalidTransitionID;
 AS_EXTERN int32_t const ASLayoutElementContextDefaultTransitionID;
 
 // Does not currently support nesting – there must be no current context.
-AS_EXTERN void ASLayoutElementPushContext(ASLayoutElementContext * context);
+AS_EXTERN void ASLayoutElementPushContext(ASLayoutElementContext *context);
 
-AS_EXTERN ASLayoutElementContext * _Nullable ASLayoutElementGetCurrentContext(void);
+AS_EXTERN ASLayoutElementContext *_Nullable ASLayoutElementGetCurrentContext(void);
 
 AS_EXTERN void ASLayoutElementPopContext(void);
 
@@ -37,25 +37,23 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - ASLayoutElementLayoutDefaults
 
-#define ASLayoutElementLayoutCalculationDefaults \
-- (ASLayout *)layoutThatFits:(ASSizeRange)constrainedSize\
-{\
-  return [self layoutThatFits:constrainedSize parentSize:constrainedSize.max];\
-}\
-\
-- (ASLayout *)layoutThatFits:(ASSizeRange)constrainedSize parentSize:(CGSize)parentSize\
-{\
-  return [self calculateLayoutThatFits:constrainedSize restrictedToSize:self.style.size relativeToParentSize:parentSize];\
-}\
-\
-- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize\
-                     restrictedToSize:(ASLayoutElementSize)size\
-                 relativeToParentSize:(CGSize)parentSize\
-{\
-  const ASSizeRange resolvedRange = ASSizeRangeIntersect(constrainedSize, ASLayoutElementSizeResolve(self.style.size, parentSize));\
-  return [self calculateLayoutThatFits:resolvedRange];\
-}\
-
+#define ASLayoutElementLayoutCalculationDefaults                                                        \
+  -(ASLayout *)layoutThatFits : (ASSizeRange)constrainedSize {                                          \
+    return [self layoutThatFits:constrainedSize parentSize:constrainedSize.max];                        \
+  }                                                                                                     \
+                                                                                                        \
+  -(ASLayout *)layoutThatFits : (ASSizeRange)constrainedSize parentSize : (CGSize)parentSize {          \
+    return [self calculateLayoutThatFits:constrainedSize                                                \
+                        restrictedToSize:self.style.size                                                \
+                    relativeToParentSize:parentSize];                                                   \
+  }                                                                                                     \
+                                                                                                        \
+  -(ASLayout *)calculateLayoutThatFits : (ASSizeRange)constrainedSize restrictedToSize                  \
+      : (ASLayoutElementSize)size relativeToParentSize : (CGSize)parentSize {                           \
+    const ASSizeRange resolvedRange =                                                                   \
+        ASSizeRangeIntersect(constrainedSize, ASLayoutElementSizeResolve(self.style.size, parentSize)); \
+    return [self calculateLayoutThatFits:resolvedRange];                                                \
+  }
 
 #pragma mark - ASLayoutElementExtensibility
 
@@ -73,34 +71,27 @@ typedef struct ASLayoutElementStyleExtensions {
   UIEdgeInsets edgeInsetsExtensions[kMaxLayoutElementStateEdgeInsetExtensions];
 } ASLayoutElementStyleExtensions;
 
-#define ASLayoutElementStyleExtensibilityForwarding \
-- (void)setLayoutOptionExtensionBool:(BOOL)value atIndex:(int)idx\
-{\
-  [self.style setLayoutOptionExtensionBool:value atIndex:idx];\
-}\
-\
-- (BOOL)layoutOptionExtensionBoolAtIndex:(int)idx\
-{\
-  return [self.style layoutOptionExtensionBoolAtIndex:idx];\
-}\
-\
-- (void)setLayoutOptionExtensionInteger:(NSInteger)value atIndex:(int)idx\
-{\
-  [self.style setLayoutOptionExtensionInteger:value atIndex:idx];\
-}\
-\
-- (NSInteger)layoutOptionExtensionIntegerAtIndex:(int)idx\
-{\
-  return [self.style layoutOptionExtensionIntegerAtIndex:idx];\
-}\
-\
-- (void)setLayoutOptionExtensionEdgeInsets:(UIEdgeInsets)value atIndex:(int)idx\
-{\
-  [self.style setLayoutOptionExtensionEdgeInsets:value atIndex:idx];\
-}\
-\
-- (UIEdgeInsets)layoutOptionExtensionEdgeInsetsAtIndex:(int)idx\
-{\
-  return [self.style layoutOptionExtensionEdgeInsetsAtIndex:idx];\
-}\
-
+#define ASLayoutElementStyleExtensibilityForwarding                                    \
+  -(void)setLayoutOptionExtensionBool : (BOOL)value atIndex : (int)idx {               \
+    [self.style setLayoutOptionExtensionBool:value atIndex:idx];                       \
+  }                                                                                    \
+                                                                                       \
+  -(BOOL)layoutOptionExtensionBoolAtIndex : (int)idx {                                 \
+    return [self.style layoutOptionExtensionBoolAtIndex:idx];                          \
+  }                                                                                    \
+                                                                                       \
+  -(void)setLayoutOptionExtensionInteger : (NSInteger)value atIndex : (int)idx {       \
+    [self.style setLayoutOptionExtensionInteger:value atIndex:idx];                    \
+  }                                                                                    \
+                                                                                       \
+  -(NSInteger)layoutOptionExtensionIntegerAtIndex : (int)idx {                         \
+    return [self.style layoutOptionExtensionIntegerAtIndex:idx];                       \
+  }                                                                                    \
+                                                                                       \
+  -(void)setLayoutOptionExtensionEdgeInsets : (UIEdgeInsets)value atIndex : (int)idx { \
+    [self.style setLayoutOptionExtensionEdgeInsets:value atIndex:idx];                 \
+  }                                                                                    \
+                                                                                       \
+  -(UIEdgeInsets)layoutOptionExtensionEdgeInsetsAtIndex : (int)idx {                   \
+    return [self.style layoutOptionExtensionEdgeInsetsAtIndex:idx];                    \
+  }

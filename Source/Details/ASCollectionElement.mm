@@ -7,14 +7,14 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASCollectionElement.h>
 #import <AsyncDisplayKit/ASCellNode+Internal.h>
+#import <AsyncDisplayKit/ASCollectionElement.h>
 #import <mutex>
 
 @interface ASCollectionElement ()
 
 /// Required node block used to allocate a cell node. Nil after the first execution.
-@property (nonatomic) ASCellNodeBlock nodeBlock;
+@property(nonatomic) ASCellNodeBlock nodeBlock;
 
 @end
 
@@ -28,8 +28,7 @@
          supplementaryElementKind:(NSString *)supplementaryElementKind
                   constrainedSize:(ASSizeRange)constrainedSize
                        owningNode:(id<ASRangeManagingNode>)owningNode
-                  traitCollection:(ASPrimitiveTraitCollection)traitCollection
-{
+                  traitCollection:(ASPrimitiveTraitCollection)traitCollection {
   NSAssert(nodeBlock != nil, @"Node block must not be nil");
   self = [super init];
   if (self) {
@@ -43,8 +42,7 @@
   return self;
 }
 
-- (ASCellNode *)node
-{
+- (ASCellNode *)node {
   std::lock_guard<std::mutex> l(_lock);
   if (_nodeBlock != nil) {
     ASCellNode *node = _nodeBlock();
@@ -62,24 +60,22 @@
   return _node;
 }
 
-- (ASCellNode *)nodeIfAllocated
-{
+- (ASCellNode *)nodeIfAllocated {
   std::lock_guard<std::mutex> l(_lock);
   return _node;
 }
 
-- (void)setTraitCollection:(ASPrimitiveTraitCollection)traitCollection
-{
+- (void)setTraitCollection:(ASPrimitiveTraitCollection)traitCollection {
   ASCellNode *nodeIfNeedsPropagation;
-  
+
   {
     std::lock_guard<std::mutex> l(_lock);
-    if (! ASPrimitiveTraitCollectionIsEqualToASPrimitiveTraitCollection(_traitCollection, traitCollection)) {
+    if (!ASPrimitiveTraitCollectionIsEqualToASPrimitiveTraitCollection(_traitCollection, traitCollection)) {
       _traitCollection = traitCollection;
       nodeIfNeedsPropagation = _node;
     }
   }
-  
+
   if (nodeIfNeedsPropagation != nil) {
     ASTraitCollectionPropagateDown(nodeIfNeedsPropagation, traitCollection);
   }

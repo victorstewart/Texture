@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASAbstractLayoutController.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 AS_SUBCLASSING_RESTRICTED
 @interface ASTableLayoutController : ASAbstractLayoutController
 
-@property (nonatomic, weak, readonly) UITableView *tableView;
+@property(nonatomic, weak, readonly) UITableView *tableView;
 
 - (instancetype)initWithTableView:(UITableView *)tableView;
 

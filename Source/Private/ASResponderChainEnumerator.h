@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <UIKit/UIResponder.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <UIKit/UIResponder.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,6 +24,5 @@ AS_SUBCLASSING_RESTRICTED
 - (ASResponderChainEnumerator *)asdk_responderChainEnumerator;
 
 @end
-
 
 NS_ASSUME_NONNULL_END

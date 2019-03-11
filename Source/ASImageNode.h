@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <UIKit/UIKit.h>
 #import <AsyncDisplayKit/ASControlNode.h>
+#import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,8 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return A transformed image.
  */
-typedef UIImage * _Nullable (^asimagenode_modification_block_t)(UIImage *image);
-
+typedef UIImage *_Nullable (^asimagenode_modification_block_t)(UIImage *image);
 
 /**
  * @abstract Draws images.
@@ -37,12 +36,12 @@ typedef UIImage * _Nullable (^asimagenode_modification_block_t)(UIImage *image);
  * the layer's contentsCenter property.  Non-stretchable images work too, of
  * course.
  */
-@property (nullable) UIImage *image;
+@property(nullable) UIImage *image;
 
 /**
  @abstract The placeholder color.
  */
-@property (nullable, copy) UIColor *placeholderColor;
+@property(nullable, copy) UIColor *placeholderColor;
 
 /**
  * @abstract Indicates whether efficient cropping of the receiver is enabled.
@@ -50,7 +49,7 @@ typedef UIImage * _Nullable (^asimagenode_modification_block_t)(UIImage *image);
  * @discussion Defaults to YES. See -setCropEnabled:recropImmediately:inBounds: for more
  * information.
  */
-@property (getter=isCropEnabled) BOOL cropEnabled;
+@property(getter=isCropEnabled) BOOL cropEnabled;
 
 /**
  * @abstract Indicates that efficient downsizing of backing store should *not* be enabled.
@@ -63,14 +62,14 @@ typedef UIImage * _Nullable (^asimagenode_modification_block_t)(UIImage *image);
 /**
  * @abstract Forces image to be rendered at forcedSize.
  * @discussion Defaults to CGSizeZero to indicate that the forcedSize should not be used.
- * Setting forcedSize to non-CGSizeZero will force the backing of the layer contents to 
+ * Setting forcedSize to non-CGSizeZero will force the backing of the layer contents to
  * be forcedSize (automatically adjusted for contentsSize).
  */
 @property CGSize forcedSize;
 
 /**
  * @abstract Enables or disables efficient cropping.
- * 
+ *
  * @param cropEnabled YES to efficiently crop the receiver's contents such that
  * contents outside of its bounds are not included; NO otherwise.
  *
@@ -106,7 +105,7 @@ typedef UIImage * _Nullable (^asimagenode_modification_block_t)(UIImage *image);
  * @discussion Can be used to add image effects (such as rounding, adding
  * borders, or other pattern overlays) without extraneous display calls.
  */
-@property (nullable) asimagenode_modification_block_t imageModificationBlock;
+@property(nullable) asimagenode_modification_block_t imageModificationBlock;
 
 /**
  * @abstract Marks the receiver as needing display and performs a block after
@@ -115,7 +114,7 @@ typedef UIImage * _Nullable (^asimagenode_modification_block_t)(UIImage *image);
  * @param displayCompletionBlock The block to be performed after display has
  * finished.  Its `canceled` property will be YES if display was prevented or
  * canceled (via displaySuspended); NO otherwise.
- * 
+ *
  * @discussion displayCompletionBlock will be performed on the main-thread. If
  * `displaySuspended` is YES, `displayCompletionBlock` is will be
  * performed immediately and `YES` will be passed for `canceled`.
@@ -123,7 +122,7 @@ typedef UIImage * _Nullable (^asimagenode_modification_block_t)(UIImage *image);
 - (void)setNeedsDisplayWithCompletion:(nullable void (^)(BOOL canceled))displayCompletionBlock;
 
 #if TARGET_OS_TV
-/** 
+/**
  * A bool to track if the current appearance of the node
  * is the default focus appearance.
  * Exposed here so the category methods can set it.
@@ -149,7 +148,7 @@ typedef UIImage * _Nullable (^asimagenode_modification_block_t)(UIImage *image);
  * another method is used internally. If you need to know when the animatedImage
  * is set, override @c animatedImageSet:previousAnimatedImage:
  */
-@property (nullable) id <ASAnimatedImageProtocol> animatedImage;
+@property(nullable) id<ASAnimatedImageProtocol> animatedImage;
 
 /**
  * @abstract Pause the playback of an animated image.
@@ -166,7 +165,7 @@ typedef UIImage * _Nullable (^asimagenode_modification_block_t)(UIImage *image);
  * Setting NSDefaultRunLoopMode will cause animation to pause while scrolling (if the ASImageNode is
  * in a scroll view), which may improve scroll performance in some use cases.
  */
-@property (copy) NSString *animatedImageRunLoopMode;
+@property(copy) NSString *animatedImageRunLoopMode;
 
 /**
  * @abstract Method called when animated image has been set
@@ -174,15 +173,18 @@ typedef UIImage * _Nullable (^asimagenode_modification_block_t)(UIImage *image);
  * @discussion This method is for subclasses to override so they can know if an animated image
  * has been set on the node.
  */
-- (void)animatedImageSet:(nullable id <ASAnimatedImageProtocol>)newAnimatedImage previousAnimatedImage:(nullable id <ASAnimatedImageProtocol>)previousAnimatedImage ASDISPLAYNODE_REQUIRES_SUPER;
+- (void)animatedImageSet:(nullable id<ASAnimatedImageProtocol>)newAnimatedImage
+    previousAnimatedImage:(nullable id<ASAnimatedImageProtocol>)previousAnimatedImage ASDISPLAYNODE_REQUIRES_SUPER;
 
 @end
 
 @interface ASImageNode (Unavailable)
 
-- (instancetype)initWithLayerBlock:(ASDisplayNodeLayerBlock)viewBlock didLoadBlock:(nullable ASDisplayNodeDidLoadBlock)didLoadBlock AS_UNAVAILABLE();
+- (instancetype)initWithLayerBlock:(ASDisplayNodeLayerBlock)viewBlock
+                      didLoadBlock:(nullable ASDisplayNodeDidLoadBlock)didLoadBlock AS_UNAVAILABLE();
 
-- (instancetype)initWithViewBlock:(ASDisplayNodeViewBlock)viewBlock didLoadBlock:(nullable ASDisplayNodeDidLoadBlock)didLoadBlock AS_UNAVAILABLE();
+- (instancetype)initWithViewBlock:(ASDisplayNodeViewBlock)viewBlock
+                     didLoadBlock:(nullable ASDisplayNodeDidLoadBlock)didLoadBlock AS_UNAVAILABLE();
 
 @end
 
@@ -196,7 +198,8 @@ typedef UIImage * _Nullable (^asimagenode_modification_block_t)(UIImage *image);
  *
  * @return An ASImageNode image modification block.
  */
-AS_EXTERN asimagenode_modification_block_t ASImageNodeRoundBorderModificationBlock(CGFloat borderWidth, UIColor * _Nullable borderColor);
+AS_EXTERN asimagenode_modification_block_t ASImageNodeRoundBorderModificationBlock(CGFloat borderWidth,
+                                                                                   UIColor *_Nullable borderColor);
 
 /**
  * @abstract Image modification block that applies a tint color à la UIImage configured with

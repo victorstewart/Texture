@@ -8,49 +8,42 @@
 //
 
 #pragma once
-#import <UIKit/UIGeometry.h>
+#import <AsyncDisplayKit/ASAssert.h>
 #import <AsyncDisplayKit/ASAvailability.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
-#import <AsyncDisplayKit/ASAssert.h>
+#import <UIKit/UIGeometry.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-ASDISPLAYNODE_INLINE BOOL AS_WARN_UNUSED_RESULT ASPointsValidForLayout(CGFloat points)
-{
+ASDISPLAYNODE_INLINE BOOL AS_WARN_UNUSED_RESULT ASPointsValidForLayout(CGFloat points) {
   return ((isnormal(points) || points == 0.0) && points >= 0.0 && points < (CGFLOAT_MAX / 2.0));
 }
 
-ASDISPLAYNODE_INLINE BOOL AS_WARN_UNUSED_RESULT ASIsCGSizeValidForLayout(CGSize size)
-{
+ASDISPLAYNODE_INLINE BOOL AS_WARN_UNUSED_RESULT ASIsCGSizeValidForLayout(CGSize size) {
   return (ASPointsValidForLayout(size.width) && ASPointsValidForLayout(size.height));
 }
 
 // Note we want YGUndefined (10E20) to be considered invalid, so we have picked a smaller number than CGFLOAT_MAX/2.0
-ASDISPLAYNODE_INLINE BOOL AS_WARN_UNUSED_RESULT ASPointsValidForSize(CGFloat points)
-{
+ASDISPLAYNODE_INLINE BOOL AS_WARN_UNUSED_RESULT ASPointsValidForSize(CGFloat points) {
   return ((isnormal(points) || points == 0.0) && points >= 0.0 && points < 10000000.0);
 }
 
-ASDISPLAYNODE_INLINE BOOL AS_WARN_UNUSED_RESULT ASIsCGSizeValidForSize(CGSize size)
-{
+ASDISPLAYNODE_INLINE BOOL AS_WARN_UNUSED_RESULT ASIsCGSizeValidForSize(CGSize size) {
   return (ASPointsValidForSize(size.width) && ASPointsValidForSize(size.height));
 }
 
 // Note we want YGUndefined (10E20) to be considered invalid, so we have picked a smaller number than CGFLOAT_MAX/2.0
-ASDISPLAYNODE_INLINE BOOL ASIsCGPositionPointsValidForLayout(CGFloat points)
-{
+ASDISPLAYNODE_INLINE BOOL ASIsCGPositionPointsValidForLayout(CGFloat points) {
   return ((isnormal(points) || points == 0.0) && points < 10000000.0);
 }
 
-ASDISPLAYNODE_INLINE BOOL ASIsCGPositionValidForLayout(CGPoint point)
-{
+ASDISPLAYNODE_INLINE BOOL ASIsCGPositionValidForLayout(CGPoint point) {
   return (ASIsCGPositionPointsValidForLayout(point.x) && ASIsCGPositionPointsValidForLayout(point.y));
 }
 
-ASDISPLAYNODE_INLINE BOOL ASIsCGRectValidForLayout(CGRect rect)
-{
+ASDISPLAYNODE_INLINE BOOL ASIsCGRectValidForLayout(CGRect rect) {
   return (ASIsCGPositionValidForLayout(rect.origin) && ASIsCGSizeValidForLayout(rect.size));
 }
 
@@ -60,14 +53,16 @@ ASDISPLAYNODE_INLINE BOOL ASIsCGRectValidForLayout(CGRect rect)
  * A dimension relative to constraints to be provided in the future.
  * A ASDimension can be one of three types:
  *
- * "Auto" - This indicated "I have no opinion" and may be resolved in whatever way makes most sense given the circumstances.
+ * "Auto" - This indicated "I have no opinion" and may be resolved in whatever way makes most sense given the
+ * circumstances.
  *
  * "Points" - Just a number. It will always resolve to exactly this amount.
  *
  * "Percent" - Multiplied to a provided parent amount to resolve a final amount.
  */
 typedef NS_ENUM(NSInteger, ASDimensionUnit) {
-  /** This indicates "I have no opinion" and may be resolved in whatever way makes most sense given the circumstances. */
+  /** This indicates "I have no opinion" and may be resolved in whatever way makes most sense given the circumstances.
+   */
   ASDimensionUnitAuto,
   /** Just a number. It will always resolve to exactly this amount. This is the default type. */
   ASDimensionUnitPoints,
@@ -88,14 +83,14 @@ AS_EXTERN ASDimension const ASDimensionAuto;
 /**
  * Returns a dimension with the specified type and value.
  */
-ASOVERLOADABLE ASDISPLAYNODE_INLINE ASDimension ASDimensionMake(ASDimensionUnit unit, CGFloat value)
-{
-  if (unit == ASDimensionUnitAuto ) {
+ASOVERLOADABLE ASDISPLAYNODE_INLINE ASDimension ASDimensionMake(ASDimensionUnit unit, CGFloat value) {
+  if (unit == ASDimensionUnitAuto) {
     ASDisplayNodeCAssert(value == 0, @"ASDimension auto value must be 0.");
   } else if (unit == ASDimensionUnitPoints) {
     ASDisplayNodeCAssertPositiveReal(@"Points", value);
   } else if (unit == ASDimensionUnitFraction) {
-    ASDisplayNodeCAssert( 0 <= value && value <= 1.0, @"ASDimension fraction value (%f) must be between 0 and 1.", value);
+    ASDisplayNodeCAssert(0 <= value && value <= 1.0, @"ASDimension fraction value (%f) must be between 0 and 1.",
+                         value);
   }
   ASDimension dimension;
   dimension.unit = unit;
@@ -106,8 +101,7 @@ ASOVERLOADABLE ASDISPLAYNODE_INLINE ASDimension ASDimensionMake(ASDimensionUnit 
 /**
  * Returns a dimension with the specified points value.
  */
-ASOVERLOADABLE ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASDimension ASDimensionMake(CGFloat points)
-{
+ASOVERLOADABLE ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASDimension ASDimensionMake(CGFloat points) {
   return ASDimensionMake(ASDimensionUnitPoints, points);
 }
 
@@ -121,8 +115,7 @@ ASOVERLOADABLE AS_WARN_UNUSED_RESULT AS_EXTERN ASDimension ASDimensionMake(NSStr
 /**
  * Returns a dimension with the specified points value.
  */
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASDimension ASDimensionMakeWithPoints(CGFloat points)
-{
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASDimension ASDimensionMakeWithPoints(CGFloat points) {
   ASDisplayNodeCAssertPositiveReal(@"Points", points);
   return ASDimensionMake(ASDimensionUnitPoints, points);
 }
@@ -130,17 +123,16 @@ ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASDimension ASDimensionMakeWithPoints
 /**
  * Returns a dimension with the specified fraction value.
  */
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASDimension ASDimensionMakeWithFraction(CGFloat fraction)
-{
-  ASDisplayNodeCAssert( 0 <= fraction && fraction <= 1.0, @"ASDimension fraction value (%f) must be between 0 and 1.", fraction);
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASDimension ASDimensionMakeWithFraction(CGFloat fraction) {
+  ASDisplayNodeCAssert(0 <= fraction && fraction <= 1.0, @"ASDimension fraction value (%f) must be between 0 and 1.",
+                       fraction);
   return ASDimensionMake(ASDimensionUnitFraction, fraction);
 }
 
 /**
  * Returns whether two dimensions are equal.
  */
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASDimensionEqualToDimension(ASDimension lhs, ASDimension rhs)
-{
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASDimensionEqualToDimension(ASDimension lhs, ASDimension rhs) {
   return (lhs.unit == rhs.unit && lhs.value == rhs.value);
 }
 
@@ -152,8 +144,9 @@ AS_EXTERN AS_WARN_UNUSED_RESULT NSString *NSStringFromASDimension(ASDimension di
 /**
  * Resolve this dimension to a parent size.
  */
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT CGFloat ASDimensionResolve(ASDimension dimension, CGFloat parentSize, CGFloat autoSize)
-{
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT CGFloat ASDimensionResolve(ASDimension dimension,
+                                                                      CGFloat parentSize,
+                                                                      CGFloat autoSize) {
   switch (dimension.unit) {
     case ASDimensionUnitAuto:
       return autoSize;
@@ -179,8 +172,7 @@ AS_EXTERN ASLayoutSize const ASLayoutSizeAuto;
 /*
  * Creates an ASLayoutSize with provided min and max dimensions.
  */
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASLayoutSize ASLayoutSizeMake(ASDimension width, ASDimension height)
-{
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASLayoutSize ASLayoutSizeMake(ASDimension width, ASDimension height) {
   ASLayoutSize size;
   size.width = width;
   size.height = height;
@@ -190,8 +182,7 @@ ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASLayoutSize ASLayoutSizeMake(ASDimen
 /**
  * Resolve this relative size relative to a parent size.
  */
-ASDISPLAYNODE_INLINE CGSize ASLayoutSizeResolveSize(ASLayoutSize layoutSize, CGSize parentSize, CGSize autoSize)
-{
+ASDISPLAYNODE_INLINE CGSize ASLayoutSizeResolveSize(ASLayoutSize layoutSize, CGSize parentSize, CGSize autoSize) {
   return CGSizeMake(ASDimensionResolve(layoutSize.width, parentSize.width, autoSize.width),
                     ASDimensionResolve(layoutSize.height, parentSize.height, autoSize.height));
 }
@@ -199,11 +190,9 @@ ASDISPLAYNODE_INLINE CGSize ASLayoutSizeResolveSize(ASLayoutSize layoutSize, CGS
 /*
  * Returns a string representation of a relative size.
  */
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT NSString *NSStringFromASLayoutSize(ASLayoutSize size)
-{
-  return [NSString stringWithFormat:@"{%@, %@}",
-          NSStringFromASDimension(size.width),
-          NSStringFromASDimension(size.height)];
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT NSString *NSStringFromASLayoutSize(ASLayoutSize size) {
+  return [NSString
+      stringWithFormat:@"{%@, %@}", NSStringFromASDimension(size.width), NSStringFromASDimension(size.height)];
 }
 
 #pragma mark - ASSizeRange
@@ -229,8 +218,7 @@ AS_EXTERN ASSizeRange const ASSizeRangeUnconstrained;
 /**
  * Returns whether a size range has > 0.1 max width and max height.
  */
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASSizeRangeHasSignificantArea(ASSizeRange sizeRange)
-{
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASSizeRangeHasSignificantArea(ASSizeRange sizeRange) {
   static CGFloat const limit = 0.1f;
   return (sizeRange.max.width > limit && sizeRange.max.height > limit);
 }
@@ -238,16 +226,15 @@ ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASSizeRangeHasSignificantArea(AS
 /**
  * Creates an ASSizeRange with provided min and max size.
  */
-ASOVERLOADABLE ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASSizeRange ASSizeRangeMake(CGSize min, CGSize max)
-{
+ASOVERLOADABLE ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASSizeRange ASSizeRangeMake(CGSize min, CGSize max) {
   ASDisplayNodeCAssertPositiveReal(@"Range min width", min.width);
   ASDisplayNodeCAssertPositiveReal(@"Range min height", min.height);
   ASDisplayNodeCAssertInfOrPositiveReal(@"Range max width", max.width);
   ASDisplayNodeCAssertInfOrPositiveReal(@"Range max height", max.height);
-  ASDisplayNodeCAssert(min.width <= max.width,
-                       @"Range min width (%f) must not be larger than max width (%f).", min.width, max.width);
-  ASDisplayNodeCAssert(min.height <= max.height,
-                       @"Range min height (%f) must not be larger than max height (%f).", min.height, max.height);
+  ASDisplayNodeCAssert(min.width <= max.width, @"Range min width (%f) must not be larger than max width (%f).",
+                       min.width, max.width);
+  ASDisplayNodeCAssert(min.height <= max.height, @"Range min height (%f) must not be larger than max height (%f).",
+                       min.height, max.height);
   ASSizeRange sizeRange;
   sizeRange.min = min;
   sizeRange.max = max;
@@ -257,16 +244,14 @@ ASOVERLOADABLE ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASSizeRange ASSizeRang
 /**
  * Creates an ASSizeRange with provided size as both min and max.
  */
-ASOVERLOADABLE ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASSizeRange ASSizeRangeMake(CGSize exactSize)
-{
+ASOVERLOADABLE ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASSizeRange ASSizeRangeMake(CGSize exactSize) {
   return ASSizeRangeMake(exactSize, exactSize);
 }
 
 /**
  * Clamps the provided CGSize between the [min, max] bounds of this ASSizeRange.
  */
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT CGSize ASSizeRangeClamp(ASSizeRange sizeRange, CGSize size)
-{
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT CGSize ASSizeRangeClamp(ASSizeRange sizeRange, CGSize size) {
   return CGSizeMake(MAX(sizeRange.min.width, MIN(sizeRange.max.width, size.width)),
                     MAX(sizeRange.min.height, MIN(sizeRange.max.height, size.height)));
 }
@@ -280,8 +265,7 @@ AS_EXTERN AS_WARN_UNUSED_RESULT ASSizeRange ASSizeRangeIntersect(ASSizeRange siz
 /**
  * Returns whether two size ranges are equal in min and max size.
  */
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASSizeRangeEqualToSizeRange(ASSizeRange lhs, ASSizeRange rhs)
-{
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASSizeRangeEqualToSizeRange(ASSizeRange lhs, ASSizeRange rhs) {
   return CGSizeEqualToSize(lhs.min, rhs.min) && CGSizeEqualToSize(lhs.max, rhs.max);
 }
 

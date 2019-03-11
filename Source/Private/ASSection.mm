@@ -12,8 +12,7 @@
 
 @implementation ASSection
 
-- (instancetype)initWithSectionID:(NSInteger)sectionID context:(id<ASSectionContext>)context
-{
+- (instancetype)initWithSectionID:(NSInteger)sectionID context:(id<ASSectionContext>)context {
   self = [super init];
   if (self) {
     _sectionID = sectionID;

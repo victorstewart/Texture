@@ -8,9 +8,9 @@
 
 #import "ASIntegerMap.h"
 #import <AsyncDisplayKit/ASAssert.h>
-#import <unordered_map>
-#import <AsyncDisplayKit/NSIndexSet+ASHelpers.h>
 #import <AsyncDisplayKit/ASObjectDescriptionHelpers.h>
+#import <AsyncDisplayKit/NSIndexSet+ASHelpers.h>
+#import <unordered_map>
 
 /**
  * This is just a friendly Objective-C interface to unordered_map<NSInteger, NSInteger>
@@ -22,13 +22,12 @@
   std::unordered_map<NSInteger, NSInteger> _map;
   BOOL _isIdentity;
   BOOL _isEmpty;
-  BOOL _immutable; // identity map and empty mape are immutable.
+  BOOL _immutable;  // identity map and empty mape are immutable.
 }
 
 #pragma mark - Singleton
 
-+ (ASIntegerMap *)identityMap NS_RETURNS_RETAINED
-{
++ (ASIntegerMap *)identityMap NS_RETURNS_RETAINED {
   static ASIntegerMap *identityMap;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -39,8 +38,7 @@
   return identityMap;
 }
 
-+ (ASIntegerMap *)emptyMap NS_RETURNS_RETAINED
-{
++ (ASIntegerMap *)emptyMap NS_RETURNS_RETAINED {
   static ASIntegerMap *emptyMap;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -51,8 +49,9 @@
   return emptyMap;
 }
 
-+ (ASIntegerMap *)mapForUpdateWithOldCount:(NSInteger)oldCount deleted:(NSIndexSet *)deletions inserted:(NSIndexSet *)insertions NS_RETURNS_RETAINED
-{
++ (ASIntegerMap *)mapForUpdateWithOldCount:(NSInteger)oldCount
+                                   deleted:(NSIndexSet *)deletions
+                                  inserted:(NSIndexSet *)insertions NS_RETURNS_RETAINED {
   if (oldCount == 0) {
     return ASIntegerMap.emptyMap;
   }
@@ -66,17 +65,18 @@
   NSMutableIndexSet *indexes = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, oldCount)];
 
   // Descending order, shift deleted ranges left
-  [deletions enumerateRangesWithOptions:NSEnumerationReverse usingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-    [indexes shiftIndexesStartingAtIndex:NSMaxRange(range) by:-range.length];
-  }];
+  [deletions enumerateRangesWithOptions:NSEnumerationReverse
+                             usingBlock:^(NSRange range, BOOL *_Nonnull stop) {
+                               [indexes shiftIndexesStartingAtIndex:NSMaxRange(range) by:-range.length];
+                             }];
 
   // Ascending order, shift inserted ranges right
-  [insertions enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+  [insertions enumerateRangesUsingBlock:^(NSRange range, BOOL *_Nonnull stop) {
     [indexes shiftIndexesStartingAtIndex:range.location by:range.length];
   }];
 
   __block NSInteger oldIndex = 0;
-  [indexes enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+  [indexes enumerateRangesUsingBlock:^(NSRange range, BOOL *_Nonnull stop) {
     // Note we advance oldIndex unconditionally, not newIndex
     for (NSInteger newIndex = range.location; newIndex < NSMaxRange(range); oldIndex++) {
       if ([deletions containsIndex:oldIndex]) {
@@ -90,8 +90,7 @@
   return result;
 }
 
-- (NSInteger)integerForKey:(NSInteger)key
-{
+- (NSInteger)integerForKey:(NSInteger)key {
   if (_isIdentity) {
     return key;
   } else if (_isEmpty) {
@@ -102,8 +101,7 @@
   return result != _map.end() ? result->second : NSNotFound;
 }
 
-- (void)setInteger:(NSInteger)value forKey:(NSInteger)key
-{
+- (void)setInteger:(NSInteger)value forKey:(NSInteger)key {
   if (_immutable) {
     ASDisplayNodeFailAssert(@"Cannot mutate special integer map: %@", self);
     return;
@@ -112,14 +110,13 @@
   _map[key] = value;
 }
 
-- (ASIntegerMap *)inverseMap
-{
+- (ASIntegerMap *)inverseMap {
   if (_isIdentity || _isEmpty) {
     return self;
   }
 
   const auto result = [[ASIntegerMap alloc] init];
-  
+
   for (const auto &e : _map) {
     result->_map[e.second] = e.first;
   }
@@ -128,8 +125,7 @@
 
 #pragma mark - NSCopying
 
-- (id)copyWithZone:(NSZone *)zone
-{
+- (id)copyWithZone:(NSZone *)zone {
   if (_immutable) {
     return self;
   }
@@ -141,14 +137,13 @@
 
 #pragma mark - Description
 
-- (NSMutableArray<NSDictionary *> *)propertiesForDescription
-{
+- (NSMutableArray<NSDictionary *> *)propertiesForDescription {
   NSMutableArray *result = [NSMutableArray array];
 
   if (_isIdentity) {
-    [result addObject:@{ @"map": @"<identity>" }];
+    [result addObject:@{@"map" : @"<identity>"}];
   } else if (_isEmpty) {
-    [result addObject:@{ @"map": @"<empty>" }];
+    [result addObject:@{@"map" : @"<empty>"}];
   } else {
     // { 1->2 3->4 5->6 }
     NSMutableString *str = [NSMutableString string];
@@ -159,19 +154,17 @@
     if (str.length > 0) {
       [str deleteCharactersInRange:NSMakeRange(0, 1)];
     }
-    [result addObject:@{ @"map": str }];
+    [result addObject:@{@"map" : str}];
   }
 
   return result;
 }
 
-- (NSString *)description
-{
+- (NSString *)description {
   return ASObjectDescriptionMakeWithoutObject([self propertiesForDescription]);
 }
 
-- (BOOL)isEqual:(id)object
-{
+- (BOOL)isEqual:(id)object {
   if ([super isEqual:object]) {
     return YES;
   }

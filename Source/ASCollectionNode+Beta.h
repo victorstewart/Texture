@@ -9,7 +9,8 @@
 
 #import <AsyncDisplayKit/ASCollectionNode.h>
 
-@protocol ASCollectionViewLayoutFacilitatorProtocol, ASCollectionLayoutDelegate, ASBatchFetchingDelegate;
+@protocol ASCollectionViewLayoutFacilitatorProtocol
+, ASCollectionLayoutDelegate, ASBatchFetchingDelegate;
 @class ASElementMap;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,16 +22,16 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @default [ASCollectionView class] is used whenever this property is unset or nil.
  */
-@property (nullable, nonatomic) Class collectionViewClass;
+@property(nullable, nonatomic) Class collectionViewClass;
 
 /**
  * The elements that are currently displayed. The "UIKit index space". Must be accessed on main thread.
  */
-@property (nonatomic, readonly) ASElementMap *visibleElements;
+@property(nonatomic, readonly) ASElementMap *visibleElements;
 
-@property (nullable, readonly) id<ASCollectionLayoutDelegate> layoutDelegate;
+@property(nullable, readonly) id<ASCollectionLayoutDelegate> layoutDelegate;
 
-@property (nullable, nonatomic, weak) id<ASBatchFetchingDelegate> batchFetchingDelegate;
+@property(nullable, nonatomic, weak) id<ASBatchFetchingDelegate> batchFetchingDelegate;
 
 /**
  * When this mode is enabled, ASCollectionView matches the timing of UICollectionView as closely as
@@ -49,12 +50,12 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @default defaults to ASCellLayoutModeNone.
  */
-@property (nonatomic) ASCellLayoutMode cellLayoutMode;
+@property(nonatomic) ASCellLayoutMode cellLayoutMode;
 
 /**
  *  Returns YES if the ASCollectionNode contents are completely synchronized with the underlying collection-view layout.
  */
-@property (nonatomic, readonly, getter=isSynchronized) BOOL synchronized;
+@property(nonatomic, readonly, getter=isSynchronized) BOOL synchronized;
 
 /**
  *  Schedules a block to be performed (on the main thread) as soon as the completion block is called
@@ -64,15 +65,20 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)onDidFinishSynchronizing:(void (^)(void))didFinishSynchronizing;
 
-- (instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout layoutFacilitator:(nullable id<ASCollectionViewLayoutFacilitatorProtocol>)layoutFacilitator;
+- (instancetype)initWithFrame:(CGRect)frame
+         collectionViewLayout:(UICollectionViewLayout *)layout
+            layoutFacilitator:(nullable id<ASCollectionViewLayoutFacilitatorProtocol>)layoutFacilitator;
 
-- (instancetype)initWithLayoutDelegate:(id<ASCollectionLayoutDelegate>)layoutDelegate layoutFacilitator:(nullable id<ASCollectionViewLayoutFacilitatorProtocol>)layoutFacilitator;
+- (instancetype)initWithLayoutDelegate:(id<ASCollectionLayoutDelegate>)layoutDelegate
+                     layoutFacilitator:(nullable id<ASCollectionViewLayoutFacilitatorProtocol>)layoutFacilitator;
 
 - (void)beginUpdates ASDISPLAYNODE_DEPRECATED_MSG("Use -performBatchUpdates:completion: instead.");
 
 - (void)endUpdatesAnimated:(BOOL)animated ASDISPLAYNODE_DEPRECATED_MSG("Use -performBatchUpdates:completion: instead.");
 
-- (void)endUpdatesAnimated:(BOOL)animated completion:(nullable void (^)(BOOL))completion ASDISPLAYNODE_DEPRECATED_MSG("Use -performBatchUpdates:completion: instead.");
+- (void)endUpdatesAnimated:(BOOL)animated
+                completion:(nullable void (^)(BOOL))completion
+    ASDISPLAYNODE_DEPRECATED_MSG("Use -performBatchUpdates:completion: instead.");
 
 @end
 

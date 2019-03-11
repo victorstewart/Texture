@@ -14,6 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-AS_EXTERN ASSizeRange ASSizeRangeForCollectionLayoutThatFitsViewportSize(CGSize viewportSize, ASScrollDirection scrollableDirections) AS_WARN_UNUSED_RESULT;
+AS_EXTERN ASSizeRange ASSizeRangeForCollectionLayoutThatFitsViewportSize(
+    CGSize viewportSize, ASScrollDirection scrollableDirections) AS_WARN_UNUSED_RESULT;
 
 NS_ASSUME_NONNULL_END

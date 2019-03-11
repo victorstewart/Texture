@@ -12,8 +12,8 @@
 #import <AsyncDisplayKit/ASLog.h>
 #import <AsyncDisplayKit/ASObjectDescriptionHelpers.h>
 #import <AsyncDisplayKit/ASRunLoopQueue.h>
-#import <AsyncDisplayKit/ASThread.h>
 #import <AsyncDisplayKit/ASSignpost.h>
+#import <AsyncDisplayKit/ASThread.h>
 #import <QuartzCore/QuartzCore.h>
 #import <cstdlib>
 #import <deque>
@@ -38,8 +38,7 @@ static void runLoopSourceCallback(void *info) {
   AS::Mutex _lock;
 }
 
-+ (ASDeallocQueue *)sharedDeallocationQueue NS_RETURNS_RETAINED
-{
++ (ASDeallocQueue *)sharedDeallocationQueue NS_RETURNS_RETAINED {
   static ASDeallocQueue *deallocQueue = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -48,21 +47,19 @@ static void runLoopSourceCallback(void *info) {
   return deallocQueue;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
   ASDisplayNodeFailAssert(@"Singleton should not dealloc.");
 }
 
-- (void)releaseObjectInBackground:(id  _Nullable __strong *)objectPtr
-{
+- (void)releaseObjectInBackground:(id _Nullable __strong *)objectPtr {
   NSParameterAssert(objectPtr != NULL);
-  
+
   // Cast to CFType so we can manipulate retain count manually.
   const auto cfPtr = (CFTypeRef *)(void *)objectPtr;
   if (!cfPtr || !*cfPtr) {
     return;
   }
-  
+
   _lock.lock();
   const auto isFirstEntry = _queue.empty();
   // Push the pointer into our queue and clear their pointer.
@@ -71,16 +68,16 @@ static void runLoopSourceCallback(void *info) {
   _queue.push_back(*cfPtr);
   *cfPtr = NULL;
   _lock.unlock();
-  
+
   if (isFirstEntry) {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.100 * NSEC_PER_SEC)), dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
-      [self drain];
-    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.100 * NSEC_PER_SEC)),
+                   dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
+                     [self drain];
+                   });
   }
 }
 
-- (void)drain
-{
+- (void)drain {
   _lock.lock();
   const auto q = std::move(_queue);
   _lock.unlock();
@@ -94,13 +91,13 @@ static void runLoopSourceCallback(void *info) {
 
 @implementation ASAbstractRunLoopQueue
 
-- (instancetype)init
-{
+- (instancetype)init {
   self = [super init];
   if (self == nil) {
     return nil;
   }
-  ASDisplayNodeAssert(self.class != [ASAbstractRunLoopQueue class], @"Should never create instances of abstract class ASAbstractRunLoopQueue.");
+  ASDisplayNodeAssert(self.class != [ASAbstractRunLoopQueue class],
+                      @"Should never create instances of abstract class ASAbstractRunLoopQueue.");
   return self;
 }
 
@@ -112,7 +109,7 @@ static void runLoopSourceCallback(void *info) {
   CFRunLoopRef _runLoop;
   CFRunLoopSourceRef _runLoopSource;
   CFRunLoopObserverRef _runLoopObserver;
-  NSPointerArray *_internalQueue; // Use NSPointerArray so we can decide __strong or __weak per-instance.
+  NSPointerArray *_internalQueue;  // Use NSPointerArray so we can decide __strong or __weak per-instance.
   AS::RecursiveMutex _internalQueueLock;
 
   // In order to not pollute the top-level activities, each queue has 1 root activity.
@@ -123,14 +120,15 @@ static void runLoopSourceCallback(void *info) {
 #endif
 }
 
-@property (nonatomic) void (^queueConsumer)(id dequeuedItem, BOOL isQueueDrained);
+@property(nonatomic) void (^queueConsumer)(id dequeuedItem, BOOL isQueueDrained);
 
 @end
 
 @implementation ASRunLoopQueue
 
-- (instancetype)initWithRunLoop:(CFRunLoopRef)runloop retainObjects:(BOOL)retainsObjects handler:(void (^)(id _Nullable, BOOL))handlerBlock
-{
+- (instancetype)initWithRunLoop:(CFRunLoopRef)runloop
+                  retainObjects:(BOOL)retainsObjects
+                        handler:(void (^)(id _Nullable, BOOL))handlerBlock {
   if (self = [super init]) {
     _runLoop = runloop;
     NSPointerFunctionsOptions options = retainsObjects ? NSPointerFunctionsStrongMemory : NSPointerFunctionsWeakMemory;
@@ -147,16 +145,17 @@ static void runLoopSourceCallback(void *info) {
       as_activity_scope_verbose(_rootActivity);
       as_log_verbose(ASDisplayLog(), "Created run loop queue: %@", self);
     }
-    
+
     // Self is guaranteed to outlive the observer.  Without the high cost of a weak pointer,
     // __unsafe_unretained allows us to avoid flagging the memory cycle detector.
     __unsafe_unretained __typeof__(self) weakSelf = self;
-    void (^handlerBlock) (CFRunLoopObserverRef observer, CFRunLoopActivity activity) = ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
-      [weakSelf processQueue];
-    };
+    void (^handlerBlock)(CFRunLoopObserverRef observer, CFRunLoopActivity activity) =
+        ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
+          [weakSelf processQueue];
+        };
     _runLoopObserver = CFRunLoopObserverCreateWithHandler(NULL, kCFRunLoopBeforeWaiting, true, 0, handlerBlock);
-    CFRunLoopAddObserver(_runLoop, _runLoopObserver,  kCFRunLoopCommonModes);
-    
+    CFRunLoopAddObserver(_runLoop, _runLoopObserver, kCFRunLoopCommonModes);
+
     // It is not guaranteed that the runloop will turn if it has no scheduled work, and this causes processing of
     // the queue to stop. Attaching a custom loop source to the run loop and signal it if new work needs to be done
     CFRunLoopSourceContext sourceContext = {};
@@ -168,21 +167,24 @@ static void runLoopSourceCallback(void *info) {
     CFRunLoopAddSource(runloop, _runLoopSource, kCFRunLoopCommonModes);
 
 #if ASRunLoopQueueLoggingEnabled
-    _runloopQueueLoggingTimer = [NSTimer timerWithTimeInterval:1.0 target:self selector:@selector(checkRunLoop) userInfo:nil repeats:YES];
+    _runloopQueueLoggingTimer = [NSTimer timerWithTimeInterval:1.0
+                                                        target:self
+                                                      selector:@selector(checkRunLoop)
+                                                      userInfo:nil
+                                                       repeats:YES];
     [[NSRunLoop mainRunLoop] addTimer:_runloopQueueLoggingTimer forMode:NSRunLoopCommonModes];
 #endif
   }
   return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
   if (CFRunLoopContainsSource(_runLoop, _runLoopSource, kCFRunLoopCommonModes)) {
     CFRunLoopRemoveSource(_runLoop, _runLoopSource, kCFRunLoopCommonModes);
   }
   CFRelease(_runLoopSource);
   _runLoopSource = nil;
-  
+
   if (CFRunLoopObserverIsValid(_runLoopObserver)) {
     CFRunLoopObserverInvalidate(_runLoopObserver);
   }
@@ -191,14 +193,12 @@ static void runLoopSourceCallback(void *info) {
 }
 
 #if ASRunLoopQueueLoggingEnabled
-- (void)checkRunLoop
-{
-    NSLog(@"<%@> - Jobs: %ld", self, _internalQueue.count);
+- (void)checkRunLoop {
+  NSLog(@"<%@> - Jobs: %ld", self, _internalQueue.count);
 }
 #endif
 
-- (void)processQueue
-{
+- (void)processQueue {
   BOOL hasExecutionBlock = (_queueConsumer != nil);
 
   // If we have an execution block, this vector will be populated, otherwise remains empty.
@@ -260,7 +260,8 @@ static void runLoopSourceCallback(void *info) {
   // itemsToProcess will be empty if _queueConsumer == nil so no need to check again.
   const auto count = itemsToProcess.size();
   if (count > 0) {
-    as_activity_scope_verbose(as_activity_create("Process run loop queue batch", _rootActivity, OS_ACTIVITY_FLAG_DEFAULT));
+    as_activity_scope_verbose(
+        as_activity_create("Process run loop queue batch", _rootActivity, OS_ACTIVITY_FLAG_DEFAULT));
     const auto itemsEnd = itemsToProcess.cend();
     for (auto iterator = itemsToProcess.begin(); iterator < itemsEnd; iterator++) {
       __unsafe_unretained id value = *iterator;
@@ -277,21 +278,20 @@ static void runLoopSourceCallback(void *info) {
     CFRunLoopSourceSignal(_runLoopSource);
     CFRunLoopWakeUp(_runLoop);
   }
-  
+
   ASSignpostEnd(ASSignpostRunLoopQueueBatch);
 }
 
-- (void)enqueue:(id)object
-{
+- (void)enqueue:(id)object {
   if (!object) {
     return;
   }
-  
+
   MutexLocker l(_internalQueueLock);
 
   // Check if the object exists.
   BOOL foundObject = NO;
-    
+
   if (_ensureExclusiveMembership) {
     for (id currentObject in _internalQueue) {
       if (currentObject == object) {
@@ -310,32 +310,31 @@ static void runLoopSourceCallback(void *info) {
   }
 }
 
-- (BOOL)isEmpty
-{
+- (BOOL)isEmpty {
   MutexLocker l(_internalQueueLock);
   return _internalQueue.count == 0;
 }
 
 ASSynthesizeLockingMethodsWithMutex(_internalQueueLock)
 
-@end
+    @end
 
 #pragma mark - ASCATransactionQueue
 
 @interface ASCATransactionQueue () {
   CFRunLoopSourceRef _runLoopSource;
   CFRunLoopObserverRef _preTransactionObserver;
-  
+
   // Current buffer for new entries, only accessed from within its mutex.
   std::vector<id<ASCATransactionQueueObserving>> _internalQueue;
-  
+
   // No retain, no release, pointer hash, pointer equality.
   // Enforce uniqueness in our queue. std::unordered_set does a heap allocation for each entry – not good.
   CFMutableSetRef _internalQueueHashSet;
-  
+
   // Temporary buffer, only accessed from the main thread in -process.
   std::vector<id<ASCATransactionQueueObserving>> _batchBuffer;
-  
+
   AS::Mutex _internalQueueLock;
 
   // In order to not pollute the top-level activities, each queue has 1 root activity.
@@ -354,11 +353,10 @@ ASSynthesizeLockingMethodsWithMutex(_internalQueueLock)
 // but after most other scheduled work on the runloop has processed.
 static int const kASASCATransactionQueueOrder = 1000000;
 
-- (instancetype)init
-{
+- (instancetype)init {
   if (self = [super init]) {
     _internalQueueHashSet = CFSetCreateMutable(NULL, 0, NULL);
-    
+
     // This is going to be a very busy queue – every node in the preload range will enter this queue.
     // Save some time on first render by reserving space up front.
     static constexpr int kInternalQueueInitialCapacity = 64;
@@ -377,11 +375,13 @@ static int const kASASCATransactionQueueOrder = 1000000;
     // Self is guaranteed to outlive the observer.  Without the high cost of a weak pointer,
     // __unsafe_unretained allows us to avoid flagging the memory cycle detector.
     __unsafe_unretained __typeof__(self) weakSelf = self;
-    _preTransactionObserver = CFRunLoopObserverCreateWithHandler(NULL, kCFRunLoopBeforeWaiting, true, kASASCATransactionQueueOrder, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
-      while (!weakSelf->_internalQueue.empty()) {
-        [weakSelf processQueue];
-      }
-    });
+    _preTransactionObserver =
+        CFRunLoopObserverCreateWithHandler(NULL, kCFRunLoopBeforeWaiting, true, kASASCATransactionQueueOrder,
+                                           ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
+                                             while (!weakSelf->_internalQueue.empty()) {
+                                               [weakSelf processQueue];
+                                             }
+                                           });
 
     CFRunLoopAddObserver(CFRunLoopGetMain(), _preTransactionObserver, kCFRunLoopCommonModes);
 
@@ -396,15 +396,18 @@ static int const kASASCATransactionQueueOrder = 1000000;
     CFRunLoopAddSource(CFRunLoopGetMain(), _runLoopSource, kCFRunLoopCommonModes);
 
 #if ASRunLoopQueueLoggingEnabled
-    _runloopQueueLoggingTimer = [NSTimer timerWithTimeInterval:1.0 target:self selector:@selector(checkRunLoop) userInfo:nil repeats:YES];
+    _runloopQueueLoggingTimer = [NSTimer timerWithTimeInterval:1.0
+                                                        target:self
+                                                      selector:@selector(checkRunLoop)
+                                                      userInfo:nil
+                                                       repeats:YES];
     [[NSRunLoop mainRunLoop] addTimer:_runloopQueueLoggingTimer forMode:NSRunLoopCommonModes];
 #endif
   }
   return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
   ASDisplayNodeAssertMainThread();
 
   CFRelease(_internalQueueHashSet);
@@ -420,14 +423,12 @@ static int const kASASCATransactionQueueOrder = 1000000;
 }
 
 #if ASRunLoopQueueLoggingEnabled
-- (void)checkRunLoop
-{
+- (void)checkRunLoop {
   NSLog(@"<%@> - Jobs: %ld", self, _internalQueue.count);
 }
 #endif
 
-- (void)processQueue
-{
+- (void)processQueue {
   ASDisplayNodeAssertMainThread();
 
   AS::UniqueLock l(_internalQueueLock);
@@ -436,16 +437,17 @@ static int const kASASCATransactionQueueOrder = 1000000;
   if (count == 0) {
     return;
   }
-  as_activity_scope_verbose(as_activity_create("Process run loop queue batch", _rootActivity, OS_ACTIVITY_FLAG_DEFAULT));
+  as_activity_scope_verbose(
+      as_activity_create("Process run loop queue batch", _rootActivity, OS_ACTIVITY_FLAG_DEFAULT));
   ASSignpostStart(ASSignpostRunLoopQueueBatch);
-  
+
   // Swap buffers, clear our hash table.
   _internalQueue.swap(_batchBuffer);
   CFSetRemoveAllValues(_internalQueueHashSet);
-  
+
   // Unlock early. We are done with internal queue, and batch buffer is main-thread-only so no lock.
   l.unlock();
-  
+
   for (const id<ASCATransactionQueueObserving> &value : _batchBuffer) {
     [value prepareForCATransactionCommit];
     as_log_verbose(ASDisplayLog(), "processed %@", value);
@@ -455,8 +457,7 @@ static int const kASASCATransactionQueueOrder = 1000000;
   ASSignpostEnd(ASSignpostRunLoopQueueBatch);
 }
 
-- (void)enqueue:(id<ASCATransactionQueueObserving>)object
-{
+- (void)enqueue:(id<ASCATransactionQueueObserving>)object {
   if (!object) {
     return;
   }
@@ -478,14 +479,12 @@ static int const kASASCATransactionQueueOrder = 1000000;
   }
 }
 
-- (BOOL)isEmpty
-{
+- (BOOL)isEmpty {
   MutexLocker l(_internalQueueLock);
   return _internalQueue.empty();
 }
 
-- (BOOL)isEnabled
-{
+- (BOOL)isEnabled {
   return ASActivateExperimentalFeature(ASExperimentalInterfaceStateCoalescing);
 }
 

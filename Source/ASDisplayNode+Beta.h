@@ -9,30 +9,32 @@
 
 #import <AsyncDisplayKit/ASAvailability.h>
 #import <AsyncDisplayKit/ASDisplayNode.h>
-#import <AsyncDisplayKit/ASLayoutRangeType.h>
 #import <AsyncDisplayKit/ASEventLog.h>
+#import <AsyncDisplayKit/ASLayoutRangeType.h>
 
 #if YOGA
-  #import YOGA_HEADER_PATH
-  #import <AsyncDisplayKit/ASYogaUtilities.h>
-  #import <AsyncDisplayKit/ASDisplayNode+Yoga.h>
+#import YOGA_HEADER_PATH
+#import <AsyncDisplayKit/ASDisplayNode+Yoga.h>
+#import <AsyncDisplayKit/ASYogaUtilities.h>
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
 
 AS_EXTERN void ASPerformBlockOnMainThread(void (^block)(void));
-AS_EXTERN void ASPerformBlockOnBackgroundThread(void (^block)(void)); // DISPATCH_QUEUE_PRIORITY_DEFAULT
+AS_EXTERN void ASPerformBlockOnBackgroundThread(void (^block)(void));  // DISPATCH_QUEUE_PRIORITY_DEFAULT
 
 #if ASEVENTLOG_ENABLE
-  #define ASDisplayNodeLogEvent(node, ...) [node.eventLog logEventWithBacktrace:(AS_SAVE_EVENT_BACKTRACES ? [NSThread callStackSymbols] : nil) format:__VA_ARGS__]
+#define ASDisplayNodeLogEvent(node, ...)                                                              \
+  [node.eventLog logEventWithBacktrace:(AS_SAVE_EVENT_BACKTRACES ? [NSThread callStackSymbols] : nil) \
+                                format:__VA_ARGS__]
 #else
-  #define ASDisplayNodeLogEvent(node, ...)
+#define ASDisplayNodeLogEvent(node, ...)
 #endif
 
 #if ASEVENTLOG_ENABLE
-  #define ASDisplayNodeGetEventLog(node) node.eventLog
+#define ASDisplayNodeGetEventLog(node) node.eventLog
 #else
-  #define ASDisplayNodeGetEventLog(node) nil
+#define ASDisplayNodeGetEventLog(node) nil
 #endif
 
 /**
@@ -62,7 +64,8 @@ typedef struct {
  *
  * This property defaults to NO. It will be removed in a future release.
  */
-+ (BOOL)suppressesInvalidCollectionUpdateExceptions AS_WARN_UNUSED_RESULT ASDISPLAYNODE_DEPRECATED_MSG("Collection update exceptions are thrown if assertions are enabled.");
++ (BOOL)suppressesInvalidCollectionUpdateExceptions AS_WARN_UNUSED_RESULT
+    ASDISPLAYNODE_DEPRECATED_MSG("Collection update exceptions are thrown if assertions are enabled.");
 + (void)setSuppressesInvalidCollectionUpdateExceptions:(BOOL)suppresses;
 
 /**
@@ -79,12 +82,12 @@ typedef struct {
  * restoring context if necessary. Restoring can be done in contextDidDisplayNodeContent
  * This block can be called from *any* thread and it is unsafe to access any UIKit main thread properties from it.
  */
-@property (nullable) ASDisplayNodeContextModifier willDisplayNodeContentWithRenderingContext;
+@property(nullable) ASDisplayNodeContextModifier willDisplayNodeContentWithRenderingContext;
 
 /**
  * @abstract allow modification of a context after the node's content is drawn
  */
-@property (nullable) ASDisplayNodeContextModifier didDisplayNodeContentWithRenderingContext;
+@property(nullable) ASDisplayNodeContextModifier didDisplayNodeContentWithRenderingContext;
 
 /**
  * @abstract A bitmask representing which actions (layout spec, layout generation) should be measured.
@@ -94,19 +97,21 @@ typedef struct {
 /**
  * @abstract A simple struct representing performance measurements collected.
  */
-@property (readonly) ASDisplayNodePerformanceMeasurements performanceMeasurements;
+@property(readonly) ASDisplayNodePerformanceMeasurements performanceMeasurements;
 
 #if ASEVENTLOG_ENABLE
 /*
- * @abstract The primitive event tracing object. You shouldn't directly use it to log event. Use the ASDisplayNodeLogEvent macro instead.
+ * @abstract The primitive event tracing object. You shouldn't directly use it to log event. Use the
+ * ASDisplayNodeLogEvent macro instead.
  */
-@property (nonatomic, readonly) ASEventLog *eventLog;
+@property(nonatomic, readonly) ASEventLog *eventLog;
 #endif
 
 /**
- * @abstract Whether this node acts as an accessibility container. If set to YES, then this node's accessibility label will represent
- * an aggregation of all child nodes' accessibility labels. Nodes in this node's subtree that are also accessibility containers will
- * not be included in this aggregation, and will be exposed as separate accessibility elements to UIKit.
+ * @abstract Whether this node acts as an accessibility container. If set to YES, then this node's accessibility label
+ * will represent an aggregation of all child nodes' accessibility labels. Nodes in this node's subtree that are also
+ * accessibility containers will not be included in this aggregation, and will be exposed as separate accessibility
+ * elements to UIKit.
  */
 @property BOOL isAccessibilityContainer;
 
@@ -115,15 +120,16 @@ typedef struct {
  * example, the default accessibility label for a text node may be its text content, while most
  * other nodes would have nil default labels.
  */
-@property (nullable, readonly, copy) NSString *defaultAccessibilityLabel;
-@property (nullable, readonly, copy) NSString *defaultAccessibilityHint;
-@property (nullable, readonly, copy) NSString *defaultAccessibilityValue;
-@property (nullable, readonly, copy) NSString *defaultAccessibilityIdentifier;
-@property (readonly) UIAccessibilityTraits defaultAccessibilityTraits;
+@property(nullable, readonly, copy) NSString *defaultAccessibilityLabel;
+@property(nullable, readonly, copy) NSString *defaultAccessibilityHint;
+@property(nullable, readonly, copy) NSString *defaultAccessibilityValue;
+@property(nullable, readonly, copy) NSString *defaultAccessibilityIdentifier;
+@property(readonly) UIAccessibilityTraits defaultAccessibilityTraits;
 
 /**
- * @abstract Invoked when a user performs a custom action on an accessible node. Nodes that are children of accessibility containers, have
- * an accessibity label and have an interactive UIAccessibilityTrait will automatically receive custom-action handling.
+ * @abstract Invoked when a user performs a custom action on an accessible node. Nodes that are children of
+ * accessibility containers, have an accessibity label and have an interactive UIAccessibilityTrait will automatically
+ * receive custom-action handling.
  *
  * @return Return a boolean value that determine whether to propagate through the responder chain.
  * To halt propagation, return YES; otherwise, return NO.
@@ -131,16 +137,18 @@ typedef struct {
 - (BOOL)performAccessibilityCustomAction:(UIAccessibilityCustomAction *)action;
 
 /**
- * @abstract Currently used by ASNetworkImageNode and ASMultiplexImageNode to allow their placeholders to stay if they are loading an image from the network.
- * Otherwise, a display pass is scheduled and completes, but does not actually draw anything - and ASDisplayNode considers the element finished.
+ * @abstract Currently used by ASNetworkImageNode and ASMultiplexImageNode to allow their placeholders to stay if they
+ * are loading an image from the network. Otherwise, a display pass is scheduled and completes, but does not actually
+ * draw anything - and ASDisplayNode considers the element finished.
  */
 - (BOOL)placeholderShouldPersist AS_WARN_UNUSED_RESULT;
 
 /**
- * @abstract Indicates that the receiver and all subnodes have finished displaying. May be called more than once, for example if the receiver has
- * a network image node. This is called after the first display pass even if network image nodes have not downloaded anything (text would be done,
- * and other nodes that are ready to do their final display). Each render of every progressive jpeg network node would cause this to be called, so
- * this hook could be called up to 1 + (pJPEGcount * pJPEGrenderCount) times. The render count depends on how many times the downloader calls the
+ * @abstract Indicates that the receiver and all subnodes have finished displaying. May be called more than once, for
+ * example if the receiver has a network image node. This is called after the first display pass even if network image
+ * nodes have not downloaded anything (text would be done, and other nodes that are ready to do their final display).
+ * Each render of every progressive jpeg network node would cause this to be called, so this hook could be called up to
+ * 1 + (pJPEGcount * pJPEGrenderCount) times. The render count depends on how many times the downloader calls the
  * progressImage block.
  */
 AS_CATEGORY_IMPLEMENTABLE
@@ -153,11 +161,12 @@ AS_CATEGORY_IMPLEMENTABLE
 - (void)willCalculateLayout:(ASSizeRange)constrainedSize NS_REQUIRES_SUPER;
 
 /**
- * Only ASLayoutRangeModeVisibleOnly or ASLayoutRangeModeLowMemory are recommended.  Default is ASLayoutRangeModeVisibleOnly,
- * because this is the only way to ensure an application will not have blank / flashing views as the user navigates back after
- * a memory warning.  Apps that wish to use the more effective / aggressive ASLayoutRangeModeLowMemory may need to take steps
- * to mitigate this behavior, including: restoring a larger range mode to the next controller before the user navigates there,
- * enabling .neverShowPlaceholders on ASCellNodes so that the navigation operation is blocked on redisplay completing, etc.
+ * Only ASLayoutRangeModeVisibleOnly or ASLayoutRangeModeLowMemory are recommended.  Default is
+ * ASLayoutRangeModeVisibleOnly, because this is the only way to ensure an application will not have blank / flashing
+ * views as the user navigates back after a memory warning.  Apps that wish to use the more effective / aggressive
+ * ASLayoutRangeModeLowMemory may need to take steps to mitigate this behavior, including: restoring a larger range mode
+ * to the next controller before the user navigates there, enabling .neverShowPlaceholders on ASCellNodes so that the
+ * navigation operation is blocked on redisplay completing, etc.
  */
 + (void)setRangeModeForMemoryWarnings:(ASLayoutRangeMode)rangeMode;
 

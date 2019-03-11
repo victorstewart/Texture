@@ -6,10 +6,10 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 #import <AsyncDisplayKit/ASAssert.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @class ASCollectionElement;
 
@@ -27,13 +27,16 @@ AS_EXTERN ASPageCoordinate ASPageCoordinateMake(uint16_t x, uint16_t y) AS_WARN_
 
 /**
  * Returns coordinate of the page that contains the specified point.
- * Similar to CGRectContainsPoint, a point is considered inside a page if its  lie inside the page or on the minimum X or minimum Y edge.
+ * Similar to CGRectContainsPoint, a point is considered inside a page if its  lie inside the page or on the minimum X
+ * or minimum Y edge.
  *
- * @param point The point that the page at the returned  should contain. Any negative  of the point will be corrected to 0.0
+ * @param point The point that the page at the returned  should contain. Any negative  of the point will be corrected to
+ * 0.0
  *
  * @param pageSize The size of each page.
  */
-AS_EXTERN ASPageCoordinate ASPageCoordinateForPageThatContainsPoint(CGPoint point, CGSize pageSize) AS_WARN_UNUSED_RESULT;
+AS_EXTERN ASPageCoordinate ASPageCoordinateForPageThatContainsPoint(CGPoint point,
+                                                                    CGSize pageSize) AS_WARN_UNUSED_RESULT;
 
 AS_EXTERN uint16_t ASPageCoordinateGetX(ASPageCoordinate pageCoordinate) AS_WARN_UNUSED_RESULT;
 
@@ -42,8 +45,9 @@ AS_EXTERN uint16_t ASPageCoordinateGetY(ASPageCoordinate pageCoordinate) AS_WARN
 AS_EXTERN CGRect ASPageCoordinateGetPageRect(ASPageCoordinate pageCoordinate, CGSize pageSize) AS_WARN_UNUSED_RESULT;
 
 /**
- * Returns coordinate pointers for pages that intersect the specified rect. For each pointer, use ASPageCoordinateFromPointer() to get the original coordinate.
- * The specified rect is restricted to the bounds of a content rect that has an origin of {0, 0} and a size of the given contentSize.
+ * Returns coordinate pointers for pages that intersect the specified rect. For each pointer, use
+ * ASPageCoordinateFromPointer() to get the original coordinate. The specified rect is restricted to the bounds of a
+ * content rect that has an origin of {0, 0} and a size of the given contentSize.
  *
  * @param rect The rect intersecting the target pages.
  *
@@ -51,7 +55,9 @@ AS_EXTERN CGRect ASPageCoordinateGetPageRect(ASPageCoordinate pageCoordinate, CG
  *
  * @param pageSize The size of each page.
  */
-AS_EXTERN NSPointerArray * _Nullable ASPageCoordinatesForPagesThatIntersectRect(CGRect rect, CGSize contentSize, CGSize pageSize) AS_WARN_UNUSED_RESULT;
+AS_EXTERN NSPointerArray *_Nullable ASPageCoordinatesForPagesThatIntersectRect(CGRect rect,
+                                                                               CGSize contentSize,
+                                                                               CGSize pageSize) AS_WARN_UNUSED_RESULT;
 
 /**
  * An alias for an NSMapTable created to store objects using ASPageCoordinates as keys.
@@ -69,7 +75,7 @@ typedef ASPageTable<id, NSMutableArray<UICollectionViewLayoutAttributes *> *> AS
 /**
  * A category for creating & using map tables meant for storing objects using ASPage as keys.
  */
-@interface NSMapTable<id, ObjectType> (ASPageTableMethods)
+@interface NSMapTable <id, ObjectType>(ASPageTableMethods)
 
 /**
  * Creates a new page table with (NSMapTableStrongMemory | NSMapTableObjectPointerPersonality) for values.
@@ -90,7 +96,9 @@ typedef ASPageTable<id, NSMutableArray<UICollectionViewLayoutAttributes *> *> AS
  *
  * @param pageSize The size of each page.
  */
-+ (ASPageToLayoutAttributesTable *)pageTableWithLayoutAttributes:(id<NSFastEnumeration>)layoutAttributesEnumerator contentSize:(CGSize)contentSize pageSize:(CGSize)pageSize NS_RETURNS_RETAINED;
++ (ASPageToLayoutAttributesTable *)pageTableWithLayoutAttributes:(id<NSFastEnumeration>)layoutAttributesEnumerator
+                                                     contentSize:(CGSize)contentSize
+                                                        pageSize:(CGSize)pageSize NS_RETURNS_RETAINED;
 
 /**
  * Retrieves the object for a given page, or nil if the page is not found.

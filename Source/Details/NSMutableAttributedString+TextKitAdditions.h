@@ -15,7 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)attributeTextInRange:(NSRange)range withTextKitMinimumLineHeight:(CGFloat)minimumLineHeight;
 
-- (void)attributeTextInRange:(NSRange)range withTextKitMinimumLineHeight:(CGFloat)minimumLineHeight maximumLineHeight:(CGFloat)maximumLineHeight;
+- (void)attributeTextInRange:(NSRange)range
+    withTextKitMinimumLineHeight:(CGFloat)minimumLineHeight
+               maximumLineHeight:(CGFloat)maximumLineHeight;
 
 - (void)attributeTextInRange:(NSRange)range withTextKitLineHeight:(CGFloat)lineHeight;
 

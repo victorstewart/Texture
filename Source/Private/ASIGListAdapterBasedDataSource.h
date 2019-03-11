@@ -11,16 +11,18 @@
 
 #if AS_IG_LIST_KIT
 
-#import <IGListKit/IGListKit.h>
-#import <AsyncDisplayKit/ASCollectionView.h>
 #import <AsyncDisplayKit/ASCollectionNode.h>
+#import <AsyncDisplayKit/ASCollectionView.h>
+#import <IGListKit/IGListKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 AS_SUBCLASSING_RESTRICTED
-@interface ASIGListAdapterBasedDataSource : NSObject <ASCollectionDataSourceInterop, ASCollectionDelegateInterop, ASCollectionDelegateFlowLayout>
+@interface ASIGListAdapterBasedDataSource
+    : NSObject <ASCollectionDataSourceInterop, ASCollectionDelegateInterop, ASCollectionDelegateFlowLayout>
 
-- (instancetype)initWithListAdapter:(IGListAdapter *)listAdapter collectionDelegate:(nullable id<ASCollectionDelegate>)collectionDelegate;
+- (instancetype)initWithListAdapter:(IGListAdapter *)listAdapter
+                 collectionDelegate:(nullable id<ASCollectionDelegate>)collectionDelegate;
 
 @end
 

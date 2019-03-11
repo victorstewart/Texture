@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASDisplayNode.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,12 +27,12 @@ NS_ASSUME_NONNULL_BEGIN
  * Note: If this property is read on the main thread, the enumeration will attempt to go up
  *  the layer hierarchy if it finds a break in the display node hierarchy.
  */
-@property (readonly) id<NSFastEnumeration> supernodes;
+@property(readonly) id<NSFastEnumeration> supernodes;
 
 /**
  * Same as `supernodes` but begins the enumeration with self.
  */
-@property (readonly) id<NSFastEnumeration> supernodesIncludingSelf;
+@property(readonly) id<NSFastEnumeration> supernodesIncludingSelf;
 
 /**
  * Searches the supernodes of this node for one matching the given class.
@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * e.g. "(<MYTextNode: 0xFFFF>, <MYTextContainingNode: 0xFFFF>, <MYCellNode: 0xFFFF>)"
  */
-@property (copy, readonly) NSString *ancestryDescription;
+@property(copy, readonly) NSString *ancestryDescription;
 
 @end
 

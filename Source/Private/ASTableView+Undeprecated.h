@@ -7,10 +7,10 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
+#import <AsyncDisplayKit/ASLayoutRangeType.h>
+#import <AsyncDisplayKit/ASTableNode.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <AsyncDisplayKit/ASTableNode.h>
-#import <AsyncDisplayKit/ASLayoutRangeType.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,30 +23,31 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface ASTableView (Undeprecated)
 
-@property (nullable, nonatomic, weak) id<ASTableDelegate>   asyncDelegate;
-@property (nullable, nonatomic, weak) id<ASTableDataSource> asyncDataSource;
-@property (nonatomic) UIEdgeInsets contentInset;
-@property (nonatomic) CGPoint contentOffset;
-@property (nonatomic) BOOL automaticallyAdjustsContentOffset;
-@property (nonatomic) BOOL inverted;
-@property (nullable, nonatomic, readonly) NSArray<NSIndexPath *> *indexPathsForVisibleRows;
-@property (nullable, nonatomic, readonly) NSArray<NSIndexPath *> *indexPathsForSelectedRows;
-@property (nullable, nonatomic, readonly) NSIndexPath *indexPathForSelectedRow;
+@property(nullable, nonatomic, weak) id<ASTableDelegate> asyncDelegate;
+@property(nullable, nonatomic, weak) id<ASTableDataSource> asyncDataSource;
+@property(nonatomic) UIEdgeInsets contentInset;
+@property(nonatomic) CGPoint contentOffset;
+@property(nonatomic) BOOL automaticallyAdjustsContentOffset;
+@property(nonatomic) BOOL inverted;
+@property(nullable, nonatomic, readonly) NSArray<NSIndexPath *> *indexPathsForVisibleRows;
+@property(nullable, nonatomic, readonly) NSArray<NSIndexPath *> *indexPathsForSelectedRows;
+@property(nullable, nonatomic, readonly) NSIndexPath *indexPathForSelectedRow;
 
 /**
  * The number of screens left to scroll before the delegate -tableView:beginBatchFetchingWithContext: is called.
  *
  * Defaults to two screenfuls.
  */
-@property (nonatomic) CGFloat leadingScreensForBatching;
+@property(nonatomic) CGFloat leadingScreensForBatching;
 
 /**
  * Initializer.
  *
- * @param frame A rectangle specifying the initial location and size of the table view in its superview’s coordinates.
- * The frame of the table view changes as table cells are added and deleted.
+ * @param frame A rectangle specifying the initial location and size of the table view in its superview’s
+ * coordinates. The frame of the table view changes as table cells are added and deleted.
  *
- * @param style A constant that specifies the style of the table view. See UITableViewStyle for descriptions of valid constants.
+ * @param style A constant that specifies the style of the table view. See UITableViewStyle for descriptions of valid
+ * constants.
  */
 - (instancetype)initWithFrame:(CGRect)frame style:(UITableViewStyle)style;
 
@@ -84,7 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @see ASLayoutRangeMode
  * @see ASLayoutRangeType
  */
-- (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode rangeType:(ASLayoutRangeType)rangeType AS_WARN_UNUSED_RESULT;
+- (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode
+                                              rangeType:(ASLayoutRangeType)rangeType AS_WARN_UNUSED_RESULT;
 
 /**
  * Set the tuning parameters for a range type in the specified mode.
@@ -96,7 +98,9 @@ NS_ASSUME_NONNULL_BEGIN
  * @see ASLayoutRangeMode
  * @see ASLayoutRangeType
  */
-- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeMode:(ASLayoutRangeMode)rangeMode rangeType:(ASLayoutRangeType)rangeType;
+- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters
+               forRangeMode:(ASLayoutRangeMode)rangeMode
+                  rangeType:(ASLayoutRangeType)rangeType;
 
 - (nullable __kindof UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 
@@ -107,9 +111,13 @@ NS_ASSUME_NONNULL_BEGIN
  * @param scrollPosition Where the row should end up after the scroll.
  * @param animated Whether the scroll should be animated or not.
  */
-- (void)scrollToRowAtIndexPath:(NSIndexPath *)indexPath atScrollPosition:(UITableViewScrollPosition)scrollPosition animated:(BOOL)animated;
+- (void)scrollToRowAtIndexPath:(NSIndexPath *)indexPath
+              atScrollPosition:(UITableViewScrollPosition)scrollPosition
+                      animated:(BOOL)animated;
 
-- (void)selectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(UITableViewScrollPosition)scrollPosition;
+- (void)selectRowAtIndexPath:(NSIndexPath *)indexPath
+                    animated:(BOOL)animated
+              scrollPosition:(UITableViewScrollPosition)scrollPosition;
 
 - (nullable NSIndexPath *)indexPathForRowAtPoint:(CGPoint)point;
 
@@ -138,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
  * the main thread.
  * @warning This method is substantially more expensive than UITableView's version.
  */
--(void)reloadDataWithCompletion:(void (^ _Nullable)(void))completion;
+- (void)reloadDataWithCompletion:(void (^_Nullable)(void))completion;
 
 /**
  * Reload everything from scratch, destroying the working range and all cached nodes.
@@ -155,22 +163,26 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)relayoutItems;
 
 /**
- *  Begins a series of method calls that insert, delete, select, or reload rows and sections of the table view, with animation enabled and no completion block.
+ *  Begins a series of method calls that insert, delete, select, or reload rows and sections of the table view, with
+ * animation enabled and no completion block.
  *
- *  @discussion You call this method to bracket a series of method calls that ends with endUpdates and that consists of operations
- *  to insert, delete, select, and reload rows and sections of the table view. When you call endUpdates, ASTableView begins animating
- *  the operations simultaneously. It's important to remember that the ASTableView will be processing the updates asynchronously after this call is completed.
+ *  @discussion You call this method to bracket a series of method calls that ends with endUpdates and that consists of
+ * operations to insert, delete, select, and reload rows and sections of the table view. When you call endUpdates,
+ * ASTableView begins animating the operations simultaneously. It's important to remember that the ASTableView will be
+ * processing the updates asynchronously after this call is completed.
  *
  *  @warning This method must be called from the main thread.
  */
 - (void)beginUpdates;
 
 /**
- *  Concludes a series of method calls that insert, delete, select, or reload rows and sections of the table view, with animation enabled and no completion block.
+ *  Concludes a series of method calls that insert, delete, select, or reload rows and sections of the table view, with
+ * animation enabled and no completion block.
  *
- *  @discussion You call this method to bracket a series of method calls that begins with beginUpdates and that consists of operations
- *  to insert, delete, select, and reload rows and sections of the table view. When you call endUpdates, ASTableView begins animating
- *  the operations simultaneously. It's important to remember that the ASTableView will be processing the updates asynchronously after this call is completed.
+ *  @discussion You call this method to bracket a series of method calls that begins with beginUpdates and that consists
+ * of operations to insert, delete, select, and reload rows and sections of the table view. When you call endUpdates,
+ * ASTableView begins animating the operations simultaneously. It's important to remember that the ASTableView will be
+ * processing the updates asynchronously after this call is completed.
  *
  *  @warning This method is must be called from the main thread.
  */
@@ -178,21 +190,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  Concludes a series of method calls that insert, delete, select, or reload rows and sections of the table view.
- *  You call this method to bracket a series of method calls that begins with beginUpdates and that consists of operations
- *  to insert, delete, select, and reload rows and sections of the table view. When you call endUpdates, ASTableView begins animating
- *  the operations simultaneously. This method is must be called from the main thread. It's important to remember that the ASTableView will
- *  be processing the updates asynchronously after this call and are not guaranteed to be reflected in the ASTableView until
- *  the completion block is executed.
+ *  You call this method to bracket a series of method calls that begins with beginUpdates and that consists of
+ * operations to insert, delete, select, and reload rows and sections of the table view. When you call endUpdates,
+ * ASTableView begins animating the operations simultaneously. This method is must be called from the main thread. It's
+ * important to remember that the ASTableView will be processing the updates asynchronously after this call and are not
+ * guaranteed to be reflected in the ASTableView until the completion block is executed.
  *
  *  @param animated   NO to disable all animations.
- *  @param completion A completion handler block to execute when all of the operations are finished. This block takes a single
- *                    Boolean parameter that contains the value YES if all of the related animations completed successfully or
- *                    NO if they were interrupted. This parameter may be nil. If supplied, the block is run on the main thread.
+ *  @param completion A completion handler block to execute when all of the operations are finished. This block takes a
+ * single Boolean parameter that contains the value YES if all of the related animations completed successfully or NO if
+ * they were interrupted. This parameter may be nil. If supplied, the block is run on the main thread.
  */
-- (void)endUpdatesAnimated:(BOOL)animated completion:(void (^ _Nullable)(BOOL completed))completion;
+- (void)endUpdatesAnimated:(BOOL)animated completion:(void (^_Nullable)(BOOL completed))completion;
 
 /**
- *  Blocks execution of the main thread until all section and row updates are committed. This method must be called from the main thread.
+ *  Blocks execution of the main thread until all section and row updates are committed. This method must be called from
+ * the main thread.
  */
 - (void)waitUntilAllUpdatesAreCommitted;
 
@@ -203,8 +216,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param animation A constant that indicates how the insertion is to be animated. See UITableViewRowAnimation.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)insertSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation;
 
@@ -215,8 +228,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param animation A constant that indicates how the deletion is to be animated. See UITableViewRowAnimation.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)deleteSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation;
 
@@ -227,8 +240,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param animation A constant that indicates how the reloading is to be animated. See UITableViewRowAnimation.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)reloadSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation;
 
@@ -239,20 +252,21 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param newSection The index that is the destination of the move for the section.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)moveSection:(NSInteger)section toSection:(NSInteger)newSection;
 
 /**
  * Inserts rows at the locations identified by an array of index paths, with an option to animate the insertion.
  *
- * @param indexPaths An array of NSIndexPath objects, each representing a row index and section index that together identify a row.
+ * @param indexPaths An array of NSIndexPath objects, each representing a row index and section index that together
+ * identify a row.
  *
  * @param animation A constant that indicates how the insertion is to be animated. See UITableViewRowAnimation.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)insertRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation;
 
@@ -263,8 +277,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param animation A constant that indicates how the deletion is to be animated. See UITableViewRowAnimation.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)deleteRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation;
 
@@ -275,8 +289,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param animation A constant that indicates how the reloading is to be animated. See UITableViewRowAnimation.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)reloadRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation;
 
@@ -287,8 +301,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param newIndexPath The index path that is the destination of the move for the row.
  *
- * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the changes
- * before this method is called.
+ * @discussion This method must be called from the main thread. The asyncDataSource must be updated to reflect the
+ * changes before this method is called.
  */
 - (void)moveRowAtIndexPath:(NSIndexPath *)indexPath toIndexPath:(NSIndexPath *)newIndexPath;
 

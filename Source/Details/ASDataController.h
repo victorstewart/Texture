@@ -9,10 +9,10 @@
 
 #pragma once
 
-#import <UIKit/UIKit.h>
 #import <AsyncDisplayKit/ASBlockTypes.h>
 #import <AsyncDisplayKit/ASDimension.h>
 #import <AsyncDisplayKit/ASEventLog.h>
+#import <UIKit/UIKit.h>
 #ifdef __cplusplus
 #import <vector>
 #endif
@@ -20,7 +20,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #if ASEVENTLOG_ENABLE
-#define ASDataControllerLogEvent(dataController, ...) [dataController.eventLog logEventWithBacktrace:(AS_SAVE_EVENT_BACKTRACES ? [NSThread callStackSymbols] : nil) format:__VA_ARGS__]
+#define ASDataControllerLogEvent(dataController, ...)                                                           \
+  [dataController.eventLog logEventWithBacktrace:(AS_SAVE_EVENT_BACKTRACES ? [NSThread callStackSymbols] : nil) \
+                                          format:__VA_ARGS__]
 #else
 #define ASDataControllerLogEvent(dataController, ...)
 #endif
@@ -39,8 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NSUInteger ASDataControllerAnimationOptions;
 
-AS_EXTERN NSString * const ASDataControllerRowNodeKind;
-AS_EXTERN NSString * const ASCollectionInvalidUpdateException;
+AS_EXTERN NSString *const ASDataControllerRowNodeKind;
+AS_EXTERN NSString *const ASCollectionInvalidUpdateException;
 
 /**
  Data source for data controller
@@ -50,9 +52,12 @@ AS_EXTERN NSString * const ASCollectionInvalidUpdateException;
 @protocol ASDataControllerSource <NSObject>
 
 /**
- Fetch the ASCellNode block for specific index path. This block should return the ASCellNode for the specified index path.
+ Fetch the ASCellNode block for specific index path. This block should return the ASCellNode for the specified index
+ path.
  */
-- (ASCellNodeBlock)dataController:(ASDataController *)dataController nodeBlockAtIndexPath:(NSIndexPath *)indexPath shouldAsyncLayout:(BOOL *)shouldAsyncLayout;
+- (ASCellNodeBlock)dataController:(ASDataController *)dataController
+             nodeBlockAtIndexPath:(NSIndexPath *)indexPath
+                shouldAsyncLayout:(BOOL *)shouldAsyncLayout;
 
 /**
  Fetch the number of rows in specific section.
@@ -68,7 +73,9 @@ AS_EXTERN NSString * const ASCollectionInvalidUpdateException;
  Returns if the collection element size matches a given size.
  @precondition The element is present in the data controller's visible map.
  */
-- (BOOL)dataController:(ASDataController *)dataController presentedSizeForElement:(ASCollectionElement *)element matchesSize:(CGSize)size;
+- (BOOL)dataController:(ASDataController *)dataController
+    presentedSizeForElement:(ASCollectionElement *)element
+                matchesSize:(CGSize)size;
 
 - (nullable id)dataController:(ASDataController *)dataController nodeModelForItemAtIndexPath:(NSIndexPath *)indexPath;
 
@@ -80,7 +87,8 @@ AS_EXTERN NSString * const ASCollectionInvalidUpdateException;
  * Returning YES will cause the ASDataController to wait on the background queue, and this ensures
  * that any new / changed cells are in the hierarchy by the very next CATransaction / frame draw.
  */
-- (BOOL)dataController:(ASDataController *)dataController shouldSynchronouslyProcessChangeSet:(_ASHierarchyChangeSet *)changeSet;
+- (BOOL)dataController:(ASDataController *)dataController
+    shouldSynchronouslyProcessChangeSet:(_ASHierarchyChangeSet *)changeSet;
 - (BOOL)dataController:(ASDataController *)dataController shouldEagerlyLayoutNode:(ASCellNode *)node;
 - (BOOL)dataControllerShouldSerializeNodeCreation:(ASDataController *)dataController;
 
@@ -89,18 +97,27 @@ AS_EXTERN NSString * const ASCollectionInvalidUpdateException;
 /**
  The constrained size range for layout. Called only if collection layout delegate is not provided.
  */
-- (ASSizeRange)dataController:(ASDataController *)dataController constrainedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath;
+- (ASSizeRange)dataController:(ASDataController *)dataController
+    constrainedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath;
 
-- (NSArray<NSString *> *)dataController:(ASDataController *)dataController supplementaryNodeKindsInSections:(NSIndexSet *)sections;
+- (NSArray<NSString *> *)dataController:(ASDataController *)dataController
+       supplementaryNodeKindsInSections:(NSIndexSet *)sections;
 
-- (NSUInteger)dataController:(ASDataController *)dataController supplementaryNodesOfKind:(NSString *)kind inSection:(NSUInteger)section;
+- (NSUInteger)dataController:(ASDataController *)dataController
+    supplementaryNodesOfKind:(NSString *)kind
+                   inSection:(NSUInteger)section;
 
-- (ASCellNodeBlock)dataController:(ASDataController *)dataController supplementaryNodeBlockOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath shouldAsyncLayout:(BOOL *)shouldAsyncLayout;
+- (ASCellNodeBlock)dataController:(ASDataController *)dataController
+     supplementaryNodeBlockOfKind:(NSString *)kind
+                      atIndexPath:(NSIndexPath *)indexPath
+                shouldAsyncLayout:(BOOL *)shouldAsyncLayout;
 
 /**
  The constrained size range for layout. Called only if no data controller layout delegate is provided.
  */
-- (ASSizeRange)dataController:(ASDataController *)dataController constrainedSizeForSupplementaryNodeOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath;
+- (ASSizeRange)dataController:(ASDataController *)dataController
+    constrainedSizeForSupplementaryNodeOfKind:(NSString *)kind
+                                  atIndexPath:(NSIndexPath *)indexPath;
 
 - (nullable id<ASSectionContext>)dataController:(ASDataController *)dataController contextForSection:(NSInteger)section;
 
@@ -121,9 +138,12 @@ AS_EXTERN NSString * const ASCollectionInvalidUpdateException;
  *
  * @discussion The updates block must always be executed or the data controller will get into a bad state.
  * It should be called at the time the backing view is ready to process the updates,
- * i.e inside the updates block of `-[UICollectionView performBatchUpdates:completion:] or after calling `-[UITableView beginUpdates]`.
+ * i.e inside the updates block of `-[UICollectionView performBatchUpdates:completion:] or after calling `-[UITableView
+ * beginUpdates]`.
  */
-- (void)dataController:(ASDataController *)dataController updateWithChangeSet:(_ASHierarchyChangeSet *)changeSet updates:(dispatch_block_t)updates;
+- (void)dataController:(ASDataController *)dataController
+    updateWithChangeSet:(_ASHierarchyChangeSet *)changeSet
+                updates:(dispatch_block_t)updates;
 
 @end
 
@@ -144,11 +164,13 @@ AS_EXTERN NSString * const ASCollectionInvalidUpdateException;
  *
  * @return The new layout calculated for the given context.
  *
- * @discussion This method is called ahead of time, i.e before the underlying collection/table view is aware of the provided elements.
- * As a result, clients must solely rely on the given context and should not reach out to other objects for information not available in the context.
+ * @discussion This method is called ahead of time, i.e before the underlying collection/table view is aware of the
+ * provided elements. As a result, clients must solely rely on the given context and should not reach out to other
+ * objects for information not available in the context.
  *
- * This method will be called on background theads. It must be thread-safe and should not change any internal state of the conforming object.
- * It must block the calling thread but can dispatch to other theads to reduce total blocking time.
+ * This method will be called on background theads. It must be thread-safe and should not change any internal state of
+ * the conforming object. It must block the calling thread but can dispatch to other theads to reduce total blocking
+ * time.
  */
 + (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context;
 
@@ -157,13 +179,15 @@ AS_EXTERN NSString * const ASCollectionInvalidUpdateException;
 /**
  * Controller to layout data in background, and managed data updating.
  *
- * All operations are asynchronous and thread safe. You can call it from background thread (it is recommendated) and the data
- * will be updated asynchronously. The dataSource must be updated to reflect the changes before these methods has been called.
- * For each data updating, the corresponding methods in delegate will be called.
+ * All operations are asynchronous and thread safe. You can call it from background thread (it is recommendated) and the
+ * data will be updated asynchronously. The dataSource must be updated to reflect the changes before these methods has
+ * been called. For each data updating, the corresponding methods in delegate will be called.
  */
 @interface ASDataController : NSObject
 
-- (instancetype)initWithDataSource:(id<ASDataControllerSource>)dataSource node:(nullable id<ASRangeManagingNode>)node eventLog:(nullable ASEventLog *)eventLog NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDataSource:(id<ASDataControllerSource>)dataSource
+                              node:(nullable id<ASRangeManagingNode>)node
+                          eventLog:(nullable ASEventLog *)eventLog NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -172,41 +196,41 @@ AS_EXTERN NSString * const ASCollectionInvalidUpdateException;
  *
  * NOTE: Soon we will drop support for using ASTableView/ASCollectionView without the node, so this will be non-null.
  */
-@property (nullable, nonatomic, weak, readonly) id<ASRangeManagingNode> node;
+@property(nullable, nonatomic, weak, readonly) id<ASRangeManagingNode> node;
 
 /**
  * The map that is currently displayed. The "UIKit index space."
  *
  * This property will only be changed on the main thread.
  */
-@property (copy, readonly) ASElementMap *visibleMap;
+@property(copy, readonly) ASElementMap *visibleMap;
 
 /**
  * The latest map fetched from the data source. May be more recent than @c visibleMap.
  *
  * This property will only be changed on the main thread.
  */
-@property (copy, readonly) ASElementMap *pendingMap;
+@property(copy, readonly) ASElementMap *pendingMap;
 
 /**
  Data source for fetching data info.
  */
-@property (nonatomic, weak, readonly) id<ASDataControllerSource> dataSource;
+@property(nonatomic, weak, readonly) id<ASDataControllerSource> dataSource;
 
 /**
  An object that will be included in the backtrace of any update validation exceptions that occur.
  */
-@property (nonatomic, weak) id validationErrorSource;
+@property(nonatomic, weak) id validationErrorSource;
 
 /**
  Delegate to notify when data is updated.
  */
-@property (nonatomic, weak) id<ASDataControllerDelegate> delegate;
+@property(nonatomic, weak) id<ASDataControllerDelegate> delegate;
 
 /**
  * Delegate for preparing layouts. Main thead only.
  */
-@property (nonatomic, weak) id<ASDataControllerLayoutDelegate> layoutDelegate;
+@property(nonatomic, weak) id<ASDataControllerLayoutDelegate> layoutDelegate;
 
 #ifdef __cplusplus
 /**
@@ -225,13 +249,14 @@ AS_EXTERN NSString * const ASCollectionInvalidUpdateException;
  *
  * This must be called on the main thread.
  */
-@property (nonatomic, readonly) BOOL initialReloadDataHasBeenCalled;
+@property(nonatomic, readonly) BOOL initialReloadDataHasBeenCalled;
 
 #if ASEVENTLOG_ENABLE
 /*
- * @abstract The primitive event tracing object. You shouldn't directly use it to log event. Use the ASDataControllerLogEvent macro instead.
+ * @abstract The primitive event tracing object. You shouldn't directly use it to log event. Use the
+ * ASDataControllerLogEvent macro instead.
  */
-@property (nonatomic, readonly) ASEventLog *eventLog;
+@property(nonatomic, readonly) ASEventLog *eventLog;
 #endif
 
 /** @name Data Updating */
@@ -240,7 +265,7 @@ AS_EXTERN NSString * const ASCollectionInvalidUpdateException;
 
 /**
  * Re-measures all loaded nodes in the backing store.
- * 
+ *
  * @discussion Used to respond to a change in size of the containing view
  * (e.g. ASTableView or ASCollectionView after an orientation change).
  *
@@ -259,21 +284,23 @@ AS_EXTERN NSString * const ASCollectionInvalidUpdateException;
 /**
  * See ASCollectionNode.h for full documentation of these methods.
  */
-@property (nonatomic, readonly) BOOL isProcessingUpdates;
+@property(nonatomic, readonly) BOOL isProcessingUpdates;
 - (void)onDidFinishProcessingUpdates:(void (^)(void))completion;
 - (void)waitUntilAllUpdatesAreProcessed;
 
 /**
  * See ASCollectionNode.h for full documentation of these methods.
  */
-@property (nonatomic, readonly, getter=isSynchronized) BOOL synchronized;
+@property(nonatomic, readonly, getter=isSynchronized) BOOL synchronized;
 - (void)onDidFinishSynchronizing:(void (^)(void))completion;
 
 /**
- * Notifies the data controller object that its environment has changed. The object will request its environment delegate for new information
- * and propagate the information to all visible elements, including ones that are being prepared in background.
+ * Notifies the data controller object that its environment has changed. The object will request its environment
+ * delegate for new information and propagate the information to all visible elements, including ones that are being
+ * prepared in background.
  *
- * @discussion If called before the initial @c reloadData, this method will do nothing and the trait collection of the initial load will be requested from the environment delegate.
+ * @discussion If called before the initial @c reloadData, this method will do nothing and the trait collection of the
+ * initial load will be requested from the environment delegate.
  *
  * @discussion This method can be called on any threads.
  */

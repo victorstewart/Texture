@@ -9,77 +9,82 @@
 
 #import <Foundation/Foundation.h>
 #if TARGET_OS_TV
-#import <AsyncDisplayKit/ASControlNode.h>
 #import <AsyncDisplayKit/ASControlNode+Private.h>
+#import <AsyncDisplayKit/ASControlNode.h>
 
 @implementation ASControlNode (tvOS)
 
 #pragma mark - tvOS
-- (void)_pressDown
-{
-  [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
-    [self setPressedState];
-  } completion:^(BOOL finished) {
-    if (finished) {
-      [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
-        [self setFocusedState];
-      } completion:nil];
-    }
-  }];
+- (void)_pressDown {
+  [UIView animateWithDuration:0.1
+      delay:0
+      options:UIViewAnimationOptionCurveLinear
+      animations:^{
+        [self setPressedState];
+      }
+      completion:^(BOOL finished) {
+        if (finished) {
+          [UIView animateWithDuration:0.1
+                                delay:0
+                              options:UIViewAnimationOptionCurveLinear
+                           animations:^{
+                             [self setFocusedState];
+                           }
+                           completion:nil];
+        }
+      }];
 }
 
-- (BOOL)canBecomeFocused
-{
+- (BOOL)canBecomeFocused {
   return YES;
 }
 
-- (BOOL)shouldUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context
-{
+- (BOOL)shouldUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context {
   return YES;
 }
 
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
-{
-  //FIXME: This is never valid inside an ASCellNode
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context
+       withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+  // FIXME: This is never valid inside an ASCellNode
   if (context.nextFocusedView && context.nextFocusedView == self.view) {
-    //Focused
-    [coordinator addCoordinatedAnimations:^{
-      [self setFocusedState];
-    } completion:nil];
-  } else{
-    //Not focused
-    [coordinator addCoordinatedAnimations:^{
-      [self setDefaultFocusAppearance];
-    } completion:nil];
+    // Focused
+    [coordinator
+        addCoordinatedAnimations:^{
+          [self setFocusedState];
+        }
+                      completion:nil];
+  } else {
+    // Not focused
+    [coordinator
+        addCoordinatedAnimations:^{
+          [self setDefaultFocusAppearance];
+        }
+                      completion:nil];
   }
 }
 
-- (void)setFocusedState
-{
+- (void)setFocusedState {
   CALayer *layer = self.layer;
   layer.shadowOffset = CGSizeMake(2, 10);
-  [self applyDefaultShadowProperties: layer];
+  [self applyDefaultShadowProperties:layer];
   self.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.1, 1.1);
 }
 
-- (void)setPressedState
-{
+- (void)setPressedState {
   CALayer *layer = self.layer;
   layer.shadowOffset = CGSizeMake(2, 2);
-  [self applyDefaultShadowProperties: layer];
+  [self applyDefaultShadowProperties:layer];
   self.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
 }
 
-- (void)applyDefaultShadowProperties:(CALayer *)layer
-{
+- (void)applyDefaultShadowProperties:(CALayer *)layer {
   layer.shadowColor = [UIColor blackColor].CGColor;
   layer.shadowRadius = 12.0;
   layer.shadowOpacity = 0.45;
   layer.shadowPath = [UIBezierPath bezierPathWithRect:self.layer.bounds].CGPath;
 }
 
-- (void)setDefaultFocusAppearance
-{
+- (void)setDefaultFocusAppearance {
   CALayer *layer = self.layer;
   layer.shadowOffset = CGSizeZero;
   layer.shadowColor = [UIColor blackColor].CGColor;

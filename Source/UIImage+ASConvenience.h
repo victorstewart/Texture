@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <UIKit/UIKit.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -43,7 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
  *  @param traitCollection The traits associated with the intended environment for the image.
  *  @return The loaded image or nil
  */
-+ (nullable UIImage *)as_imageNamed:(NSString *)imageName compatibleWithTraitCollection:(nullable UITraitCollection *)traitCollection NS_RETURNS_RETAINED;
++ (nullable UIImage *)as_imageNamed:(NSString *)imageName
+      compatibleWithTraitCollection:(nullable UITraitCollection *)traitCollection NS_RETURNS_RETAINED;
 
 @end
 
@@ -93,7 +94,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @param fillColor       The fill color of the rounded-corner image
  * @param borderColor     The border color. Set to nil for no border.
  * @param borderWidth     The border width. Dummy value if borderColor = nil.
- * @param roundedCorners  Select individual or multiple corners to round. Set to UIRectCornerAllCorners to round all 4 corners.
+ * @param roundedCorners  Select individual or multiple corners to round. Set to UIRectCornerAllCorners to round all 4
+ * corners.
  * @param scale           The number of pixels per point. Provide 0.0 to use the screen scale.
  */
 + (UIImage *)as_resizableRoundedImageWithCornerRadius:(CGFloat)cornerRadius

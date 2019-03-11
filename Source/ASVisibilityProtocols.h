@@ -19,7 +19,7 @@ AS_EXTERN ASLayoutRangeMode ASLayoutRangeModeForVisibilityDepth(NSUInteger visib
 /**
  * ASVisibilityDepth
  *
- * @discussion "Visibility Depth" represents the number of user actions required to make an ASDisplayNode or 
+ * @discussion "Visibility Depth" represents the number of user actions required to make an ASDisplayNode or
  * ASViewController visibile. AsyncDisplayKit uses this information to intelligently manage memory and focus
  * resources where they are most visible to the user.
  *
@@ -51,7 +51,7 @@ AS_EXTERN ASLayoutRangeMode ASLayoutRangeModeForVisibilityDepth(NSUInteger visib
  *
  * @discussion @c visibilityDepthDidChange is called whenever the visibility depth of the represented view controller
  * has changed.
- * 
+ *
  * If implemented by a view controller container, use this method to notify child view controllers that their view
  * depth has changed @see ASNavigationController.m
  *
@@ -59,8 +59,8 @@ AS_EXTERN ASLayoutRangeMode ASLayoutRangeModeForVisibilityDepth(NSUInteger visib
  * view controller uses. A higher visibility depth view controller should decrease it's resource usage, a lower
  * visibility depth controller should pre-warm resources in preperation for a display at 0 depth.
  *
- * ASViewController implements this method and reduces / increases range mode of supporting nodes (such as ASCollectionNode
- * and ASTableNode).
+ * ASViewController implements this method and reduces / increases range mode of supporting nodes (such as
+ * ASCollectionNode and ASTableNode).
  *
  * @see visibilityDepth
  */
@@ -91,55 +91,51 @@ AS_EXTERN ASLayoutRangeMode ASLayoutRangeModeForVisibilityDepth(NSUInteger visib
 
 @end
 
-#define ASVisibilitySetVisibilityDepth \
-- (void)setVisibilityDepth:(NSUInteger)visibilityDepth \
-{ \
-  if (_visibilityDepth == visibilityDepth) { \
-    return; \
-  } \
-  _visibilityDepth = visibilityDepth; \
-  [self visibilityDepthDidChange]; \
-}
+#define ASVisibilitySetVisibilityDepth                      \
+  -(void)setVisibilityDepth : (NSUInteger)visibilityDepth { \
+    if (_visibilityDepth == visibilityDepth) {              \
+      return;                                               \
+    }                                                       \
+    _visibilityDepth = visibilityDepth;                     \
+    [self visibilityDepthDidChange];                        \
+  }
 
-#define ASVisibilityDepthImplementation \
-- (NSInteger)visibilityDepth \
-{ \
-  if (self.parentViewController && _parentManagesVisibilityDepth == NO) { \
-    _parentManagesVisibilityDepth = [self.parentViewController conformsToProtocol:@protocol(ASManagesChildVisibilityDepth)]; \
-  } \
-  \
-  if (_parentManagesVisibilityDepth) { \
-    return [(id <ASManagesChildVisibilityDepth>)self.parentViewController visibilityDepthOfChildViewController:self]; \
-  } \
-  return _visibilityDepth; \
-}
+#define ASVisibilityDepthImplementation                                                                                \
+  -(NSInteger)visibilityDepth {                                                                                        \
+    if (self.parentViewController && _parentManagesVisibilityDepth == NO) {                                            \
+      _parentManagesVisibilityDepth =                                                                                  \
+          [self.parentViewController conformsToProtocol:@protocol(ASManagesChildVisibilityDepth)];                     \
+    }                                                                                                                  \
+                                                                                                                       \
+    if (_parentManagesVisibilityDepth) {                                                                               \
+      return [(id<ASManagesChildVisibilityDepth>)self.parentViewController visibilityDepthOfChildViewController:self]; \
+    }                                                                                                                  \
+    return _visibilityDepth;                                                                                           \
+  }
 
 #define ASVisibilityViewDidDisappearImplementation \
-- (void)viewDidDisappear:(BOOL)animated \
-{ \
-  [super viewDidDisappear:animated]; \
-  \
-  if (_parentManagesVisibilityDepth == NO) { \
-    [self setVisibilityDepth:1]; \
-  } \
-}
+  -(void)viewDidDisappear : (BOOL)animated {       \
+    [super viewDidDisappear:animated];             \
+                                                   \
+    if (_parentManagesVisibilityDepth == NO) {     \
+      [self setVisibilityDepth:1];                 \
+    }                                              \
+  }
 
-#define ASVisibilityViewWillAppear \
-- (void)viewWillAppear:(BOOL)animated \
-{ \
-  [super viewWillAppear:animated]; \
-  \
-  if (_parentManagesVisibilityDepth == NO) { \
-    [self setVisibilityDepth:0]; \
-  } \
-}
+#define ASVisibilityViewWillAppear             \
+  -(void)viewWillAppear : (BOOL)animated {     \
+    [super viewWillAppear:animated];           \
+                                               \
+    if (_parentManagesVisibilityDepth == NO) { \
+      [self setVisibilityDepth:0];             \
+    }                                          \
+  }
 
-#define ASVisibilityDidMoveToParentViewController \
-- (void)didMoveToParentViewController:(UIViewController *)parent \
-{ \
-  [super didMoveToParentViewController:parent]; \
-  _parentManagesVisibilityDepth = NO; \
-  [self visibilityDepthDidChange]; \
-}
+#define ASVisibilityDidMoveToParentViewController                     \
+  -(void)didMoveToParentViewController : (UIViewController *)parent { \
+    [super didMoveToParentViewController:parent];                     \
+    _parentManagesVisibilityDepth = NO;                               \
+    [self visibilityDepthDidChange];                                  \
+  }
 
 NS_ASSUME_NONNULL_END

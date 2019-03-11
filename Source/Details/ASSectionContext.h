@@ -16,7 +16,7 @@
 /**
  * Custom name of this section, for debugging only.
  */
-@property (nonatomic, copy, nullable) NSString *sectionName;
-@property (nonatomic, weak, nullable) ASCollectionView *collectionView;
+@property(nonatomic, copy, nullable) NSString *sectionName;
+@property(nonatomic, weak, nullable) ASCollectionView *collectionView;
 
 @end

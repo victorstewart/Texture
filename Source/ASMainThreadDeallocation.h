@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
  * return fixed values for other common classes, such as UIImage,
  * UIGestureRecognizer, and UIResponder.
  */
-@property (class, readonly) BOOL needsMainThreadDeallocation;
+@property(class, readonly) BOOL needsMainThreadDeallocation;
 
 @end
 
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
  * The NSProxy implementation returns NO because
  * proxies almost always hold weak references.
  */
-@property (class, readonly) BOOL needsMainThreadDeallocation;
+@property(class, readonly) BOOL needsMainThreadDeallocation;
 
 @end
 

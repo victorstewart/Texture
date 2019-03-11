@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 #if AS_ENABLE_TIPS
 
@@ -22,7 +22,7 @@ AS_SUBCLASSING_RESTRICTED
 /**
  * The shared tip controller instance.
  */
-@property (class, readonly) ASTipsController *shared;
+@property(class, readonly) ASTipsController *shared;
 
 #pragma mark - Node Event Hooks
 
@@ -37,4 +37,4 @@ AS_SUBCLASSING_RESTRICTED
 
 NS_ASSUME_NONNULL_END
 
-#endif // AS_ENABLE_TIPS
+#endif  // AS_ENABLE_TIPS

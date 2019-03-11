@@ -7,28 +7,25 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASDisplayNodeInternal.h>
 #import <AsyncDisplayKit/ASDisplayNode+FrameworkPrivate.h>
+#import <AsyncDisplayKit/ASDisplayNodeInternal.h>
 #import <AsyncDisplayKit/ASNodeController+Beta.h>
 #import <AsyncDisplayKit/ASThread.h>
 
 #define _node (_shouldInvertStrongReference ? _weakNode : _strongNode)
 
-@implementation ASNodeController
-{
+@implementation ASNodeController {
   ASDisplayNode *_strongNode;
   __weak ASDisplayNode *_weakNode;
   AS::RecursiveMutex __instanceLock__;
 }
 
-- (void)loadNode
-{
+- (void)loadNode {
   ASLockScopeSelf();
   self.node = [[ASDisplayNode alloc] init];
 }
 
-- (ASDisplayNode *)node
-{
+- (ASDisplayNode *)node {
   ASLockScopeSelf();
   if (_node == nil) {
     [self loadNode];
@@ -36,8 +33,7 @@
   return _node;
 }
 
-- (void)setupReferencesWithNode:(ASDisplayNode *)node
-{
+- (void)setupReferencesWithNode:(ASDisplayNode *)node {
   ASLockScopeSelf();
   if (_shouldInvertStrongReference) {
     // The node should own the controller; weak reference from controller to node.
@@ -52,8 +48,7 @@
   [node __setNodeController:self];
 }
 
-- (void)setNode:(ASDisplayNode *)node
-{
+- (void)setNode:(ASDisplayNode *)node {
   ASLockScopeSelf();
   if (node == _node) {
     return;
@@ -62,8 +57,7 @@
   [node addInterfaceStateDelegate:self];
 }
 
-- (void)setShouldInvertStrongReference:(BOOL)shouldInvertStrongReference
-{
+- (void)setShouldInvertStrongReference:(BOOL)shouldInvertStrongReference {
   ASLockScopeSelf();
   if (_shouldInvertStrongReference != shouldInvertStrongReference) {
     // Because the BOOL controls which ivar we access, get the node before toggling.
@@ -74,23 +68,33 @@
 }
 
 // subclass overrides
-- (void)nodeDidLoad {}
-- (void)nodeDidLayout {}
-- (void)nodeWillCalculateLayout:(ASSizeRange)constrainedSize {}
+- (void)nodeDidLoad {
+}
+- (void)nodeDidLayout {
+}
+- (void)nodeWillCalculateLayout:(ASSizeRange)constrainedSize {
+}
 
-- (void)didEnterVisibleState {}
-- (void)didExitVisibleState  {}
+- (void)didEnterVisibleState {
+}
+- (void)didExitVisibleState {
+}
 
-- (void)didEnterDisplayState {}
-- (void)didExitDisplayState  {}
+- (void)didEnterDisplayState {
+}
+- (void)didExitDisplayState {
+}
 
-- (void)didEnterPreloadState {}
-- (void)didExitPreloadState  {}
+- (void)didEnterPreloadState {
+}
+- (void)didExitPreloadState {
+}
 
-- (void)interfaceStateDidChange:(ASInterfaceState)newState
-                      fromState:(ASInterfaceState)oldState {}
+- (void)interfaceStateDidChange:(ASInterfaceState)newState fromState:(ASInterfaceState)oldState {
+}
 
-- (void)hierarchyDisplayDidFinish {}
+- (void)hierarchyDisplayDidFinish {
+}
 
 - (ASLockSet)lockPair {
   ASLockSet lockSet = ASLockSequence(^BOOL(ASAddLockBlock addLock) {
@@ -108,18 +112,15 @@
 
 #pragma mark NSLocking
 
-- (void)lock
-{
+- (void)lock {
   __instanceLock__.lock();
 }
 
-- (void)unlock
-{
+- (void)unlock {
   __instanceLock__.unlock();
 }
 
-- (BOOL)tryLock
-{
+- (BOOL)tryLock {
   return __instanceLock__.try_lock();
 }
 
@@ -127,8 +128,7 @@
 
 @implementation ASDisplayNode (ASNodeController)
 
-- (ASNodeController *)nodeController
-{
+- (ASNodeController *)nodeController {
   return _weakNodeController ?: _strongNodeController;
 }
 

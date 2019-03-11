@@ -7,11 +7,10 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASTabBarController.h>
 #import <AsyncDisplayKit/ASLog.h>
+#import <AsyncDisplayKit/ASTabBarController.h>
 
-@implementation ASTabBarController
-{
+@implementation ASTabBarController {
   BOOL _parentManagesVisibilityDepth;
   NSInteger _visibilityDepth;
 }
@@ -26,23 +25,21 @@ ASVisibilitySetVisibilityDepth;
 
 ASVisibilityDepthImplementation;
 
-- (void)visibilityDepthDidChange
-{
+- (void)visibilityDepthDidChange {
   for (UIViewController *viewController in self.viewControllers) {
     if ([viewController conformsToProtocol:@protocol(ASVisibilityDepth)]) {
-      [(id <ASVisibilityDepth>)viewController visibilityDepthDidChange];
+      [(id<ASVisibilityDepth>)viewController visibilityDepthDidChange];
     }
   }
 }
 
-- (NSInteger)visibilityDepthOfChildViewController:(UIViewController *)childViewController
-{
+- (NSInteger)visibilityDepthOfChildViewController:(UIViewController *)childViewController {
   NSUInteger viewControllerIndex = [self.viewControllers indexOfObjectIdenticalTo:childViewController];
   if (viewControllerIndex == NSNotFound) {
-    //If childViewController is not actually a child, return NSNotFound which is also a really large number.
+    // If childViewController is not actually a child, return NSNotFound which is also a really large number.
     return NSNotFound;
   }
-  
+
   if (self.selectedViewController == childViewController) {
     return [self visibilityDepth];
   }
@@ -51,20 +48,17 @@ ASVisibilityDepthImplementation;
 
 #pragma mark - UIKit overrides
 
-- (void)setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers
-{
+- (void)setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers {
   [super setViewControllers:viewControllers];
   [self visibilityDepthDidChange];
 }
 
-- (void)setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers animated:(BOOL)animated
-{
+- (void)setViewControllers:(NSArray<__kindof UIViewController *> *)viewControllers animated:(BOOL)animated {
   [super setViewControllers:viewControllers animated:animated];
   [self visibilityDepthDidChange];
 }
 
-- (void)setSelectedIndex:(NSUInteger)selectedIndex
-{
+- (void)setSelectedIndex:(NSUInteger)selectedIndex {
   as_activity_create_for_scope("Set selected index of ASTabBarController");
   as_log_info(ASNodeLog(), "Selected tab %tu of %@", selectedIndex, self);
 
@@ -72,8 +66,7 @@ ASVisibilityDepthImplementation;
   [self visibilityDepthDidChange];
 }
 
-- (void)setSelectedViewController:(__kindof UIViewController *)selectedViewController
-{
+- (void)setSelectedViewController:(__kindof UIViewController *)selectedViewController {
   as_activity_create_for_scope("Set selected view controller of ASTabBarController");
   as_log_info(ASNodeLog(), "Selected view controller %@ of %@", selectedViewController, self);
 

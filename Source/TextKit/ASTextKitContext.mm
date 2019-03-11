@@ -16,8 +16,7 @@
 
 #include <memory>
 
-@implementation ASTextKitContext
-{
+@implementation ASTextKitContext {
   // All TextKit operations (even non-mutative ones) must be executed serially.
   std::shared_ptr<AS::Mutex> __instanceLock__;
 
@@ -39,25 +38,25 @@
     dispatch_once(&onceToken, ^{
       mutex = new AS::Mutex();
     });
-    
+
     // Concurrently initialising TextKit components crashes (rdar://18448377) so we use a global lock.
     AS::MutexLocker l(*mutex);
-    
+
     __instanceLock__ = std::make_shared<AS::Mutex>();
-    
+
     // Create the TextKit component stack with our default configuration.
-    
+
     _textStorage = [[NSTextStorage alloc] init];
     _layoutManager = [[ASLayoutManager alloc] init];
     _layoutManager.usesFontLeading = NO;
     [_textStorage addLayoutManager:_layoutManager];
-    
-    // Instead of calling [NSTextStorage initWithAttributedString:], setting attributedString just after calling addlayoutManager can fix CJK language layout issues.
-    // See https://github.com/facebook/AsyncDisplayKit/issues/2894
+
+    // Instead of calling [NSTextStorage initWithAttributedString:], setting attributedString just after calling
+    // addlayoutManager can fix CJK language layout issues. See https://github.com/facebook/AsyncDisplayKit/issues/2894
     if (attributedString) {
       [_textStorage setAttributedString:attributedString];
     }
-    
+
     _textContainer = [[NSTextContainer alloc] initWithSize:constrainedSize];
     // We want the text laid out up to the very edges of the container.
     _textContainer.lineFragmentPadding = 0;
@@ -69,10 +68,8 @@
   return self;
 }
 
-- (void)performBlockWithLockedTextKitComponents:(NS_NOESCAPE void (^)(NSLayoutManager *,
-                                                                      NSTextStorage *,
-                                                                      NSTextContainer *))block
-{
+- (void)performBlockWithLockedTextKitComponents:
+    (NS_NOESCAPE void (^)(NSLayoutManager *, NSTextStorage *, NSTextContainer *))block {
   AS::MutexLocker l(*__instanceLock__);
   if (block) {
     block(_layoutManager, _textStorage, _textContainer);

@@ -7,15 +7,15 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
+#import <AsyncDisplayKit/ASBaseDefines.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <AsyncDisplayKit/ASBaseDefines.h>
 
 @class ASCollectionLayoutContext, ASLayout, ASCollectionElement;
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef ASCollectionElement * _Nullable (^ASCollectionLayoutStateGetElementBlock)(ASLayout *);
+typedef ASCollectionElement *_Nullable (^ASCollectionLayoutStateGetElementBlock)(ASLayout *);
 
 @interface NSMapTable (ASCollectionLayoutConvenience)
 
@@ -29,10 +29,10 @@ AS_SUBCLASSING_RESTRICTED
 @interface ASCollectionLayoutState : NSObject
 
 /// The context used to calculate this object
-@property (readonly) ASCollectionLayoutContext *context;
+@property(readonly) ASCollectionLayoutContext *context;
 
 /// The final content size of the collection's layout
-@property (readonly) CGSize contentSize;
+@property(readonly) CGSize contentSize;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -47,8 +47,9 @@ AS_SUBCLASSING_RESTRICTED
  * It should have NSMapTableObjectPointerPersonality and NSMapTableWeakMemory as key options.
  */
 - (instancetype)initWithContext:(ASCollectionLayoutContext *)context
-                    contentSize:(CGSize)contentSize
- elementToLayoutAttributesTable:(NSMapTable<ASCollectionElement *, UICollectionViewLayoutAttributes *> *)table NS_DESIGNATED_INITIALIZER;
+                       contentSize:(CGSize)contentSize
+    elementToLayoutAttributesTable:(NSMapTable<ASCollectionElement *, UICollectionViewLayoutAttributes *> *)table
+    NS_DESIGNATED_INITIALIZER;
 
 /**
  * Convenience initializer. Returns an object with zero content size and an empty table.

@@ -28,8 +28,7 @@
 
 - (instancetype)initWithType:(NSTextCheckingType)type
              entityAttribute:(ASTextKitEntityAttribute *)entityAttribute
-                       range:(NSRange)range
-{
+                       range:(NSRange)range {
   if ((self = [super init])) {
     _resultTypeOverride = type;
     _rangeOverride = range;
@@ -38,13 +37,11 @@
   return self;
 }
 
-- (NSTextCheckingType)resultType
-{
+- (NSTextCheckingType)resultType {
   return _resultTypeOverride;
 }
 
-- (NSRange)range
-{
+- (NSRange)range {
   return _rangeOverride;
 }
 
@@ -52,50 +49,55 @@
 
 @implementation ASTextKitRenderer (TextChecking)
 
-- (NSTextCheckingResult *)textCheckingResultAtPoint:(CGPoint)point
-{
+- (NSTextCheckingResult *)textCheckingResultAtPoint:(CGPoint)point {
   __block NSTextCheckingResult *result = nil;
   NSAttributedString *attributedString = self.attributes.attributedString;
   NSAttributedString *truncationAttributedString = self.attributes.truncationAttributedString;
 
   // get the index of the last character, so we can handle text in the truncation token
-  __block NSRange truncationTokenRange = { NSNotFound, 0 };
+  __block NSRange truncationTokenRange = {NSNotFound, 0};
 
-  [truncationAttributedString enumerateAttribute:ASTextKitTruncationAttributeName inRange:NSMakeRange(0, truncationAttributedString.length)
+  [truncationAttributedString enumerateAttribute:ASTextKitTruncationAttributeName
+                                         inRange:NSMakeRange(0, truncationAttributedString.length)
                                          options:0
                                       usingBlock:^(id value, NSRange range, BOOL *stop) {
-    if (value != nil && range.length > 0) {
-      truncationTokenRange = range;
-    }
-  }];
+                                        if (value != nil && range.length > 0) {
+                                          truncationTokenRange = range;
+                                        }
+                                      }];
 
   if (truncationTokenRange.location == NSNotFound) {
     // The truncation string didn't specify a substring which should be highlighted, so we just highlight it all
-    truncationTokenRange = { 0, truncationAttributedString.length };
+    truncationTokenRange = {0, truncationAttributedString.length};
   }
 
   NSRange visibleRange = self.truncater.firstVisibleRange;
   truncationTokenRange.location += NSMaxRange(visibleRange);
-  
+
   __block CGFloat minDistance = CGFLOAT_MAX;
-  [self enumerateTextIndexesAtPosition:point usingBlock:^(NSUInteger index, CGRect glyphBoundingRect, BOOL *stop){
-    if (index >= truncationTokenRange.location) {
-      result = [[ASTextKitTextCheckingResult alloc] initWithType:ASTextKitTextCheckingTypeTruncation
-                                                 entityAttribute:nil
-                                                           range:truncationTokenRange];
-    } else {
-      NSRange range;
-      NSDictionary *attributes = [attributedString attributesAtIndex:index effectiveRange:&range];
-      ASTextKitEntityAttribute *entityAttribute = attributes[ASTextKitEntityAttributeName];
-      CGFloat distance = hypot(CGRectGetMidX(glyphBoundingRect) - point.x, CGRectGetMidY(glyphBoundingRect) - point.y);
-      if (entityAttribute && distance < minDistance) {
-        result = [[ASTextKitTextCheckingResult alloc] initWithType:ASTextKitTextCheckingTypeEntity
-                                                   entityAttribute:entityAttribute
-                                                             range:range];
-        minDistance = distance;
-      }
-    }
-  }];
+  [self enumerateTextIndexesAtPosition:point
+                            usingBlock:^(NSUInteger index, CGRect glyphBoundingRect, BOOL *stop) {
+                              if (index >= truncationTokenRange.location) {
+                                result = [[ASTextKitTextCheckingResult alloc]
+                                       initWithType:ASTextKitTextCheckingTypeTruncation
+                                    entityAttribute:nil
+                                              range:truncationTokenRange];
+                              } else {
+                                NSRange range;
+                                NSDictionary *attributes = [attributedString attributesAtIndex:index
+                                                                                effectiveRange:&range];
+                                ASTextKitEntityAttribute *entityAttribute = attributes[ASTextKitEntityAttributeName];
+                                CGFloat distance = hypot(CGRectGetMidX(glyphBoundingRect) - point.x,
+                                                         CGRectGetMidY(glyphBoundingRect) - point.y);
+                                if (entityAttribute && distance < minDistance) {
+                                  result =
+                                      [[ASTextKitTextCheckingResult alloc] initWithType:ASTextKitTextCheckingTypeEntity
+                                                                        entityAttribute:entityAttribute
+                                                                                  range:range];
+                                  minDistance = distance;
+                                }
+                              }
+                            }];
   return result;
 }
 

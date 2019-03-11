@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASControlNode.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <AsyncDisplayKit/ASControlNode.h>
 
 #if AS_ENABLE_TIPS
 
@@ -30,10 +30,10 @@ AS_SUBCLASSING_RESTRICTED
 
 - (instancetype)init NS_UNAVAILABLE;
 
-@property (nonatomic, readonly) ASTip *tip;
+@property(nonatomic, readonly) ASTip *tip;
 
 @end
 
 NS_ASSUME_NONNULL_END
 
-#endif // AS_ENABLE_TIPS
+#endif  // AS_ENABLE_TIPS

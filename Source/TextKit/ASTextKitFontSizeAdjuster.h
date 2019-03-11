@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 AS_SUBCLASSING_RESTRICTED
 @interface ASTextKitFontSizeAdjuster : NSObject
 
-@property (nonatomic) CGSize constrainedSize;
+@property(nonatomic) CGSize constrainedSize;
 
 /**
  *  Creates a class that will return a scale factor the will make a string fit inside the constrained size.

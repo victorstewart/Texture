@@ -53,7 +53,7 @@ typedef struct {
  * @param lock The lock to attempt to add.
  * @return YES if the lock was added, NO otherwise.
  */
-typedef BOOL(^ASAddLockBlock)(id<ASLocking> lock);
+typedef BOOL (^ASAddLockBlock)(id<ASLocking> lock);
 
 /**
  * A block that attempts to lock multiple locks in sequence.
@@ -71,7 +71,7 @@ typedef BOOL(^ASAddLockBlock)(id<ASLocking> lock);
  * @param addLock A block you can call to attempt to add a lock.
  * @return YES if all locks were added, NO otherwise.
  */
-typedef BOOL(^ASLockSequenceBlock)(NS_NOESCAPE ASAddLockBlock addLock);
+typedef BOOL (^ASLockSequenceBlock)(NS_NOESCAPE ASAddLockBlock addLock);
 
 /**
  * Unlock and release all of the locks in this lock set.
@@ -101,30 +101,28 @@ NS_INLINE void ASUnlockSet(ASLockSet *lockSet) {
  * one of the locks is already locked (recursive.) Only locks taken
  * inside this function are guaranteed not to cause a deadlock.
  */
-NS_INLINE ASLockSet ASLockSequence(NS_NOESCAPE ASLockSequenceBlock body)
-{
+NS_INLINE ASLockSet ASLockSequence(NS_NOESCAPE ASLockSequenceBlock body) {
   __block ASLockSet locks = (ASLockSet){0, {}};
   BOOL (^addLock)(id<ASLocking>) = ^(id<ASLocking> obj) {
-    
     // nil lock = ignore.
     if (!obj) {
       return YES;
     }
-    
+
     // If they go over capacity, assert and return YES.
     // If we return NO, they will enter an infinite loop.
     if (locks.count == kLockSetCapacity) {
       ASDisplayNodeCFailAssert(@"Locking more than %d locks at once is not supported.", kLockSetCapacity);
       return YES;
     }
-    
+
     if ([obj tryLock]) {
       locks.locks[locks.count++] = (__bridge_retained CFTypeRef)obj;
       return YES;
     }
     return NO;
   };
-  
+
   /**
    * Repeatedly try running their block, passing in our `addLock`
    * until it succeeds. If it fails, unlock all and yield the thread

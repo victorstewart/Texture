@@ -11,8 +11,8 @@
 
 + (ASBasicImageDownloaderContext *)contextForURL:(NSURL *)URL;
 
-@property (nonatomic, readonly) NSURL *URL;
-@property (nonatomic, weak) NSURLSessionTask *sessionTask;
+@property(nonatomic, readonly) NSURL *URL;
+@property(nonatomic, weak) NSURLSessionTask *sessionTask;
 
 - (BOOL)isCancelled;
 - (void)cancel;

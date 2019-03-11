@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param collectionNode The collection node to drive with this list adapter.
  *
- * @note This method may only be called once per list adapter, 
+ * @note This method may only be called once per list adapter,
  *   and it must be called on the main thread. -[UIViewController init]
  *   is a good place to call it. This method does not retain the collection node.
  */
@@ -34,4 +34,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-#endif // AS_IG_LIST_KIT
+#endif  // AS_IG_LIST_KIT

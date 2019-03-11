@@ -10,7 +10,7 @@
 
 static void DeallocCallback(void *ref) {
   ASTextRunDelegate *self = (__bridge_transfer ASTextRunDelegate *)(ref);
-  self = nil; // release
+  self = nil;  // release
 }
 
 static CGFloat GetAscentCallback(void *ref) {

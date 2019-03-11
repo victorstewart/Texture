@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 #ifndef ASEVENTLOG_CAPACITY
 #define ASEVENTLOG_CAPACITY 5
@@ -30,7 +30,8 @@ AS_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithObject:(id)anObject;
 
-- (void)logEventWithBacktrace:(nullable NSArray<NSString *> *)backtrace format:(NSString *)format, ... NS_FORMAT_FUNCTION(2, 3);
+- (void)logEventWithBacktrace:(nullable NSArray<NSString *> *)backtrace
+                       format:(NSString *)format, ... NS_FORMAT_FUNCTION(2, 3);
 
 - (instancetype)init NS_UNAVAILABLE;
 

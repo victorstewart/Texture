@@ -8,20 +8,20 @@
 
 #import <AsyncDisplayKit/ASCollectionGalleryLayoutDelegate.h>
 
-#import <AsyncDisplayKit/_ASCollectionGalleryLayoutInfo.h>
-#import <AsyncDisplayKit/_ASCollectionGalleryLayoutItem.h>
 #import <AsyncDisplayKit/ASAssert.h>
 #import <AsyncDisplayKit/ASCellNode.h>
 #import <AsyncDisplayKit/ASCollectionElement.h>
-#import <AsyncDisplayKit/ASCollections.h>
 #import <AsyncDisplayKit/ASCollectionLayoutContext.h>
 #import <AsyncDisplayKit/ASCollectionLayoutDefines.h>
 #import <AsyncDisplayKit/ASCollectionLayoutState.h>
+#import <AsyncDisplayKit/ASCollections.h>
 #import <AsyncDisplayKit/ASElementMap.h>
+#import <AsyncDisplayKit/ASInsetLayoutSpec.h>
 #import <AsyncDisplayKit/ASLayout.h>
 #import <AsyncDisplayKit/ASLayoutRangeType.h>
-#import <AsyncDisplayKit/ASInsetLayoutSpec.h>
 #import <AsyncDisplayKit/ASStackLayoutSpec.h>
+#import <AsyncDisplayKit/_ASCollectionGalleryLayoutInfo.h>
+#import <AsyncDisplayKit/_ASCollectionGalleryLayoutItem.h>
 
 #pragma mark - ASCollectionGalleryLayoutDelegate
 
@@ -29,48 +29,47 @@
   ASScrollDirection _scrollableDirections;
 
   struct {
-    unsigned int minimumLineSpacingForElements:1;
-    unsigned int minimumInteritemSpacingForElements:1;
-    unsigned int sectionInsetForElements:1;
+    unsigned int minimumLineSpacingForElements : 1;
+    unsigned int minimumInteritemSpacingForElements : 1;
+    unsigned int sectionInsetForElements : 1;
   } _propertiesProviderFlags;
 }
 
-- (instancetype)initWithScrollableDirections:(ASScrollDirection)scrollableDirections
-{
+- (instancetype)initWithScrollableDirections:(ASScrollDirection)scrollableDirections {
   self = [super init];
   if (self) {
     // Scrollable directions must be either vertical or horizontal, but not both
-    ASDisplayNodeAssertTrue(ASScrollDirectionContainsVerticalDirection(scrollableDirections)
-                            || ASScrollDirectionContainsHorizontalDirection(scrollableDirections));
-    ASDisplayNodeAssertFalse(ASScrollDirectionContainsVerticalDirection(scrollableDirections)
-                             && ASScrollDirectionContainsHorizontalDirection(scrollableDirections));
+    ASDisplayNodeAssertTrue(ASScrollDirectionContainsVerticalDirection(scrollableDirections) ||
+                            ASScrollDirectionContainsHorizontalDirection(scrollableDirections));
+    ASDisplayNodeAssertFalse(ASScrollDirectionContainsVerticalDirection(scrollableDirections) &&
+                             ASScrollDirectionContainsHorizontalDirection(scrollableDirections));
     _scrollableDirections = scrollableDirections;
   }
   return self;
 }
 
-- (ASScrollDirection)scrollableDirections
-{
+- (ASScrollDirection)scrollableDirections {
   ASDisplayNodeAssertMainThread();
   return _scrollableDirections;
 }
 
-- (void)setPropertiesProvider:(id<ASCollectionGalleryLayoutPropertiesProviding>)propertiesProvider
-{
+- (void)setPropertiesProvider:(id<ASCollectionGalleryLayoutPropertiesProviding>)propertiesProvider {
   ASDisplayNodeAssertMainThread();
   if (propertiesProvider == nil) {
     _propertiesProvider = nil;
     _propertiesProviderFlags = {};
   } else {
     _propertiesProvider = propertiesProvider;
-    _propertiesProviderFlags.minimumLineSpacingForElements = [_propertiesProvider respondsToSelector:@selector(galleryLayoutDelegate:minimumLineSpacingForElements:)];
-    _propertiesProviderFlags.minimumInteritemSpacingForElements = [_propertiesProvider respondsToSelector:@selector(galleryLayoutDelegate:minimumInteritemSpacingForElements:)];
-    _propertiesProviderFlags.sectionInsetForElements = [_propertiesProvider respondsToSelector:@selector(galleryLayoutDelegate:sectionInsetForElements:)];
+    _propertiesProviderFlags.minimumLineSpacingForElements =
+        [_propertiesProvider respondsToSelector:@selector(galleryLayoutDelegate:minimumLineSpacingForElements:)];
+    _propertiesProviderFlags.minimumInteritemSpacingForElements =
+        [_propertiesProvider respondsToSelector:@selector(galleryLayoutDelegate:minimumInteritemSpacingForElements:)];
+    _propertiesProviderFlags.sectionInsetForElements =
+        [_propertiesProvider respondsToSelector:@selector(galleryLayoutDelegate:sectionInsetForElements:)];
   }
 }
 
-- (id)additionalInfoForLayoutWithElements:(ASElementMap *)elements
-{
+- (id)additionalInfoForLayoutWithElements:(ASElementMap *)elements {
   ASDisplayNodeAssertMainThread();
   id<ASCollectionGalleryLayoutPropertiesProviding> propertiesProvider = _propertiesProvider;
   if (propertiesProvider == nil) {
@@ -78,17 +77,23 @@
   }
 
   CGSize itemSize = [propertiesProvider galleryLayoutDelegate:self sizeForElements:elements];
-  UIEdgeInsets sectionInset = _propertiesProviderFlags.sectionInsetForElements ? [propertiesProvider galleryLayoutDelegate:self sectionInsetForElements:elements] : UIEdgeInsetsZero;
-  CGFloat lineSpacing = _propertiesProviderFlags.minimumLineSpacingForElements ? [propertiesProvider galleryLayoutDelegate:self minimumLineSpacingForElements:elements] : 0.0;
-  CGFloat interitemSpacing = _propertiesProviderFlags.minimumInteritemSpacingForElements ? [propertiesProvider galleryLayoutDelegate:self minimumInteritemSpacingForElements:elements] : 0.0;
+  UIEdgeInsets sectionInset = _propertiesProviderFlags.sectionInsetForElements
+                                  ? [propertiesProvider galleryLayoutDelegate:self sectionInsetForElements:elements]
+                                  : UIEdgeInsetsZero;
+  CGFloat lineSpacing = _propertiesProviderFlags.minimumLineSpacingForElements
+                            ? [propertiesProvider galleryLayoutDelegate:self minimumLineSpacingForElements:elements]
+                            : 0.0;
+  CGFloat interitemSpacing = _propertiesProviderFlags.minimumInteritemSpacingForElements
+                                 ? [propertiesProvider galleryLayoutDelegate:self
+                                          minimumInteritemSpacingForElements:elements]
+                                 : 0.0;
   return [[_ASCollectionGalleryLayoutInfo alloc] initWithItemSize:itemSize
                                                minimumLineSpacing:lineSpacing
                                           minimumInteritemSpacing:interitemSpacing
                                                      sectionInset:sectionInset];
 }
 
-+ (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context
-{
++ (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context {
   ASElementMap *elements = context.elements;
   CGSize pageSize = context.viewportSize;
   ASScrollDirection scrollableDirections = context.scrollableDirections;
@@ -99,14 +104,15 @@
     return [[ASCollectionLayoutState alloc] initWithContext:context];
   }
 
-  NSArray<_ASGalleryLayoutItem *> *children = ASArrayByFlatMapping(elements.itemElements,
-                                                                   ASCollectionElement *element,
-                                                                   [[_ASGalleryLayoutItem alloc] initWithItemSize:itemSize collectionElement:element]);
+  NSArray<_ASGalleryLayoutItem *> *children =
+      ASArrayByFlatMapping(elements.itemElements, ASCollectionElement * element,
+                           [[_ASGalleryLayoutItem alloc] initWithItemSize:itemSize collectionElement:element]);
   if (children.count == 0) {
     return [[ASCollectionLayoutState alloc] initWithContext:context];
   }
 
-  // Use a stack spec to calculate layout content size and frames of all elements without actually measuring each element
+  // Use a stack spec to calculate layout content size and frames of all elements without actually measuring each
+  // element
   ASStackLayoutDirection stackDirection = ASScrollDirectionContainsVerticalDirection(scrollableDirections)
                                               ? ASStackLayoutDirectionHorizontal
                                               : ASStackLayoutDirectionVertical;
@@ -126,12 +132,16 @@
     finalSpec = [ASInsetLayoutSpec insetLayoutSpecWithInsets:sectionInset child:stackSpec];
   }
 
-  ASLayout *layout = [finalSpec layoutThatFits:ASSizeRangeForCollectionLayoutThatFitsViewportSize(pageSize, scrollableDirections)];
+  ASLayout *layout =
+      [finalSpec layoutThatFits:ASSizeRangeForCollectionLayoutThatFitsViewportSize(pageSize, scrollableDirections)];
 
-  return [[ASCollectionLayoutState alloc] initWithContext:context layout:layout getElementBlock:^ASCollectionElement * _Nullable(ASLayout * _Nonnull sublayout) {
-    _ASGalleryLayoutItem *item = ASDynamicCast(sublayout.layoutElement, _ASGalleryLayoutItem);
-    return item ? item.collectionElement : nil;
-  }];
+  return [[ASCollectionLayoutState alloc]
+      initWithContext:context
+               layout:layout
+      getElementBlock:^ASCollectionElement *_Nullable(ASLayout *_Nonnull sublayout) {
+        _ASGalleryLayoutItem *item = ASDynamicCast(sublayout.layoutElement, _ASGalleryLayoutItem);
+        return item ? item.collectionElement : nil;
+      }];
 }
 
 @end

@@ -13,12 +13,9 @@ static pthread_mutex_t _sharedDebugLock;
 static CFMutableSetRef _sharedDebugTargets = nil;
 static ASTextDebugOption *_sharedDebugOption = nil;
 
-static const void* _as_sharedDebugSetRetain(CFAllocatorRef allocator, const void *value) {
-  return value;
-}
+static const void *_as_sharedDebugSetRetain(CFAllocatorRef allocator, const void *value) { return value; }
 
-static void _as_sharedDebugSetRelease(CFAllocatorRef allocator, const void *value) {
-}
+static void _as_sharedDebugSetRelease(CFAllocatorRef allocator, const void *value) {}
 
 void _as_sharedDebugSetFunction(const void *value, void *context) {
   id<ASTextDebugTarget> target = (__bridge id<ASTextDebugTarget>)(value);
@@ -66,7 +63,6 @@ static void _removeDebugTarget(id<ASTextDebugTarget> target) {
   pthread_mutex_unlock(&_sharedDebugLock);
 }
 
-
 @implementation ASTextDebugOption
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -86,17 +82,10 @@ static void _removeDebugTarget(id<ASTextDebugTarget> target) {
 }
 
 - (BOOL)needDrawDebug {
-  if (self.baselineColor ||
-      self.CTFrameBorderColor ||
-      self.CTFrameFillColor ||
-      self.CTLineBorderColor ||
-      self.CTLineFillColor ||
-      self.CTLineNumberColor ||
-      self.CTRunBorderColor ||
-      self.CTRunFillColor ||
-      self.CTRunNumberColor ||
-      self.CGGlyphBorderColor ||
-      self.CGGlyphFillColor) return YES;
+  if (self.baselineColor || self.CTFrameBorderColor || self.CTFrameFillColor || self.CTLineBorderColor ||
+      self.CTLineFillColor || self.CTLineNumberColor || self.CTRunBorderColor || self.CTRunFillColor ||
+      self.CTRunNumberColor || self.CGGlyphBorderColor || self.CGGlyphFillColor)
+    return YES;
   return NO;
 }
 
@@ -132,4 +121,3 @@ static void _removeDebugTarget(id<ASTextDebugTarget> target) {
 }
 
 @end
-

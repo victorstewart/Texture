@@ -9,27 +9,26 @@
 
 #import <AsyncDisplayKit/ASCellNode+Internal.h>
 
+#import <AsyncDisplayKit/ASCollectionElement.h>
+#import <AsyncDisplayKit/ASCollectionNode.h>
+#import <AsyncDisplayKit/ASCollectionView+Undeprecated.h>
+#import <AsyncDisplayKit/ASDisplayNode+FrameworkPrivate.h>
+#import <AsyncDisplayKit/ASDisplayNode+Subclasses.h>
 #import <AsyncDisplayKit/ASEqualityHelpers.h>
 #import <AsyncDisplayKit/ASInternalHelpers.h>
-#import <AsyncDisplayKit/ASDisplayNode+FrameworkPrivate.h>
-#import <AsyncDisplayKit/ASCollectionView+Undeprecated.h>
-#import <AsyncDisplayKit/ASCollectionElement.h>
-#import <AsyncDisplayKit/ASTableView+Undeprecated.h>
-#import <AsyncDisplayKit/_ASDisplayView.h>
-#import <AsyncDisplayKit/ASDisplayNode+Subclasses.h>
-#import <AsyncDisplayKit/ASTextNode.h>
-#import <AsyncDisplayKit/ASCollectionNode.h>
 #import <AsyncDisplayKit/ASTableNode.h>
+#import <AsyncDisplayKit/ASTableView+Undeprecated.h>
+#import <AsyncDisplayKit/ASTextNode.h>
+#import <AsyncDisplayKit/_ASDisplayView.h>
 
-#import <AsyncDisplayKit/ASViewController.h>
-#import <AsyncDisplayKit/ASInsetLayoutSpec.h>
 #import <AsyncDisplayKit/ASDisplayNodeInternal.h>
+#import <AsyncDisplayKit/ASInsetLayoutSpec.h>
+#import <AsyncDisplayKit/ASViewController.h>
 
 #pragma mark -
 #pragma mark ASCellNode
 
-@interface ASCellNode ()
-{
+@interface ASCellNode () {
   ASDisplayNodeViewControllerBlock _viewControllerBlock;
   ASDisplayNodeDidLoadBlock _viewControllerDidLoadBlock;
   ASDisplayNode *_viewControllerNode;
@@ -45,10 +44,8 @@
 @implementation ASCellNode
 @synthesize interactionDelegate = _interactionDelegate;
 
-- (instancetype)init
-{
-  if (!(self = [super init]))
-    return nil;
+- (instancetype)init {
+  if (!(self = [super init])) return nil;
 
   // Use UITableViewCell defaults
   _selectionStyle = UITableViewCellSelectionStyleDefault;
@@ -58,24 +55,22 @@
   return self;
 }
 
-- (instancetype)initWithViewControllerBlock:(ASDisplayNodeViewControllerBlock)viewControllerBlock didLoadBlock:(ASDisplayNodeDidLoadBlock)didLoadBlock
-{
-  if (!(self = [super init]))
-    return nil;
-  
-  ASDisplayNodeAssertNotNil(viewControllerBlock, @"should initialize with a valid block that returns a UIViewController");
+- (instancetype)initWithViewControllerBlock:(ASDisplayNodeViewControllerBlock)viewControllerBlock
+                               didLoadBlock:(ASDisplayNodeDidLoadBlock)didLoadBlock {
+  if (!(self = [super init])) return nil;
+
+  ASDisplayNodeAssertNotNil(viewControllerBlock,
+                            @"should initialize with a valid block that returns a UIViewController");
   _viewControllerBlock = viewControllerBlock;
   _viewControllerDidLoadBlock = didLoadBlock;
 
   return self;
 }
 
-- (void)didLoad
-{
+- (void)didLoad {
   [super didLoad];
 
   if (_viewControllerBlock != nil) {
-
     _viewController = _viewControllerBlock();
     _viewControllerBlock = nil;
 
@@ -102,15 +97,13 @@
   }
 }
 
-- (void)layout
-{
+- (void)layout {
   [super layout];
-  
+
   _viewControllerNode.frame = self.bounds;
 }
 
-- (void)_rootNodeDidInvalidateSize
-{
+- (void)_rootNodeDidInvalidateSize {
   if (_interactionDelegate != nil) {
     [_interactionDelegate nodeDidInvalidateSize:self];
   } else {
@@ -118,8 +111,7 @@
   }
 }
 
-- (void)_layoutTransitionMeasurementDidFinish
-{
+- (void)_layoutTransitionMeasurementDidFinish {
   if (_interactionDelegate != nil) {
     [_interactionDelegate nodeDidInvalidateSize:self];
   } else {
@@ -127,13 +119,11 @@
   }
 }
 
-- (BOOL)isSelected
-{
+- (BOOL)isSelected {
   return ASLockedSelf(_selected);
 }
 
-- (void)setSelected:(BOOL)selected
-{
+- (void)setSelected:(BOOL)selected {
   if (ASLockedSelfCompareAssign(_selected, selected)) {
     if (!_suspendInteractionDelegate) {
       ASPerformBlockOnMainThread(^{
@@ -143,13 +133,11 @@
   }
 }
 
-- (BOOL)isHighlighted
-{
+- (BOOL)isHighlighted {
   return ASLockedSelf(_highlighted);
 }
 
-- (void)setHighlighted:(BOOL)highlighted
-{
+- (void)setHighlighted:(BOOL)highlighted {
   if (ASLockedSelfCompareAssign(_highlighted, highlighted)) {
     if (!_suspendInteractionDelegate) {
       ASPerformBlockOnMainThread(^{
@@ -179,18 +167,15 @@
   }
 }
 
-- (BOOL)canUpdateToNodeModel:(id)nodeModel
-{
+- (BOOL)canUpdateToNodeModel:(id)nodeModel {
   return [self.nodeModel class] == [nodeModel class];
 }
 
-- (NSIndexPath *)indexPath
-{
+- (NSIndexPath *)indexPath {
   return [self.owningNode indexPathForNode:self];
 }
 
-- (UIViewController *)viewController
-{
+- (UIViewController *)viewController {
   ASDisplayNodeAssertMainThread();
   // Force the view to load so that we will create the
   // view controller if we haven't already.
@@ -203,43 +188,41 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-missing-super-calls"
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
   ASDisplayNodeAssertMainThread();
-  ASDisplayNodeAssert([self.view isKindOfClass:_ASDisplayView.class], @"ASCellNode views must be of type _ASDisplayView");
+  ASDisplayNodeAssert([self.view isKindOfClass:_ASDisplayView.class],
+                      @"ASCellNode views must be of type _ASDisplayView");
   [(_ASDisplayView *)self.view __forwardTouchesBegan:touches withEvent:event];
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
   ASDisplayNodeAssertMainThread();
-  ASDisplayNodeAssert([self.view isKindOfClass:_ASDisplayView.class], @"ASCellNode views must be of type _ASDisplayView");
+  ASDisplayNodeAssert([self.view isKindOfClass:_ASDisplayView.class],
+                      @"ASCellNode views must be of type _ASDisplayView");
   [(_ASDisplayView *)self.view __forwardTouchesMoved:touches withEvent:event];
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
   ASDisplayNodeAssertMainThread();
-  ASDisplayNodeAssert([self.view isKindOfClass:_ASDisplayView.class], @"ASCellNode views must be of type _ASDisplayView");
+  ASDisplayNodeAssert([self.view isKindOfClass:_ASDisplayView.class],
+                      @"ASCellNode views must be of type _ASDisplayView");
   [(_ASDisplayView *)self.view __forwardTouchesEnded:touches withEvent:event];
 }
 
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
-{
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
   ASDisplayNodeAssertMainThread();
-  ASDisplayNodeAssert([self.view isKindOfClass:_ASDisplayView.class], @"ASCellNode views must be of type _ASDisplayView");
+  ASDisplayNodeAssert([self.view isKindOfClass:_ASDisplayView.class],
+                      @"ASCellNode views must be of type _ASDisplayView");
   [(_ASDisplayView *)self.view __forwardTouchesCancelled:touches withEvent:event];
 }
 
 #pragma clang diagnostic pop
 
-- (UICollectionViewLayoutAttributes *)layoutAttributes
-{
+- (UICollectionViewLayoutAttributes *)layoutAttributes {
   return ASLockedSelf(_layoutAttributes);
 }
 
-- (void)setLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes
-{
+- (void)setLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes {
   ASDisplayNodeAssertMainThread();
   if (ASLockedSelfCompareAssignObjects(_layoutAttributes, layoutAttributes)) {
     if (layoutAttributes != nil) {
@@ -248,18 +231,17 @@
   }
 }
 
-- (void)applyLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes
-{
+- (void)applyLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes {
   // To be overriden by subclasses
 }
 
-- (void)cellNodeVisibilityEvent:(ASCellNodeVisibilityEvent)event inScrollView:(UIScrollView *)scrollView withCellFrame:(CGRect)cellFrame
-{
+- (void)cellNodeVisibilityEvent:(ASCellNodeVisibilityEvent)event
+                   inScrollView:(UIScrollView *)scrollView
+                  withCellFrame:(CGRect)cellFrame {
   // To be overriden by subclasses
 }
 
-- (void)didEnterVisibleState
-{
+- (void)didEnterVisibleState {
   [super didEnterVisibleState];
   if (self.neverShowPlaceholders) {
     [self recursivelyEnsureDisplaySynchronously:YES];
@@ -267,14 +249,12 @@
   [self handleVisibilityChange:YES];
 }
 
-- (void)didExitVisibleState
-{
+- (void)didExitVisibleState {
   [super didExitVisibleState];
   [self handleVisibilityChange:NO];
 }
 
-+ (BOOL)requestsVisibilityNotifications
-{
++ (BOOL)requestsVisibilityNotifications {
   static NSCache<Class, NSNumber *> *cache;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -282,95 +262,91 @@
   });
   NSNumber *result = [cache objectForKey:self];
   if (result == nil) {
-    BOOL overrides = ASSubclassOverridesSelector([ASCellNode class], self, @selector(cellNodeVisibilityEvent:inScrollView:withCellFrame:));
+    BOOL overrides = ASSubclassOverridesSelector([ASCellNode class], self,
+                                                 @selector(cellNodeVisibilityEvent:inScrollView:withCellFrame:));
     result = overrides ? (NSNumber *)kCFBooleanTrue : (NSNumber *)kCFBooleanFalse;
     [cache setObject:result forKey:self];
   }
   return (result == (NSNumber *)kCFBooleanTrue);
 }
 
-- (void)handleVisibilityChange:(BOOL)isVisible
-{
+- (void)handleVisibilityChange:(BOOL)isVisible {
   if ([self.class requestsVisibilityNotifications] == NO) {
-    return; // The work below is expensive, and only valuable for subclasses watching visibility events.
+    return;  // The work below is expensive, and only valuable for subclasses watching visibility events.
   }
-  
+
   // NOTE: This assertion is failing in some apps and will be enabled soon.
-  // ASDisplayNodeAssert(self.isNodeLoaded, @"Node should be loaded in order for it to become visible or invisible.  If not in this situation, we shouldn't trigger creating the view.");
-  
+  // ASDisplayNodeAssert(self.isNodeLoaded, @"Node should be loaded in order for it to become visible or invisible.  If
+  // not in this situation, we shouldn't trigger creating the view.");
+
   UIView *view = self.view;
   CGRect cellFrame = CGRectZero;
-  
-  // Ensure our _scrollView is still valid before converting.  It's also possible that we have already been removed from the _scrollView,
-  // in which case it is not valid to perform a convertRect (this actually crashes on iOS 8).
-  UIScrollView *scrollView = (_scrollView != nil && view.superview != nil && [view isDescendantOfView:_scrollView]) ? _scrollView : nil;
+
+  // Ensure our _scrollView is still valid before converting.  It's also possible that we have already been removed from
+  // the _scrollView, in which case it is not valid to perform a convertRect (this actually crashes on iOS 8).
+  UIScrollView *scrollView =
+      (_scrollView != nil && view.superview != nil && [view isDescendantOfView:_scrollView]) ? _scrollView : nil;
   if (scrollView) {
     cellFrame = [view convertRect:view.bounds toView:_scrollView];
   }
-  
-  // If we did not convert, we'll pass along CGRectZero and a nil scrollView.  The EventInvisible call is thus equivalent to
-  // didExitVisibileState, but is more convenient for the developer than implementing multiple methods.
-  [self cellNodeVisibilityEvent:isVisible ? ASCellNodeVisibilityEventVisible
-                                          : ASCellNodeVisibilityEventInvisible
+
+  // If we did not convert, we'll pass along CGRectZero and a nil scrollView.  The EventInvisible call is thus
+  // equivalent to didExitVisibileState, but is more convenient for the developer than implementing multiple methods.
+  [self cellNodeVisibilityEvent:isVisible ? ASCellNodeVisibilityEventVisible : ASCellNodeVisibilityEventInvisible
                    inScrollView:scrollView
                   withCellFrame:cellFrame];
 }
 
-- (NSMutableArray<NSDictionary *> *)propertiesForDebugDescription
-{
+- (NSMutableArray<NSDictionary *> *)propertiesForDebugDescription {
   NSMutableArray *result = [super propertiesForDebugDescription];
-  
+
   UIScrollView *scrollView = self.scrollView;
-  
+
   ASDisplayNode *owningNode = scrollView.asyncdisplaykit_node;
   if ([owningNode isKindOfClass:[ASCollectionNode class]]) {
     NSIndexPath *ip = [(ASCollectionNode *)owningNode indexPathForNode:self];
     if (ip != nil) {
-      [result addObject:@{ @"indexPath" : ip }];
+      [result addObject:@{@"indexPath" : ip}];
     }
-    [result addObject:@{ @"collectionNode" : owningNode }];
+    [result addObject:@{@"collectionNode" : owningNode}];
   } else if ([owningNode isKindOfClass:[ASTableNode class]]) {
     NSIndexPath *ip = [(ASTableNode *)owningNode indexPathForNode:self];
     if (ip != nil) {
-      [result addObject:@{ @"indexPath" : ip }];
+      [result addObject:@{@"indexPath" : ip}];
     }
-    [result addObject:@{ @"tableNode" : owningNode }];
-  
+    [result addObject:@{@"tableNode" : owningNode}];
+
   } else if ([scrollView isKindOfClass:[ASCollectionView class]]) {
     NSIndexPath *ip = [(ASCollectionView *)scrollView indexPathForNode:self];
     if (ip != nil) {
-      [result addObject:@{ @"indexPath" : ip }];
+      [result addObject:@{@"indexPath" : ip}];
     }
-    [result addObject:@{ @"collectionView" : ASObjectDescriptionMakeTiny(scrollView) }];
-    
+    [result addObject:@{@"collectionView" : ASObjectDescriptionMakeTiny(scrollView)}];
+
   } else if ([scrollView isKindOfClass:[ASTableView class]]) {
     NSIndexPath *ip = [(ASTableView *)scrollView indexPathForNode:self];
     if (ip != nil) {
-      [result addObject:@{ @"indexPath" : ip }];
+      [result addObject:@{@"indexPath" : ip}];
     }
-    [result addObject:@{ @"tableView" : ASObjectDescriptionMakeTiny(scrollView) }];
+    [result addObject:@{@"tableView" : ASObjectDescriptionMakeTiny(scrollView)}];
   }
 
   return result;
 }
 
-- (NSString *)supplementaryElementKind
-{
+- (NSString *)supplementaryElementKind {
   return self.collectionElement.supplementaryElementKind;
 }
 
-- (BOOL)supportsLayerBacking
-{
+- (BOOL)supportsLayerBacking {
   return NO;
 }
 
-- (BOOL)shouldUseUIKitCell
-{
+- (BOOL)shouldUseUIKitCell {
   return NO;
 }
 
 @end
-
 
 #pragma mark -
 #pragma mark ASWrapperCellNode
@@ -378,13 +354,11 @@
 // TODO: Consider if other calls, such as willDisplayCell, should be bridged to this class.
 @implementation ASWrapperCellNode : ASCellNode
 
-- (BOOL)shouldUseUIKitCell
-{
+- (BOOL)shouldUseUIKitCell {
   return YES;
 }
 
 @end
-
 
 #pragma mark -
 #pragma mark ASTextCellNode
@@ -399,13 +373,11 @@ static const CGFloat kASTextCellNodeDefaultFontSize = 18.0f;
 static const CGFloat kASTextCellNodeDefaultHorizontalPadding = 15.0f;
 static const CGFloat kASTextCellNodeDefaultVerticalPadding = 11.0f;
 
-- (instancetype)init
-{
+- (instancetype)init {
   return [self initWithAttributes:[ASTextCellNode defaultTextAttributes] insets:[ASTextCellNode defaultTextInsets]];
 }
 
-- (instancetype)initWithAttributes:(NSDictionary *)textAttributes insets:(UIEdgeInsets)textInsets
-{
+- (instancetype)initWithAttributes:(NSDictionary *)textAttributes insets:(UIEdgeInsets)textInsets {
   self = [super init];
   if (self) {
     _textInsets = textInsets;
@@ -416,28 +388,24 @@ static const CGFloat kASTextCellNodeDefaultVerticalPadding = 11.0f;
   return self;
 }
 
-- (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize
-{
+- (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
   return [ASInsetLayoutSpec insetLayoutSpecWithInsets:self.textInsets child:self.textNode];
 }
 
-+ (NSDictionary *)defaultTextAttributes
-{
++ (NSDictionary *)defaultTextAttributes {
   return @{NSFontAttributeName : [UIFont systemFontOfSize:kASTextCellNodeDefaultFontSize]};
 }
 
-+ (UIEdgeInsets)defaultTextInsets
-{
-    return UIEdgeInsetsMake(kASTextCellNodeDefaultVerticalPadding, kASTextCellNodeDefaultHorizontalPadding, kASTextCellNodeDefaultVerticalPadding, kASTextCellNodeDefaultHorizontalPadding);
++ (UIEdgeInsets)defaultTextInsets {
+  return UIEdgeInsetsMake(kASTextCellNodeDefaultVerticalPadding, kASTextCellNodeDefaultHorizontalPadding,
+                          kASTextCellNodeDefaultVerticalPadding, kASTextCellNodeDefaultHorizontalPadding);
 }
 
-- (NSDictionary *)textAttributes
-{
+- (NSDictionary *)textAttributes {
   return ASLockedSelf(_textAttributes);
 }
 
-- (void)setTextAttributes:(NSDictionary *)textAttributes
-{
+- (void)setTextAttributes:(NSDictionary *)textAttributes {
   ASDisplayNodeAssertNotNil(textAttributes, @"Invalid text attributes");
   ASLockScopeSelf();
   if (ASCompareAssignCopy(_textAttributes, textAttributes)) {
@@ -445,38 +413,33 @@ static const CGFloat kASTextCellNodeDefaultVerticalPadding = 11.0f;
   }
 }
 
-- (UIEdgeInsets)textInsets
-{
+- (UIEdgeInsets)textInsets {
   return ASLockedSelf(_textInsets);
 }
 
-- (void)setTextInsets:(UIEdgeInsets)textInsets
-{
+- (void)setTextInsets:(UIEdgeInsets)textInsets {
   if (ASLockedSelfCompareAssignCustom(_textInsets, textInsets, UIEdgeInsetsEqualToEdgeInsets)) {
     [self setNeedsLayout];
   }
 }
 
-- (NSString *)text
-{
+- (NSString *)text {
   return ASLockedSelf(_text);
 }
 
-- (void)setText:(NSString *)text
-{
+- (void)setText:(NSString *)text {
   ASLockScopeSelf();
   if (ASCompareAssignCopy(_text, text)) {
     [self locked_updateAttributedText];
   }
 }
 
-- (void)locked_updateAttributedText
-{
+- (void)locked_updateAttributedText {
   if (_text == nil) {
     _textNode.attributedText = nil;
     return;
   }
-  
+
   _textNode.attributedText = [[NSAttributedString alloc] initWithString:_text attributes:_textAttributes];
   [self setNeedsLayout];
 }

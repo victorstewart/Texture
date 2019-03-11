@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASLayoutElement.h>
 #import <AsyncDisplayKit/ASAsciiArtBoxCreator.h>
+#import <AsyncDisplayKit/ASLayoutElement.h>
 #import <AsyncDisplayKit/ASLocking.h>
 #import <AsyncDisplayKit/ASObjectDescriptionHelpers.h>
 
@@ -17,14 +17,15 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * A layout spec is an immutable object that describes a layout, loosely inspired by React.
  */
-@interface ASLayoutSpec : NSObject <ASLayoutElement, ASLayoutElementStylability, NSFastEnumeration, ASDescriptionProvider, ASLocking>
+@interface ASLayoutSpec
+    : NSObject <ASLayoutElement, ASLayoutElementStylability, NSFastEnumeration, ASDescriptionProvider, ASLocking>
 
-/** 
+/**
  * Creation of a layout spec should only happen by a user in layoutSpecThatFits:. During that method, a
  * layout spec can be created and mutated. Once it is passed back to ASDK, the isMutable flag will be
  * set to NO and any further mutations will cause an assert.
  */
-@property (nonatomic) BOOL isMutable;
+@property(nonatomic) BOOL isMutable;
 
 /**
  * First child within the children's array.
@@ -39,18 +40,18 @@ NS_ASSUME_NONNULL_BEGIN
  * setChild:atIndex: internally. For example, ASBackgroundLayoutSpec exposes a "background"
  * property that behind the scenes is calling setChild:atIndex:.
  */
-@property (nullable, nonatomic) id<ASLayoutElement> child;
+@property(nullable, nonatomic) id<ASLayoutElement> child;
 
 /**
  * An array of ASLayoutElement children
- * 
+ *
  * @discussion Every ASLayoutSpec must act on at least one child. The ASLayoutSpec base class takes the
  * reponsibility of holding on to the spec children. Some layout specs, like ASStackLayoutSpec,
  * can take an unknown number of children. In this case, the this method should be used.
  * For good measure, in these layout specs it probably makes sense to define
  * setChild: and setChild:forIdentifier: methods to do something appropriate or to assert.
  */
-@property (nullable, nonatomic) NSArray<id<ASLayoutElement>> *children;
+@property(nullable, nonatomic) NSArray<id<ASLayoutElement>> *children;
 
 @end
 
@@ -69,7 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * Returns an ASWrapperLayoutSpec object with the given layoutElements as children.
  */
-+ (instancetype)wrapperWithLayoutElements:(NSArray<id<ASLayoutElement>> *)layoutElements NS_RETURNS_RETAINED AS_WARN_UNUSED_RESULT;
++ (instancetype)wrapperWithLayoutElements:(NSArray<id<ASLayoutElement>> *)layoutElements NS_RETURNS_RETAINED
+    AS_WARN_UNUSED_RESULT;
 
 /*
  * Returns an ASWrapperLayoutSpec object initialized with the given layoutElement as child.
@@ -92,7 +94,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  Used by other layout specs to create ascii art debug strings
  */
-+ (NSString *)asciiArtStringForChildren:(NSArray *)children parentName:(NSString *)parentName direction:(ASStackLayoutDirection)direction;
++ (NSString *)asciiArtStringForChildren:(NSArray *)children
+                             parentName:(NSString *)parentName
+                              direction:(ASStackLayoutDirection)direction;
 + (NSString *)asciiArtStringForChildren:(NSArray *)children parentName:(NSString *)parentName;
 
 @end

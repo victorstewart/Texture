@@ -26,17 +26,19 @@ NS_ASSUME_NONNULL_BEGIN
  If you're familiar with CSS: ASInsetLayoutSpec's child behaves similarly to "box-sizing: border-box".
 
  An infinite inset is resolved as an inset equal to all remaining space after applying the other insets and child size.
- @example An ASInsetLayoutSpec with an infinite left inset and 10px for all other edges will position it's child 10px from the right edge.
+ @example An ASInsetLayoutSpec with an infinite left inset and 10px for all other edges will position it's child 10px
+ from the right edge.
  */
 @interface ASInsetLayoutSpec : ASLayoutSpec
 
-@property (nonatomic) UIEdgeInsets insets;
+@property(nonatomic) UIEdgeInsets insets;
 
 /**
  @param insets The amount of space to inset on each side.
  @param child The wrapped child to inset.
  */
-+ (instancetype)insetLayoutSpecWithInsets:(UIEdgeInsets)insets child:(id<ASLayoutElement>)child NS_RETURNS_RETAINED AS_WARN_UNUSED_RESULT;
++ (instancetype)insetLayoutSpecWithInsets:(UIEdgeInsets)insets
+                                    child:(id<ASLayoutElement>)child NS_RETURNS_RETAINED AS_WARN_UNUSED_RESULT;
 
 @end
 

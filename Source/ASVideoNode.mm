@@ -14,17 +14,16 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AsyncDisplayKit/ASDisplayNode+FrameworkPrivate.h>
 #import <AsyncDisplayKit/ASDisplayNode+Subclasses.h>
+#import <AsyncDisplayKit/ASDisplayNodeExtras.h>
 #import <AsyncDisplayKit/ASDisplayNodeInternal.h>
 #import <AsyncDisplayKit/ASEqualityHelpers.h>
 #import <AsyncDisplayKit/ASInternalHelpers.h>
-#import <AsyncDisplayKit/ASDisplayNodeExtras.h>
 #import <AsyncDisplayKit/ASThread.h>
 
 static BOOL ASAssetIsEqual(AVAsset *asset1, AVAsset *asset2) {
-  return ASObjectIsEqual(asset1, asset2)
-  || ([asset1 isKindOfClass:[AVURLAsset class]]
-      && [asset2 isKindOfClass:[AVURLAsset class]]
-      && ASObjectIsEqual(((AVURLAsset *)asset1).URL, ((AVURLAsset *)asset2).URL));
+  return ASObjectIsEqual(asset1, asset2) ||
+         ([asset1 isKindOfClass:[AVURLAsset class]] && [asset2 isKindOfClass:[AVURLAsset class]] &&
+          ASObjectIsEqual(((AVURLAsset *)asset1).URL, ((AVURLAsset *)asset2).URL));
 }
 
 static UIViewContentMode ASContentModeFromVideoGravity(NSString *videoGravity) {
@@ -38,50 +37,49 @@ static UIViewContentMode ASContentModeFromVideoGravity(NSString *videoGravity) {
 }
 
 static void *ASVideoNodeContext = &ASVideoNodeContext;
-static NSString * const kPlaybackLikelyToKeepUpKey = @"playbackLikelyToKeepUp";
-static NSString * const kplaybackBufferEmpty = @"playbackBufferEmpty";
-static NSString * const kStatus = @"status";
-static NSString * const kRate = @"rate";
+static NSString *const kPlaybackLikelyToKeepUpKey = @"playbackLikelyToKeepUp";
+static NSString *const kplaybackBufferEmpty = @"playbackBufferEmpty";
+static NSString *const kStatus = @"status";
+static NSString *const kRate = @"rate";
 
-@interface ASVideoNode ()
-{
+@interface ASVideoNode () {
   struct {
-    unsigned int delegateVideNodeShouldChangePlayerStateTo:1;
-    unsigned int delegateVideoDidPlayToEnd:1;
-    unsigned int delegateDidTapVideoNode:1;
-    unsigned int delegateVideoNodeWillChangePlayerStateToState:1;
-    unsigned int delegateVideoNodeDidPlayToTimeInterval:1;
-    unsigned int delegateVideoNodeDidStartInitialLoading:1;
-    unsigned int delegateVideoNodeDidFinishInitialLoading:1;
-    unsigned int delegateVideoNodeDidSetCurrentItem:1;
-    unsigned int delegateVideoNodeDidStallAtTimeInterval:1;
-    unsigned int delegateVideoNodeDidRecoverFromStall:1;
-    unsigned int delegateVideoNodeDidFailToLoadValueForKey:1;
+    unsigned int delegateVideNodeShouldChangePlayerStateTo : 1;
+    unsigned int delegateVideoDidPlayToEnd : 1;
+    unsigned int delegateDidTapVideoNode : 1;
+    unsigned int delegateVideoNodeWillChangePlayerStateToState : 1;
+    unsigned int delegateVideoNodeDidPlayToTimeInterval : 1;
+    unsigned int delegateVideoNodeDidStartInitialLoading : 1;
+    unsigned int delegateVideoNodeDidFinishInitialLoading : 1;
+    unsigned int delegateVideoNodeDidSetCurrentItem : 1;
+    unsigned int delegateVideoNodeDidStallAtTimeInterval : 1;
+    unsigned int delegateVideoNodeDidRecoverFromStall : 1;
+    unsigned int delegateVideoNodeDidFailToLoadValueForKey : 1;
   } _delegateFlags;
-  
+
   BOOL _shouldBePlaying;
-  
+
   BOOL _shouldAutorepeat;
   BOOL _shouldAutoplay;
   BOOL _shouldAggressivelyRecoverFromStall;
   BOOL _muted;
-  
+
   ASVideoNodePlayerState _playerState;
-  
+
   AVAsset *_asset;
   NSURL *_assetURL;
   AVVideoComposition *_videoComposition;
   AVAudioMix *_audioMix;
-  
+
   AVPlayerItem *_currentPlayerItem;
   AVPlayer *_player;
-  
+
   id _timeObserver;
   int32_t _periodicTimeObserverTimescale;
   CMTime _timeObserverInterval;
-  
+
   CMTime _lastPlaybackTime;
-	
+
   ASDisplayNode *_playerNode;
   NSString *_gravity;
 }
@@ -96,8 +94,7 @@ static NSString * const kRate = @"rate";
 
 #pragma mark - Construction and Layout
 
-- (instancetype)initWithCache:(id<ASImageCacheProtocol>)cache downloader:(id<ASImageDownloaderProtocol>)downloader
-{
+- (instancetype)initWithCache:(id<ASImageCacheProtocol>)cache downloader:(id<ASImageDownloaderProtocol>)downloader {
   if (!(self = [super initWithCache:cache downloader:downloader])) {
     return nil;
   }
@@ -106,18 +103,20 @@ static NSString * const kRate = @"rate";
   _periodicTimeObserverTimescale = 10000;
   [self addTarget:self action:@selector(tapped) forControlEvents:ASControlNodeEventTouchUpInside];
   _lastPlaybackTime = kCMTimeZero;
-  
+
   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-  [notificationCenter addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-  
+  [notificationCenter addObserver:self
+                         selector:@selector(applicationDidBecomeActive:)
+                             name:UIApplicationDidBecomeActiveNotification
+                           object:nil];
+
   return self;
 }
 
-- (ASDisplayNode *)constructPlayerNode
-{
-  ASVideoNode * __weak weakSelf = self;
+- (ASDisplayNode *)constructPlayerNode {
+  ASVideoNode *__weak weakSelf = self;
 
-  return [[ASDisplayNode alloc] initWithLayerBlock:^CALayer *{
+  return [[ASDisplayNode alloc] initWithLayerBlock:^CALayer * {
     AVPlayerLayer *playerLayer = [[AVPlayerLayer alloc] init];
     playerLayer.player = weakSelf.player;
     playerLayer.videoGravity = weakSelf.gravity;
@@ -125,8 +124,7 @@ static NSString * const kRate = @"rate";
   }];
 }
 
-- (AVPlayerItem *)constructPlayerItem
-{
+- (AVPlayerItem *)constructPlayerItem {
   ASDisplayNodeAssertMainThread();
   ASLockScopeSelf();
 
@@ -143,10 +141,9 @@ static NSString * const kRate = @"rate";
   return playerItem;
 }
 
-- (void)prepareToPlayAsset:(AVAsset *)asset withKeys:(NSArray<NSString *> *)requestedKeys
-{
+- (void)prepareToPlayAsset:(AVAsset *)asset withKeys:(NSArray<NSString *> *)requestedKeys {
   ASDisplayNodeAssertMainThread();
-  
+
   for (NSString *key in requestedKeys) {
     NSError *error = nil;
     AVKeyValueStatus keyStatus = [asset statusOfValueForKey:key error:&error];
@@ -157,7 +154,7 @@ static NSString * const kRate = @"rate";
       }
     }
   }
-  
+
   if ([asset isPlayable] == NO) {
     NSLog(@"Asset is not playable.");
     return;
@@ -165,7 +162,7 @@ static NSString * const kRate = @"rate";
 
   AVPlayerItem *playerItem = [self constructPlayerItem];
   [self setCurrentItem:playerItem];
-  
+
   if (_player != nil) {
     [_player replaceCurrentItemWithPlayerItem:playerItem];
   } else {
@@ -181,43 +178,60 @@ static NSString * const kRate = @"rate";
   }
 }
 
-- (void)addPlayerItemObservers:(AVPlayerItem *)playerItem
-{
+- (void)addPlayerItemObservers:(AVPlayerItem *)playerItem {
   if (playerItem == nil) {
     return;
   }
-  
-  [playerItem addObserver:self forKeyPath:kStatus options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:ASVideoNodeContext];
-  [playerItem addObserver:self forKeyPath:kPlaybackLikelyToKeepUpKey options:NSKeyValueObservingOptionNew context:ASVideoNodeContext];
-  [playerItem addObserver:self forKeyPath:kplaybackBufferEmpty options:NSKeyValueObservingOptionNew context:ASVideoNodeContext];
-  
+
+  [playerItem addObserver:self
+               forKeyPath:kStatus
+                  options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+                  context:ASVideoNodeContext];
+  [playerItem addObserver:self
+               forKeyPath:kPlaybackLikelyToKeepUpKey
+                  options:NSKeyValueObservingOptionNew
+                  context:ASVideoNodeContext];
+  [playerItem addObserver:self
+               forKeyPath:kplaybackBufferEmpty
+                  options:NSKeyValueObservingOptionNew
+                  context:ASVideoNodeContext];
+
   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-  [notificationCenter addObserver:self selector:@selector(didPlayToEnd:) name:AVPlayerItemDidPlayToEndTimeNotification object:playerItem];
-  [notificationCenter addObserver:self selector:@selector(videoNodeDidStall:) name:AVPlayerItemPlaybackStalledNotification object:playerItem];
-  [notificationCenter addObserver:self selector:@selector(errorWhilePlaying:) name:AVPlayerItemFailedToPlayToEndTimeNotification object:playerItem];
-  [notificationCenter addObserver:self selector:@selector(errorWhilePlaying:) name:AVPlayerItemNewErrorLogEntryNotification object:playerItem];
+  [notificationCenter addObserver:self
+                         selector:@selector(didPlayToEnd:)
+                             name:AVPlayerItemDidPlayToEndTimeNotification
+                           object:playerItem];
+  [notificationCenter addObserver:self
+                         selector:@selector(videoNodeDidStall:)
+                             name:AVPlayerItemPlaybackStalledNotification
+                           object:playerItem];
+  [notificationCenter addObserver:self
+                         selector:@selector(errorWhilePlaying:)
+                             name:AVPlayerItemFailedToPlayToEndTimeNotification
+                           object:playerItem];
+  [notificationCenter addObserver:self
+                         selector:@selector(errorWhilePlaying:)
+                             name:AVPlayerItemNewErrorLogEntryNotification
+                           object:playerItem];
 }
 
-- (void)removePlayerItemObservers:(AVPlayerItem *)playerItem
-{
+- (void)removePlayerItemObservers:(AVPlayerItem *)playerItem {
   @try {
     [playerItem removeObserver:self forKeyPath:kStatus context:ASVideoNodeContext];
     [playerItem removeObserver:self forKeyPath:kPlaybackLikelyToKeepUpKey context:ASVideoNodeContext];
     [playerItem removeObserver:self forKeyPath:kplaybackBufferEmpty context:ASVideoNodeContext];
-  }
-  @catch (NSException * __unused exception) {
+  } @catch (NSException *__unused exception) {
     NSLog(@"Unnecessary KVO removal");
   }
 
   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
   [notificationCenter removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:playerItem];
-  [notificationCenter removeObserver:self name: AVPlayerItemPlaybackStalledNotification object:playerItem];
+  [notificationCenter removeObserver:self name:AVPlayerItemPlaybackStalledNotification object:playerItem];
   [notificationCenter removeObserver:self name:AVPlayerItemFailedToPlayToEndTimeNotification object:playerItem];
   [notificationCenter removeObserver:self name:AVPlayerItemNewErrorLogEntryNotification object:playerItem];
 }
 
-- (void)addPlayerObservers:(AVPlayer *)player
-{
+- (void)addPlayerObservers:(AVPlayer *)player {
   if (player == nil) {
     return;
   }
@@ -226,13 +240,14 @@ static NSString * const kRate = @"rate";
 
   __weak __typeof(self) weakSelf = self;
   _timeObserverInterval = CMTimeMake(1, _periodicTimeObserverTimescale);
-  _timeObserver = [player addPeriodicTimeObserverForInterval:_timeObserverInterval queue:NULL usingBlock:^(CMTime time){
-    [weakSelf periodicTimeObserver:time];
-  }];
+  _timeObserver = [player addPeriodicTimeObserverForInterval:_timeObserverInterval
+                                                       queue:NULL
+                                                  usingBlock:^(CMTime time) {
+                                                    [weakSelf periodicTimeObserver:time];
+                                                  }];
 }
 
-- (void) removePlayerObservers:(AVPlayer *)player
-{
+- (void)removePlayerObservers:(AVPlayer *)player {
   if (_timeObserver != nil) {
     [player removeTimeObserver:_timeObserver];
     _timeObserver = nil;
@@ -240,61 +255,57 @@ static NSString * const kRate = @"rate";
 
   @try {
     [player removeObserver:self forKeyPath:kRate context:ASVideoNodeContext];
-  }
-  @catch (NSException * __unused exception) {
+  } @catch (NSException *__unused exception) {
     NSLog(@"Unnecessary KVO removal");
   }
 }
 
-- (void)layout
-{
+- (void)layout {
   [super layout];
   // The _playerNode wraps AVPlayerLayer, and therefore should extend across the entire bounds.
   _playerNode.frame = self.bounds;
 }
 
-- (CGSize)calculateSizeThatFits:(CGSize)constrainedSize
-{
+- (CGSize)calculateSizeThatFits:(CGSize)constrainedSize {
   ASDisplayNode *playerNode = ASLockedSelf(_playerNode);
 
   CGSize calculatedSize = constrainedSize;
-  
+
   // Prevent crashes through if infinite width or height
   if (isinf(calculatedSize.width) || isinf(calculatedSize.height)) {
     ASDisplayNodeAssert(NO, @"Infinite width or height in ASVideoNode");
     calculatedSize = CGSizeZero;
   }
-  
+
   if (playerNode != nil) {
     playerNode.style.preferredSize = calculatedSize;
     [playerNode layoutThatFits:ASSizeRangeMake(CGSizeZero, calculatedSize)];
   }
-  
+
   return calculatedSize;
 }
 
-- (void)generatePlaceholderImage
-{
-  ASVideoNode * __weak weakSelf = self;
+- (void)generatePlaceholderImage {
+  ASVideoNode *__weak weakSelf = self;
   AVAsset *asset = self.asset;
 
-  [self imageAtTime:kCMTimeZero completionHandler:^(UIImage *image) {
-    ASPerformBlockOnMainThread(^{
-      // Ensure the asset hasn't changed since the image request was made
-      if (ASAssetIsEqual(weakSelf.asset, asset)) {
-        [weakSelf setVideoPlaceholderImage:image];
-      }
-    });
-  }];
+  [self imageAtTime:kCMTimeZero
+      completionHandler:^(UIImage *image) {
+        ASPerformBlockOnMainThread(^{
+          // Ensure the asset hasn't changed since the image request was made
+          if (ASAssetIsEqual(weakSelf.asset, asset)) {
+            [weakSelf setVideoPlaceholderImage:image];
+          }
+        });
+      }];
 }
 
-- (void)imageAtTime:(CMTime)imageTime completionHandler:(void(^)(UIImage *image))completionHandler
-{
+- (void)imageAtTime:(CMTime)imageTime completionHandler:(void (^)(UIImage *image))completionHandler {
   ASPerformBlockOnBackgroundThread(^{
     AVAsset *asset = self.asset;
 
     // Skip the asset image generation if we don't have any tracks available that are capable of supporting it
-    NSArray<AVAssetTrack *>* visualAssetArray = [asset tracksWithMediaCharacteristic:AVMediaCharacteristicVisual];
+    NSArray<AVAssetTrack *> *visualAssetArray = [asset tracksWithMediaCharacteristic:AVMediaCharacteristicVisual];
     if (visualAssetArray.count == 0) {
       completionHandler(nil);
       return;
@@ -304,28 +315,31 @@ static NSString * const kRate = @"rate";
     previewImageGenerator.appliesPreferredTrackTransform = YES;
     previewImageGenerator.videoComposition = _videoComposition;
 
-    [previewImageGenerator generateCGImagesAsynchronouslyForTimes:@[[NSValue valueWithCMTime:imageTime]]
-                                                completionHandler:^(CMTime requestedTime, CGImageRef image, CMTime actualTime, AVAssetImageGeneratorResult result, NSError *error) {
-                                                  if (error != nil && result != AVAssetImageGeneratorCancelled) {
-                                                    NSLog(@"Asset preview image generation failed with error: %@", error);
-                                                  }
-                                                  completionHandler(image ? [UIImage imageWithCGImage:image] : nil);
-                                                }];
+    [previewImageGenerator
+        generateCGImagesAsynchronouslyForTimes:@[ [NSValue valueWithCMTime:imageTime] ]
+                             completionHandler:^(CMTime requestedTime, CGImageRef image, CMTime actualTime,
+                                                 AVAssetImageGeneratorResult result, NSError *error) {
+                               if (error != nil && result != AVAssetImageGeneratorCancelled) {
+                                 NSLog(@"Asset preview image generation failed with error: %@", error);
+                               }
+                               completionHandler(image ? [UIImage imageWithCGImage:image] : nil);
+                             }];
   });
 }
 
-- (void)setVideoPlaceholderImage:(UIImage *)image
-{
+- (void)setVideoPlaceholderImage:(UIImage *)image {
   NSString *gravity = self.gravity;
-  
+
   if (image != nil) {
     self.contentMode = ASContentModeFromVideoGravity(gravity);
   }
   self.image = image;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context {
   AS::UniqueLock l(__instanceLock__);
 
   if (object == _currentPlayerItem) {
@@ -354,18 +368,20 @@ static NSString * const kRate = @"rate";
       } else if (self.playerState != ASVideoNodePlayerStateFinished) {
         self.playerState = ASVideoNodePlayerStatePlaybackLikelyToKeepUpButNotPlaying;
       }
-      if (_shouldBePlaying && (_shouldAggressivelyRecoverFromStall || likelyToKeepUp) && ASInterfaceStateIncludesVisible(self.interfaceState)) {
+      if (_shouldBePlaying && (_shouldAggressivelyRecoverFromStall || likelyToKeepUp) &&
+          ASInterfaceStateIncludesVisible(self.interfaceState)) {
         if (self.playerState == ASVideoNodePlayerStateLoading && _delegateFlags.delegateVideoNodeDidRecoverFromStall) {
           [self.delegate videoNodeDidRecoverFromStall:self];
         }
-        
+
         l.unlock();
-        [self play]; // autoresume after buffer catches up
+        [self play];  // autoresume after buffer catches up
         // NOTE: Early return without re-locking.
         return;
       }
     } else if ([keyPath isEqualToString:kplaybackBufferEmpty]) {
-      if (_shouldBePlaying && [change[NSKeyValueChangeNewKey] boolValue] == YES && ASInterfaceStateIncludesVisible(self.interfaceState)) {
+      if (_shouldBePlaying && [change[NSKeyValueChangeNewKey] boolValue] == YES &&
+          ASInterfaceStateIncludesVisible(self.interfaceState)) {
         self.playerState = ASVideoNodePlayerStateLoading;
       }
     }
@@ -380,15 +396,14 @@ static NSString * const kRate = @"rate";
       }
     }
   }
-  
+
   // NOTE: Early return above.
 }
 
-- (void)tapped
-{
+- (void)tapped {
   if (_delegateFlags.delegateDidTapVideoNode) {
     [self.delegate didTapVideoNode:self];
-    
+
   } else {
     if (_shouldBePlaying) {
       [self pause];
@@ -398,50 +413,47 @@ static NSString * const kRate = @"rate";
   }
 }
 
-- (void)didEnterPreloadState
-{
+- (void)didEnterPreloadState {
   [super didEnterPreloadState];
-  
+
   ASLockScopeSelf();
   AVAsset *asset = self.asset;
   // Return immediately if the asset is nil;
   if (asset == nil || self.playerState != ASVideoNodePlayerStateUnknown) {
-      return;
+    return;
   }
 
   self.playerState = ASVideoNodePlayerStateLoading;
   if (_delegateFlags.delegateVideoNodeDidStartInitialLoading) {
-      [self.delegate videoNodeDidStartInitialLoading:self];
+    [self.delegate videoNodeDidStartInitialLoading:self];
   }
-  
-  NSArray<NSString *> *requestedKeys = @[@"playable"];
-  [asset loadValuesAsynchronouslyForKeys:requestedKeys completionHandler:^{
-    ASPerformBlockOnMainThread(^{
-      if (_delegateFlags.delegateVideoNodeDidFinishInitialLoading) {
-        [self.delegate videoNodeDidFinishInitialLoading:self];
-      }
-      [self prepareToPlayAsset:asset withKeys:requestedKeys];
-    });
-  }];
+
+  NSArray<NSString *> *requestedKeys = @[ @"playable" ];
+  [asset loadValuesAsynchronouslyForKeys:requestedKeys
+                       completionHandler:^{
+                         ASPerformBlockOnMainThread(^{
+                           if (_delegateFlags.delegateVideoNodeDidFinishInitialLoading) {
+                             [self.delegate videoNodeDidFinishInitialLoading:self];
+                           }
+                           [self prepareToPlayAsset:asset withKeys:requestedKeys];
+                         });
+                       }];
 }
 
-- (void)periodicTimeObserver:(CMTime)time
-{
+- (void)periodicTimeObserver:(CMTime)time {
   NSTimeInterval timeInSeconds = CMTimeGetSeconds(time);
   if (timeInSeconds <= 0) {
     return;
   }
-  
+
   if (_delegateFlags.delegateVideoNodeDidPlayToTimeInterval) {
     [self.delegate videoNode:self didPlayToTimeInterval:timeInSeconds];
-    
   }
 }
 
-- (void)didExitPreloadState
-{
+- (void)didExitPreloadState {
   [super didExitPreloadState];
-  
+
   {
     ASLockScopeSelf();
 
@@ -451,10 +463,9 @@ static NSString * const kRate = @"rate";
   }
 }
 
-- (void)didEnterVisibleState
-{
+- (void)didEnterVisibleState {
   [super didEnterVisibleState];
-  
+
   BOOL shouldPlay = NO;
   {
     ASLockScopeSelf();
@@ -465,18 +476,17 @@ static NSString * const kRate = @"rate";
       shouldPlay = YES;
     }
   }
-  
+
   if (shouldPlay) {
     [self play];
   }
 }
 
-- (void)didExitVisibleState
-{
+- (void)didExitVisibleState {
   [super didExitVisibleState];
-  
+
   ASLockScopeSelf();
-  
+
   if (_shouldBePlaying) {
     [self pause];
     if (_player != nil && CMTIME_IS_VALID(_player.currentTime)) {
@@ -488,34 +498,31 @@ static NSString * const kRate = @"rate";
 
 #pragma mark - Video Properties
 
-- (void)setPlayerState:(ASVideoNodePlayerState)playerState
-{
+- (void)setPlayerState:(ASVideoNodePlayerState)playerState {
   ASLockScopeSelf();
-  
+
   ASVideoNodePlayerState oldState = _playerState;
-  
+
   if (oldState == playerState) {
     return;
   }
-  
+
   if (_delegateFlags.delegateVideoNodeWillChangePlayerStateToState) {
     [self.delegate videoNode:self willChangePlayerState:oldState toState:playerState];
   }
-  
+
   _playerState = playerState;
 }
 
-- (void)setAssetURL:(NSURL *)assetURL
-{
+- (void)setAssetURL:(NSURL *)assetURL {
   ASDisplayNodeAssertMainThread();
-  
+
   if (ASObjectIsEqual(assetURL, self.assetURL) == NO) {
     [self setAndFetchAsset:[AVURLAsset assetWithURL:assetURL] url:assetURL];
   }
 }
 
-- (NSURL *)assetURL
-{
+- (NSURL *)assetURL {
   ASLockScopeSelf();
 
   if (_assetURL != nil) {
@@ -527,109 +534,107 @@ static NSString * const kRate = @"rate";
   return nil;
 }
 
-- (void)setAsset:(AVAsset *)asset
-{
+- (void)setAsset:(AVAsset *)asset {
   ASDisplayNodeAssertMainThread();
-  
+
   if (ASAssetIsEqual(asset, self.asset) == NO) {
     [self setAndFetchAsset:asset url:nil];
   }
 }
 
-- (AVAsset *)asset
-{
+- (AVAsset *)asset {
   ASLockScopeSelf();
   return _asset;
 }
 
-- (void)setAndFetchAsset:(AVAsset *)asset url:(NSURL *)assetURL
-{
+- (void)setAndFetchAsset:(AVAsset *)asset url:(NSURL *)assetURL {
   ASDisplayNodeAssertMainThread();
-  
+
   [self didExitPreloadState];
-  
+
   {
     ASLockScopeSelf();
     self.videoPlaceholderImage = nil;
     _asset = asset;
     _assetURL = assetURL;
   }
-  
+
   [self setNeedsPreload];
 }
 
-- (void)setVideoComposition:(AVVideoComposition *)videoComposition
-{
+- (void)setVideoComposition:(AVVideoComposition *)videoComposition {
   ASLockScopeSelf();
 
   _videoComposition = videoComposition;
   _currentPlayerItem.videoComposition = videoComposition;
 }
 
-- (AVVideoComposition *)videoComposition
-{
+- (AVVideoComposition *)videoComposition {
   ASLockScopeSelf();
   return _videoComposition;
 }
 
-- (void)setAudioMix:(AVAudioMix *)audioMix
-{
+- (void)setAudioMix:(AVAudioMix *)audioMix {
   ASLockScopeSelf();
 
   _audioMix = audioMix;
   _currentPlayerItem.audioMix = audioMix;
 }
 
-- (AVAudioMix *)audioMix
-{
+- (AVAudioMix *)audioMix {
   ASLockScopeSelf();
   return _audioMix;
 }
 
-- (AVPlayer *)player
-{
+- (AVPlayer *)player {
   ASLockScopeSelf();
   return _player;
 }
 
-- (AVPlayerLayer *)playerLayer
-{
+- (AVPlayerLayer *)playerLayer {
   ASLockScopeSelf();
   return (AVPlayerLayer *)_playerNode.layer;
 }
 
-- (void)setDelegate:(id<ASVideoNodeDelegate>)delegate
-{
+- (void)setDelegate:(id<ASVideoNodeDelegate>)delegate {
   [super setDelegate:delegate];
-  
+
   if (delegate == nil) {
     memset(&_delegateFlags, 0, sizeof(_delegateFlags));
   } else {
-    _delegateFlags.delegateVideNodeShouldChangePlayerStateTo = [delegate respondsToSelector:@selector(videoNode:shouldChangePlayerStateTo:)];
+    _delegateFlags.delegateVideNodeShouldChangePlayerStateTo =
+        [delegate respondsToSelector:@selector(videoNode:shouldChangePlayerStateTo:)];
     _delegateFlags.delegateVideoDidPlayToEnd = [delegate respondsToSelector:@selector(videoDidPlayToEnd:)];
     _delegateFlags.delegateDidTapVideoNode = [delegate respondsToSelector:@selector(didTapVideoNode:)];
-    _delegateFlags.delegateVideoNodeWillChangePlayerStateToState = [delegate respondsToSelector:@selector(videoNode:willChangePlayerState:toState:)];
-    _delegateFlags.delegateVideoNodeDidPlayToTimeInterval = [delegate respondsToSelector:@selector(videoNode:didPlayToTimeInterval:)];
-    _delegateFlags.delegateVideoNodeDidStartInitialLoading = [delegate respondsToSelector:@selector(videoNodeDidStartInitialLoading:)];
-    _delegateFlags.delegateVideoNodeDidFinishInitialLoading = [delegate respondsToSelector:@selector(videoNodeDidFinishInitialLoading:)];
-    _delegateFlags.delegateVideoNodeDidSetCurrentItem = [delegate respondsToSelector:@selector(videoNode:didSetCurrentItem:)];
-    _delegateFlags.delegateVideoNodeDidStallAtTimeInterval = [delegate respondsToSelector:@selector(videoNode:didStallAtTimeInterval:)];
-    _delegateFlags.delegateVideoNodeDidRecoverFromStall = [delegate respondsToSelector:@selector(videoNodeDidRecoverFromStall:)];
-    _delegateFlags.delegateVideoNodeDidFailToLoadValueForKey = [delegate respondsToSelector:@selector(videoNode:didFailToLoadValueForKey:asset:error:)];
+    _delegateFlags.delegateVideoNodeWillChangePlayerStateToState =
+        [delegate respondsToSelector:@selector(videoNode:willChangePlayerState:toState:)];
+    _delegateFlags.delegateVideoNodeDidPlayToTimeInterval = [delegate respondsToSelector:@selector(videoNode:
+                                                                                             didPlayToTimeInterval:)];
+    _delegateFlags.delegateVideoNodeDidStartInitialLoading =
+        [delegate respondsToSelector:@selector(videoNodeDidStartInitialLoading:)];
+    _delegateFlags.delegateVideoNodeDidFinishInitialLoading =
+        [delegate respondsToSelector:@selector(videoNodeDidFinishInitialLoading:)];
+    _delegateFlags.delegateVideoNodeDidSetCurrentItem = [delegate respondsToSelector:@selector(videoNode:
+                                                                                         didSetCurrentItem:)];
+    _delegateFlags.delegateVideoNodeDidStallAtTimeInterval = [delegate respondsToSelector:@selector(videoNode:
+                                                                                              didStallAtTimeInterval:)];
+    _delegateFlags.delegateVideoNodeDidRecoverFromStall =
+        [delegate respondsToSelector:@selector(videoNodeDidRecoverFromStall:)];
+    _delegateFlags.delegateVideoNodeDidFailToLoadValueForKey =
+        [delegate respondsToSelector:@selector(videoNode:didFailToLoadValueForKey:asset:error:)];
   }
 }
 
-- (void)setGravity:(NSString *)gravity
-{
+- (void)setGravity:(NSString *)gravity {
   ASLockScopeSelf();
   if (!gravity) {
     gravity = AVLayerVideoGravityResizeAspect;
   }
-  
+
   if (!ASCompareAssignObjects(_gravity, gravity)) {
     return;
   }
-  
+
   if (_playerNode.isNodeLoaded) {
     ((AVPlayerLayer *)_playerNode.layer).videoGravity = gravity;
   }
@@ -637,30 +642,26 @@ static NSString * const kRate = @"rate";
   _gravity = gravity;
 }
 
-- (NSString *)gravity
-{
+- (NSString *)gravity {
   ASLockScopeSelf();
   return _gravity;
 }
 
-- (BOOL)muted
-{
+- (BOOL)muted {
   ASLockScopeSelf();
   return _muted;
 }
 
-- (void)setMuted:(BOOL)muted
-{
+- (void)setMuted:(BOOL)muted {
   ASLockScopeSelf();
-  
+
   _player.muted = muted;
   _muted = muted;
 }
 
 #pragma mark - Video Playback
 
-- (void)play
-{
+- (void)play {
   ASLockScopeSelf();
 
   if (![self isStateChangeValid:ASVideoNodePlayerStatePlaying]) {
@@ -682,19 +683,16 @@ static NSString * const kRate = @"rate";
 
     [self setNeedsLayout];
   }
-  
-  
+
   [_player play];
   _shouldBePlaying = YES;
 }
 
-- (BOOL)ready
-{
+- (BOOL)ready {
   return _currentPlayerItem.status == AVPlayerItemStatusReadyToPlay;
 }
 
-- (void)pause
-{
+- (void)pause {
   ASLockScopeSelf();
   if (![self isStateChangeValid:ASVideoNodePlayerStatePaused]) {
     return;
@@ -703,15 +701,13 @@ static NSString * const kRate = @"rate";
   _shouldBePlaying = NO;
 }
 
-- (BOOL)isPlaying
-{
+- (BOOL)isPlaying {
   ASLockScopeSelf();
-  
+
   return (_player.rate > 0 && !_player.error);
 }
 
-- (BOOL)isStateChangeValid:(ASVideoNodePlayerState)state
-{
+- (BOOL)isStateChangeValid:(ASVideoNodePlayerState)state {
   if (_delegateFlags.delegateVideNodeShouldChangePlayerStateTo) {
     if (![self.delegate videoNode:self shouldChangePlayerStateTo:state]) {
       return NO;
@@ -720,31 +716,27 @@ static NSString * const kRate = @"rate";
   return YES;
 }
 
-- (void)resetToPlaceholder
-{
+- (void)resetToPlaceholder {
   ASLockScopeSelf();
-  
+
   if (_playerNode != nil) {
     [_playerNode removeFromSupernode];
     _playerNode = nil;
   }
-  
+
   [_player seekToTime:kCMTimeZero];
   [self pause];
 }
 
-
 #pragma mark - Playback observers
 
-- (void)applicationDidBecomeActive:(NSNotification *)notification
-{
+- (void)applicationDidBecomeActive:(NSNotification *)notification {
   if (self.shouldBePlaying && self.isVisible) {
     [self play];
   }
 }
 
-- (void)didPlayToEnd:(NSNotification *)notification
-{
+- (void)didPlayToEnd:(NSNotification *)notification {
   self.playerState = ASVideoNodePlayerStateFinished;
   if (_delegateFlags.delegateVideoDidPlayToEnd) {
     [self.delegate videoDidPlayToEnd:self];
@@ -758,41 +750,39 @@ static NSString * const kRate = @"rate";
   }
 }
 
-- (void)videoNodeDidStall:(NSNotification *)notification
-{
+- (void)videoNodeDidStall:(NSNotification *)notification {
   self.playerState = ASVideoNodePlayerStateLoading;
   if (_delegateFlags.delegateVideoNodeDidStallAtTimeInterval) {
     [self.delegate videoNode:self didStallAtTimeInterval:CMTimeGetSeconds(_player.currentItem.currentTime)];
   }
 }
 
-- (void)errorWhilePlaying:(NSNotification *)notification
-{
+- (void)errorWhilePlaying:(NSNotification *)notification {
   if ([notification.name isEqualToString:AVPlayerItemFailedToPlayToEndTimeNotification]) {
     NSLog(@"Failed to play video");
   } else if ([notification.name isEqualToString:AVPlayerItemNewErrorLogEntryNotification]) {
     AVPlayerItem *item = (AVPlayerItem *)notification.object;
     AVPlayerItemErrorLogEvent *logEvent = item.errorLog.events.lastObject;
-    NSLog(@"AVPlayerItem error log entry added for video with error %@ status %@", item.error,
-          (item.status == AVPlayerItemStatusFailed ? @"FAILED" : [NSString stringWithFormat:@"%ld", (long)item.status]));
+    NSLog(
+        @"AVPlayerItem error log entry added for video with error %@ status %@", item.error,
+        (item.status == AVPlayerItemStatusFailed ? @"FAILED" : [NSString stringWithFormat:@"%ld", (long)item.status]));
     NSLog(@"Item is %@", item);
-    
+
     if (logEvent) {
-      NSLog(@"Log code %ld domain %@ comment %@", (long)logEvent.errorStatusCode, logEvent.errorDomain, logEvent.errorComment);
+      NSLog(@"Log code %ld domain %@ comment %@", (long)logEvent.errorStatusCode, logEvent.errorDomain,
+            logEvent.errorComment);
     }
   }
 }
 
 #pragma mark - Internal Properties
 
-- (AVPlayerItem *)currentItem
-{
+- (AVPlayerItem *)currentItem {
   ASLockScopeSelf();
   return _currentPlayerItem;
 }
 
-- (void)setCurrentItem:(AVPlayerItem *)currentItem
-{
+- (void)setCurrentItem:(AVPlayerItem *)currentItem {
   ASLockScopeSelf();
 
   [self removePlayerItemObservers:_currentPlayerItem];
@@ -804,14 +794,12 @@ static NSString * const kRate = @"rate";
   }
 }
 
-- (ASDisplayNode *)playerNode
-{
+- (ASDisplayNode *)playerNode {
   ASLockScopeSelf();
   return _playerNode;
 }
 
-- (void)setPlayerNode:(ASDisplayNode *)playerNode
-{
+- (void)setPlayerNode:(ASDisplayNode *)playerNode {
   {
     ASLockScopeSelf();
     _playerNode = playerNode;
@@ -820,8 +808,7 @@ static NSString * const kRate = @"rate";
   [self setNeedsLayout];
 }
 
-- (void)setPlayer:(AVPlayer *)player
-{
+- (void)setPlayer:(AVPlayer *)player {
   ASLockScopeSelf();
 
   [self removePlayerObservers:_player];
@@ -835,22 +822,19 @@ static NSString * const kRate = @"rate";
   }
 }
 
-- (BOOL)shouldBePlaying
-{
+- (BOOL)shouldBePlaying {
   ASLockScopeSelf();
   return _shouldBePlaying;
 }
 
-- (void)setShouldBePlaying:(BOOL)shouldBePlaying
-{
+- (void)setShouldBePlaying:(BOOL)shouldBePlaying {
   ASLockScopeSelf();
   _shouldBePlaying = shouldBePlaying;
 }
 
 #pragma mark - Lifecycle
 
-- (void)dealloc
-{
+- (void)dealloc {
   [self removePlayerItemObservers:_currentPlayerItem];
   [self removePlayerObservers:_player];
 

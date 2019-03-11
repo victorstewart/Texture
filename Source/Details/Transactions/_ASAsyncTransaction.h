@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,9 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class _ASAsyncTransaction;
 
-typedef void(^asyncdisplaykit_async_transaction_completion_block_t)(_ASAsyncTransaction *completedTransaction, BOOL canceled);
-typedef id<NSObject> _Nullable(^asyncdisplaykit_async_transaction_operation_block_t)(void);
-typedef void(^asyncdisplaykit_async_transaction_operation_completion_block_t)(id _Nullable value, BOOL canceled);
+typedef void (^asyncdisplaykit_async_transaction_completion_block_t)(_ASAsyncTransaction *completedTransaction,
+                                                                     BOOL canceled);
+typedef id<NSObject> _Nullable (^asyncdisplaykit_async_transaction_operation_block_t)(void);
+typedef void (^asyncdisplaykit_async_transaction_operation_completion_block_t)(id _Nullable value, BOOL canceled);
 
 /**
  State is initially ASAsyncTransactionStateOpen.
@@ -59,7 +60,7 @@ AS_EXTERN NSInteger const ASDefaultTransactionPriority;
 
 /**
  @summary Block the main thread until the transaction is complete, including callbacks.
- 
+
  @desc This must be called on the main thread.
  */
 - (void)waitUntilComplete;
@@ -67,21 +68,21 @@ AS_EXTERN NSInteger const ASDefaultTransactionPriority;
 /**
  A block that is called when the transaction is completed.
  */
-@property (nullable, readonly) asyncdisplaykit_async_transaction_completion_block_t completionBlock;
+@property(nullable, readonly) asyncdisplaykit_async_transaction_completion_block_t completionBlock;
 
 /**
  The state of the transaction.
  @see ASAsyncTransactionState
  */
-@property (readonly) ASAsyncTransactionState state;
+@property(readonly) ASAsyncTransactionState state;
 
 /**
  @summary Adds a synchronous operation to the transaction.  The execution block will be executed immediately.
- 
+
  @desc The block will be executed on the specified queue and is expected to complete synchronously.  The async
  transaction will wait for all operations to execute on their appropriate queues, so the blocks may still be executing
  async if they are running on a concurrent queue, even though the work for this block is synchronous.
- 
+
  @param block The execution block that will be executed on a background queue.  This is where the expensive work goes.
  @param priority Execution priority; Tasks with higher priority will be executed sooner
  @param queue The dispatch queue on which to execute the block.
@@ -110,7 +111,8 @@ AS_EXTERN NSInteger const ASDefaultTransactionPriority;
  When all of the operations that have been added have completed the transaction will execute their completion
  blocks.
 
- If no operations were added to this transaction, invoking commit will execute the transaction's completion block synchronously.
+ If no operations were added to this transaction, invoking commit will execute the transaction's completion block
+ synchronously.
  */
 - (void)commit;
 

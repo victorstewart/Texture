@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Notify the context object that fetching has started.
  *
- * @discussion Call this method only when you are beginning a fetch process. This should really only be called by the 
+ * @discussion Call this method only when you are beginning a fetch process. This should really only be called by the
  * context object's owner. Calling this method should be paired with -completeBatchFetching:.
  */
 - (void)beginBatchFetching;

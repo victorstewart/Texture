@@ -21,28 +21,27 @@ using AS::MutexLocker;
   /**
    * The underlying data structure of this cache.
    *
-   * The outer map table is a weak to strong table. That is because ASCollectionLayoutContext doesn't (and shouldn't) 
-   * hold a strong reference on its element map. As a result, this cache should handle the case in which 
+   * The outer map table is a weak to strong table. That is because ASCollectionLayoutContext doesn't (and shouldn't)
+   * hold a strong reference on its element map. As a result, this cache should handle the case in which
    * an element map no longer exists and all contexts and layouts associated with it should be cleared.
    *
    * The inner map table is a standard strong to strong map.
-   * Since different ASCollectionLayoutContext objects with the same content are considered equal, 
+   * Since different ASCollectionLayoutContext objects with the same content are considered equal,
    * "object pointer personality" can't be used as a key option.
    */
   NSMapTable<ASElementMap *, NSMapTable<ASCollectionLayoutContext *, ASCollectionLayoutState *> *> *_map;
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
   self = [super init];
   if (self) {
-    _map = [NSMapTable mapTableWithKeyOptions:(NSMapTableWeakMemory | NSMapTableObjectPointerPersonality) valueOptions:NSMapTableStrongMemory];
+    _map = [NSMapTable mapTableWithKeyOptions:(NSMapTableWeakMemory | NSMapTableObjectPointerPersonality)
+                                 valueOptions:NSMapTableStrongMemory];
   }
   return self;
 }
 
-- (ASCollectionLayoutState *)layoutForContext:(ASCollectionLayoutContext *)context
-{
+- (ASCollectionLayoutState *)layoutForContext:(ASCollectionLayoutContext *)context {
   ASElementMap *elements = context.elements;
   if (elements == nil) {
     return nil;
@@ -52,8 +51,7 @@ using AS::MutexLocker;
   return [[_map objectForKey:elements] objectForKey:context];
 }
 
-- (void)setLayout:(ASCollectionLayoutState *)layout forContext:(ASCollectionLayoutContext *)context
-{
+- (void)setLayout:(ASCollectionLayoutState *)layout forContext:(ASCollectionLayoutContext *)context {
   ASElementMap *elements = context.elements;
   if (layout == nil || elements == nil) {
     return;
@@ -68,8 +66,7 @@ using AS::MutexLocker;
   [innerMap setObject:layout forKey:context];
 }
 
-- (void)removeLayoutForContext:(ASCollectionLayoutContext *)context
-{
+- (void)removeLayoutForContext:(ASCollectionLayoutContext *)context {
   ASElementMap *elements = context.elements;
   if (elements == nil) {
     return;
@@ -79,8 +76,7 @@ using AS::MutexLocker;
   [[_map objectForKey:elements] removeObjectForKey:context];
 }
 
-- (void)removeAllLayouts
-{
+- (void)removeAllLayouts {
   MutexLocker l(__instanceLock__);
   [_map removeAllObjects];
 }

@@ -7,7 +7,7 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#pragma once 
+#pragma once
 
 #import <UIKit/UIKit.h>
 
@@ -23,7 +23,8 @@ typedef NS_ENUM(NSUInteger, ASAsyncTransactionContainerState) {
   ASAsyncTransactionContainerStateNoTransactions = 0,
   /**
    The async container has one or more outstanding async transactions.
-   Its contents may be out of date or showing a placeholder, depending on the configuration of the contained ASDisplayLayers.
+   Its contents may be out of date or showing a placeholder, depending on the configuration of the contained
+   ASDisplayLayers.
    */
   ASAsyncTransactionContainerStatePendingTransactions,
 };
@@ -36,19 +37,23 @@ typedef NS_ENUM(NSUInteger, ASAsyncTransactionContainerState) {
 
  @default NO
  */
-@property (nonatomic, getter=asyncdisplaykit_isAsyncTransactionContainer, setter=asyncdisplaykit_setAsyncTransactionContainer:) BOOL asyncdisplaykit_asyncTransactionContainer;
+@property(
+    nonatomic, getter=asyncdisplaykit_isAsyncTransactionContainer, setter=asyncdisplaykit_setAsyncTransactionContainer:)
+    BOOL asyncdisplaykit_asyncTransactionContainer;
 
 /**
- @summary The current state of the receiver; indicates if it is currently performing asynchronous operations or if all operations have finished/canceled.
+ @summary The current state of the receiver; indicates if it is currently performing asynchronous operations or if all
+ operations have finished/canceled.
  */
-@property (nonatomic, readonly) ASAsyncTransactionContainerState asyncdisplaykit_asyncTransactionContainerState;
+@property(nonatomic, readonly) ASAsyncTransactionContainerState asyncdisplaykit_asyncTransactionContainerState;
 
 /**
  @summary Cancels all async transactions on the receiver.
  */
 - (void)asyncdisplaykit_cancelAsyncTransactions;
 
-@property (nullable, nonatomic, setter=asyncdisplaykit_setCurrentAsyncTransaction:) _ASAsyncTransaction *asyncdisplaykit_currentAsyncTransaction;
+@property(nullable, nonatomic, setter=asyncdisplaykit_setCurrentAsyncTransaction:)
+    _ASAsyncTransaction *asyncdisplaykit_currentAsyncTransaction;
 
 @end
 
@@ -59,19 +64,21 @@ typedef NS_ENUM(NSUInteger, ASAsyncTransactionContainerState) {
  @desc asyncdisplaykit_asyncTransactionContainer does not need to be YES for this to return a transaction.
  Defaults to nil.
  */
-@property (nullable, nonatomic, readonly) _ASAsyncTransaction *asyncdisplaykit_asyncTransaction;
+@property(nullable, nonatomic, readonly) _ASAsyncTransaction *asyncdisplaykit_asyncTransaction;
 
 /**
- @summary Goes up the superlayer chain until it finds the first layer with asyncdisplaykit_asyncTransactionContainer=YES (including the receiver) and returns it.
- Returns nil if no parent container is found.
+ @summary Goes up the superlayer chain until it finds the first layer with asyncdisplaykit_asyncTransactionContainer=YES
+ (including the receiver) and returns it. Returns nil if no parent container is found.
  */
-@property (nullable, nonatomic, readonly) CALayer *asyncdisplaykit_parentTransactionContainer;
+@property(nullable, nonatomic, readonly) CALayer *asyncdisplaykit_parentTransactionContainer;
 
 /**
  @summary Whether or not this layer should serve as a transaction container.
  Defaults to NO.
  */
-@property (nonatomic, getter=asyncdisplaykit_isAsyncTransactionContainer, setter = asyncdisplaykit_setAsyncTransactionContainer:) BOOL asyncdisplaykit_asyncTransactionContainer;
+@property(
+    nonatomic, getter=asyncdisplaykit_isAsyncTransactionContainer, setter=asyncdisplaykit_setAsyncTransactionContainer:)
+    BOOL asyncdisplaykit_asyncTransactionContainer;
 
 @end
 

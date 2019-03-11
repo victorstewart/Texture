@@ -36,17 +36,19 @@ typedef NS_ENUM(NSUInteger, ASStackLayoutJustifyContent) {
   ASStackLayoutJustifyContentEnd,
   /**
    On overflow or if the stack has only 1 child, this value is identical to ASStackLayoutJustifyContentStart.
-   Otherwise, the starting edge of the first child is at the starting edge of the stack, 
+   Otherwise, the starting edge of the first child is at the starting edge of the stack,
    the ending edge of the last child is at the ending edge of the stack, and the remaining children
    are distributed so that the spacing between any two adjacent ones is the same.
-   If there is a remaining space after spacing division, it is combined with the last spacing (i.e the one between the last 2 children).
+   If there is a remaining space after spacing division, it is combined with the last spacing (i.e the one between the
+   last 2 children).
    */
   ASStackLayoutJustifyContentSpaceBetween,
   /**
    On overflow or if the stack has only 1 child, this value is identical to ASStackLayoutJustifyContentCenter.
    Otherwise, children are distributed such that the spacing between any two adjacent ones is the same,
    and the spacing between the first/last child and the stack edges is half the size of the spacing between children.
-   If there is a remaining space after spacing division, it is combined with the last spacing (i.e the one between the last child and the stack ending edge).
+   If there is a remaining space after spacing division, it is combined with the last spacing (i.e the one between the
+   last child and the stack ending edge).
    */
   ASStackLayoutJustifyContentSpaceAround
 };
@@ -112,7 +114,8 @@ typedef NS_ENUM(NSUInteger, ASHorizontalAlignment) {
   /** Right aligned */
   ASHorizontalAlignmentRight,
 
-  // After 2.0 has landed, we'll add ASDISPLAYNODE_DEPRECATED here - for now, avoid triggering errors for projects with -Werror
+  // After 2.0 has landed, we'll add ASDISPLAYNODE_DEPRECATED here - for now, avoid triggering errors for projects with
+  // -Werror
   /** @deprecated Use ASHorizontalAlignmentLeft instead */
   ASAlignmentLeft ASDISPLAYNODE_DEPRECATED = ASHorizontalAlignmentLeft,
   /** @deprecated Use ASHorizontalAlignmentMiddle instead */
@@ -132,7 +135,8 @@ typedef NS_ENUM(NSUInteger, ASVerticalAlignment) {
   /** Bottom aligned */
   ASVerticalAlignmentBottom,
 
-  // After 2.0 has landed, we'll add ASDISPLAYNODE_DEPRECATED here - for now, avoid triggering errors for projects with -Werror
+  // After 2.0 has landed, we'll add ASDISPLAYNODE_DEPRECATED here - for now, avoid triggering errors for projects with
+  // -Werror
   /** @deprecated Use ASVerticalAlignmentTop instead */
   ASAlignmentTop ASDISPLAYNODE_DEPRECATED = ASVerticalAlignmentTop,
   /** @deprecated Use ASVerticalAlignmentCenter instead */

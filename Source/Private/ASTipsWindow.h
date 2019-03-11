@@ -7,8 +7,8 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASViewController.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <AsyncDisplayKit/ASViewController.h>
 
 #if AS_ENABLE_TIPS
 
@@ -25,9 +25,9 @@ AS_SUBCLASSING_RESTRICTED
 @interface ASTipsWindow : UIWindow
 
 /// The main application window that the tips are tracking.
-@property (nonatomic, weak) UIWindow *mainWindow;
+@property(nonatomic, weak) UIWindow *mainWindow;
 
-@property (nonatomic, copy, nullable) NSMapTable<ASDisplayNode *, ASDisplayNodeTipState *> *nodeToTipStates;
+@property(nonatomic, copy, nullable) NSMapTable<ASDisplayNode *, ASDisplayNodeTipState *> *nodeToTipStates;
 
 @end
 

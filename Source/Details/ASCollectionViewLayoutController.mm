@@ -24,51 +24,58 @@ typedef struct ASRangeGeometry ASRangeGeometry;
 #pragma mark -
 #pragma mark ASCollectionViewLayoutController
 
-@interface ASCollectionViewLayoutController ()
-{
-  @package
-  ASCollectionView * __weak _collectionView;
-  UICollectionViewLayout * __strong _collectionViewLayout;
+@interface ASCollectionViewLayoutController () {
+ @package
+  ASCollectionView *__weak _collectionView;
+  UICollectionViewLayout *__strong _collectionViewLayout;
 }
 @end
 
 @implementation ASCollectionViewLayoutController
 
-- (instancetype)initWithCollectionView:(ASCollectionView *)collectionView
-{
+- (instancetype)initWithCollectionView:(ASCollectionView *)collectionView {
   if (!(self = [super init])) {
     return nil;
   }
-  
+
   _collectionView = collectionView;
   _collectionViewLayout = [collectionView collectionViewLayout];
   return self;
 }
 
-- (NSHashTable<ASCollectionElement *> *)elementsForScrolling:(ASScrollDirection)scrollDirection rangeMode:(ASLayoutRangeMode)rangeMode rangeType:(ASLayoutRangeType)rangeType map:(ASElementMap *)map
-{
+- (NSHashTable<ASCollectionElement *> *)elementsForScrolling:(ASScrollDirection)scrollDirection
+                                                   rangeMode:(ASLayoutRangeMode)rangeMode
+                                                   rangeType:(ASLayoutRangeType)rangeType
+                                                         map:(ASElementMap *)map {
   ASRangeTuningParameters tuningParameters = [self tuningParametersForRangeMode:rangeMode rangeType:rangeType];
   CGRect rangeBounds = [self rangeBoundsWithScrollDirection:scrollDirection rangeTuningParameters:tuningParameters];
   return [self elementsWithinRangeBounds:rangeBounds map:map];
 }
 
-- (void)allElementsForScrolling:(ASScrollDirection)scrollDirection rangeMode:(ASLayoutRangeMode)rangeMode displaySet:(NSHashTable<ASCollectionElement *> *__autoreleasing  _Nullable *)displaySet preloadSet:(NSHashTable<ASCollectionElement *> *__autoreleasing  _Nullable *)preloadSet map:(ASElementMap *)map
-{
+- (void)allElementsForScrolling:(ASScrollDirection)scrollDirection
+                      rangeMode:(ASLayoutRangeMode)rangeMode
+                     displaySet:(NSHashTable<ASCollectionElement *> *__autoreleasing _Nullable *)displaySet
+                     preloadSet:(NSHashTable<ASCollectionElement *> *__autoreleasing _Nullable *)preloadSet
+                            map:(ASElementMap *)map {
   if (displaySet == NULL || preloadSet == NULL) {
     return;
   }
-  
-  ASRangeTuningParameters displayParams = [self tuningParametersForRangeMode:rangeMode rangeType:ASLayoutRangeTypeDisplay];
-  ASRangeTuningParameters preloadParams = [self tuningParametersForRangeMode:rangeMode rangeType:ASLayoutRangeTypePreload];
+
+  ASRangeTuningParameters displayParams = [self tuningParametersForRangeMode:rangeMode
+                                                                   rangeType:ASLayoutRangeTypeDisplay];
+  ASRangeTuningParameters preloadParams = [self tuningParametersForRangeMode:rangeMode
+                                                                   rangeType:ASLayoutRangeTypePreload];
   CGRect displayBounds = [self rangeBoundsWithScrollDirection:scrollDirection rangeTuningParameters:displayParams];
   CGRect preloadBounds = [self rangeBoundsWithScrollDirection:scrollDirection rangeTuningParameters:preloadParams];
-  
+
   CGRect unionBounds = CGRectUnion(displayBounds, preloadBounds);
   NSArray *layoutAttributes = [_collectionViewLayout layoutAttributesForElementsInRect:unionBounds];
   NSInteger count = layoutAttributes.count;
 
-  __auto_type display = [[NSHashTable<ASCollectionElement *> alloc] initWithOptions:NSHashTableObjectPointerPersonality capacity:count];
-  __auto_type preload = [[NSHashTable<ASCollectionElement *> alloc] initWithOptions:NSHashTableObjectPointerPersonality capacity:count];
+  __auto_type display = [[NSHashTable<ASCollectionElement *> alloc] initWithOptions:NSHashTableObjectPointerPersonality
+                                                                           capacity:count];
+  __auto_type preload = [[NSHashTable<ASCollectionElement *> alloc] initWithOptions:NSHashTableObjectPointerPersonality
+                                                                           capacity:count];
 
   for (UICollectionViewLayoutAttributes *la in layoutAttributes) {
     // Manually filter out elements that don't intersect the range bounds.
@@ -81,7 +88,7 @@ typedef struct ASRangeGeometry ASRangeGeometry;
       // Questionable why the element would be included here, but it doesn't belong.
       continue;
     }
-    
+
     // Avoid excessive retains and releases, as well as property calls. We know the element is kept alive by map.
     __unsafe_unretained ASCollectionElement *e = [map elementForLayoutAttributes:la];
     if (e != nil && intersectsDisplay) {
@@ -97,11 +104,11 @@ typedef struct ASRangeGeometry ASRangeGeometry;
   return;
 }
 
-- (NSHashTable<ASCollectionElement *> *)elementsWithinRangeBounds:(CGRect)rangeBounds map:(ASElementMap *)map
-{
+- (NSHashTable<ASCollectionElement *> *)elementsWithinRangeBounds:(CGRect)rangeBounds map:(ASElementMap *)map {
   NSArray *layoutAttributes = [_collectionViewLayout layoutAttributesForElementsInRect:rangeBounds];
-  NSHashTable<ASCollectionElement *> *elementSet = [[NSHashTable alloc] initWithOptions:NSHashTableObjectPointerPersonality capacity:layoutAttributes.count];
-  
+  NSHashTable<ASCollectionElement *> *elementSet =
+      [[NSHashTable alloc] initWithOptions:NSHashTableObjectPointerPersonality capacity:layoutAttributes.count];
+
   for (UICollectionViewLayoutAttributes *la in layoutAttributes) {
     // Manually filter out elements that don't intersect the range bounds.
     // If a layout returns elements outside the requested rect this can be a huge problem.
@@ -118,11 +125,11 @@ typedef struct ASRangeGeometry ASRangeGeometry;
 }
 
 - (CGRect)rangeBoundsWithScrollDirection:(ASScrollDirection)scrollDirection
-                   rangeTuningParameters:(ASRangeTuningParameters)tuningParameters
-{
+                   rangeTuningParameters:(ASRangeTuningParameters)tuningParameters {
   CGRect rect = _collectionView.bounds;
-  
-  return CGRectExpandToRangeWithScrollableDirections(rect, tuningParameters, [_collectionView scrollableDirections], scrollDirection);
+
+  return CGRectExpandToRangeWithScrollableDirections(rect, tuningParameters, [_collectionView scrollableDirections],
+                                                     scrollDirection);
 }
 
 @end

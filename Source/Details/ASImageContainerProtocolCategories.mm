@@ -11,28 +11,24 @@
 
 @implementation UIImage (ASImageContainerProtocol)
 
-- (UIImage *)asdk_image
-{
-    return self;
+- (UIImage *)asdk_image {
+  return self;
 }
 
-- (NSData *)asdk_animatedImageData
-{
-    return nil;
+- (NSData *)asdk_animatedImageData {
+  return nil;
 }
 
 @end
 
 @implementation NSData (ASImageContainerProtocol)
 
-- (UIImage *)asdk_image
-{
-    return nil;
+- (UIImage *)asdk_image {
+  return nil;
 }
 
-- (NSData *)asdk_animatedImageData
-{
-    return self;
+- (NSData *)asdk_animatedImageData {
+  return self;
 }
 
 @end

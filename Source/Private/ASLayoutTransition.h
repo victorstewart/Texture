@@ -7,10 +7,10 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <AsyncDisplayKit/ASDimension.h>
-#import <AsyncDisplayKit/_ASTransitionContext.h>
-#import <AsyncDisplayKit/ASDisplayNodeLayout.h>
 #import <AsyncDisplayKit/ASBaseDefines.h>
+#import <AsyncDisplayKit/ASDimension.h>
+#import <AsyncDisplayKit/ASDisplayNodeLayout.h>
+#import <AsyncDisplayKit/_ASTransitionContext.h>
 
 #import <AsyncDisplayKit/ASDisplayNode.h>
 #import <AsyncDisplayKit/ASLayoutSpec.h>
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @abstract Returns if the layoutElement can be used to layout in an asynchronous way on a background thread.
  */
-@property (nonatomic, readonly) BOOL canLayoutAsynchronous;
+@property(nonatomic, readonly) BOOL canLayoutAsynchronous;
 
 @end
 
@@ -35,7 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 @interface ASLayoutSpec () <ASLayoutElementTransition>
 @end
-
 
 #pragma mark - ASLayoutTransition
 
@@ -45,22 +44,22 @@ AS_SUBCLASSING_RESTRICTED
 /**
  * Node to apply layout transition on
  */
-@property (nonatomic, weak, readonly) ASDisplayNode *node;
+@property(nonatomic, weak, readonly) ASDisplayNode *node;
 
 /**
  * Previous layout to transition from
  */
-@property (nonatomic, readonly) const ASDisplayNodeLayout &previousLayout NS_RETURNS_INNER_POINTER;
+@property(nonatomic, readonly) const ASDisplayNodeLayout &previousLayout NS_RETURNS_INNER_POINTER;
 
 /**
  * Pending layout to transition to
  */
-@property (nonatomic, readonly) const ASDisplayNodeLayout &pendingLayout NS_RETURNS_INNER_POINTER;
+@property(nonatomic, readonly) const ASDisplayNodeLayout &pendingLayout NS_RETURNS_INNER_POINTER;
 
 /**
  * Returns if the layout transition needs to happen synchronously
  */
-@property (nonatomic, readonly) BOOL isSynchronous;
+@property(nonatomic, readonly) BOOL isSynchronous;
 
 /**
  * Returns a newly initialized layout transition

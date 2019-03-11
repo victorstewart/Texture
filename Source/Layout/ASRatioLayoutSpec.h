@@ -33,9 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
  **/
 @interface ASRatioLayoutSpec : ASLayoutSpec
 
-@property (nonatomic) CGFloat ratio;
+@property(nonatomic) CGFloat ratio;
 
-+ (instancetype)ratioLayoutSpecWithRatio:(CGFloat)ratio child:(id<ASLayoutElement>)child NS_RETURNS_RETAINED AS_WARN_UNUSED_RESULT;
++ (instancetype)ratioLayoutSpecWithRatio:(CGFloat)ratio
+                                   child:(id<ASLayoutElement>)child NS_RETURNS_RETAINED AS_WARN_UNUSED_RESULT;
 
 @end
 

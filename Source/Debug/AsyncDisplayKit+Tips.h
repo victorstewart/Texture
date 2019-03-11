@@ -7,12 +7,12 @@
 //  Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0
 //
 
-#import <Foundation/Foundation.h>
 #import <AsyncDisplayKit/ASDisplayNode.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^ASTipDisplayBlock)(ASDisplayNode *node, NSString *message);
+typedef void (^ASTipDisplayBlock)(ASDisplayNode *node, NSString *message);
 
 /**
  * The methods added to ASDisplayNode to control the tips system.
@@ -28,7 +28,7 @@ typedef void(^ASTipDisplayBlock)(ASDisplayNode *node, NSString *message);
  * if they become annoying or have false-positives. The tips system
  * is completely disabled unless you define AS_ENABLE_TIPS=1.
  */
-@property (class) BOOL enableTips;
+@property(class) BOOL enableTips;
 
 /**
  * A block to be run on the main thread to show text when a tip is tapped.
@@ -36,7 +36,7 @@ typedef void(^ASTipDisplayBlock)(ASDisplayNode *node, NSString *message);
  * If nil, the default, the message is just logged to the console with the
  * ancestry of the node.
  */
-@property (class, nonatomic, null_resettable) ASTipDisplayBlock tipDisplayBlock;
+@property(class, nonatomic, null_resettable) ASTipDisplayBlock tipDisplayBlock;
 
 @end
 

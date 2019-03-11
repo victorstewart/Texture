@@ -14,14 +14,13 @@
 
 #import <AsyncDisplayKit/ASDimension.h>
 #import <AsyncDisplayKit/ASInternalHelpers.h>
-#import <AsyncDisplayKit/ASLayoutSpecUtilities.h>
 #import <AsyncDisplayKit/ASLayoutSpec+Subclasses.h>
+#import <AsyncDisplayKit/ASLayoutSpecUtilities.h>
 
 static CGFloat crossOffsetForItem(const ASStackLayoutSpecItem &item,
                                   const ASStackLayoutSpecStyle &style,
                                   const CGFloat crossSize,
-                                  const CGFloat baseline)
-{
+                                  const CGFloat baseline) {
   switch (alignment(item.child.style.alignSelf, style.alignItems)) {
     case ASStackLayoutAlignItemsEnd:
       return crossSize - crossDimension(style.direction, item.layout.size);
@@ -41,20 +40,21 @@ static void crossOffsetAndSpacingForEachLine(const std::size_t numOfLines,
                                              const CGFloat crossViolation,
                                              ASStackLayoutAlignContent alignContent,
                                              CGFloat &offset,
-                                             CGFloat &spacing)
-{
+                                             CGFloat &spacing) {
   ASDisplayNodeCAssertTrue(numOfLines > 0);
-  
+
   // Handle edge cases
-  if (alignContent == ASStackLayoutAlignContentSpaceBetween && (crossViolation < kViolationEpsilon || numOfLines == 1)) {
+  if (alignContent == ASStackLayoutAlignContentSpaceBetween &&
+      (crossViolation < kViolationEpsilon || numOfLines == 1)) {
     alignContent = ASStackLayoutAlignContentStart;
-  } else if (alignContent == ASStackLayoutAlignContentSpaceAround && (crossViolation < kViolationEpsilon || numOfLines == 1)) {
+  } else if (alignContent == ASStackLayoutAlignContentSpaceAround &&
+             (crossViolation < kViolationEpsilon || numOfLines == 1)) {
     alignContent = ASStackLayoutAlignContentCenter;
   }
-  
+
   offset = 0;
   spacing = 0;
-  
+
   switch (alignContent) {
     case ASStackLayoutAlignContentCenter:
       offset = crossViolation / 2;
@@ -83,20 +83,21 @@ static void stackOffsetAndSpacingForEachItem(const std::size_t numOfItems,
                                              const CGFloat stackViolation,
                                              ASStackLayoutJustifyContent justifyContent,
                                              CGFloat &offset,
-                                             CGFloat &spacing)
-{
+                                             CGFloat &spacing) {
   ASDisplayNodeCAssertTrue(numOfItems > 0);
-  
+
   // Handle edge cases
-  if (justifyContent == ASStackLayoutJustifyContentSpaceBetween && (stackViolation < kViolationEpsilon || numOfItems == 1)) {
+  if (justifyContent == ASStackLayoutJustifyContentSpaceBetween &&
+      (stackViolation < kViolationEpsilon || numOfItems == 1)) {
     justifyContent = ASStackLayoutJustifyContentStart;
-  } else if (justifyContent == ASStackLayoutJustifyContentSpaceAround && (stackViolation < kViolationEpsilon || numOfItems == 1)) {
+  } else if (justifyContent == ASStackLayoutJustifyContentSpaceAround &&
+             (stackViolation < kViolationEpsilon || numOfItems == 1)) {
     justifyContent = ASStackLayoutJustifyContentCenter;
   }
-  
+
   offset = 0;
   spacing = 0;
-  
+
   switch (justifyContent) {
     case ASStackLayoutJustifyContentCenter:
       offset = stackViolation / 2;
@@ -123,42 +124,43 @@ static void stackOffsetAndSpacingForEachItem(const std::size_t numOfItems,
 static void positionItemsInLine(const ASStackUnpositionedLine &line,
                                 const ASStackLayoutSpecStyle &style,
                                 const CGPoint &startingPoint,
-                                const CGFloat stackSpacing)
-{
+                                const CGFloat stackSpacing) {
   CGPoint p = startingPoint;
   BOOL first = YES;
-  
+
   for (const auto &item : line.items) {
     p = p + directionPoint(style.direction, item.child.style.spacingBefore, 0);
     if (!first) {
       p = p + directionPoint(style.direction, style.spacing + stackSpacing, 0);
     }
     first = NO;
-    item.layout.position = p + directionPoint(style.direction, 0, crossOffsetForItem(item, style, line.crossSize, line.baseline));
-    
-    p = p + directionPoint(style.direction, stackDimension(style.direction, item.layout.size) + item.child.style.spacingAfter, 0);
+    item.layout.position =
+        p + directionPoint(style.direction, 0, crossOffsetForItem(item, style, line.crossSize, line.baseline));
+
+    p = p + directionPoint(style.direction,
+                           stackDimension(style.direction, item.layout.size) + item.child.style.spacingAfter, 0);
   }
 }
 
 ASStackPositionedLayout ASStackPositionedLayout::compute(const ASStackUnpositionedLayout &layout,
                                                          const ASStackLayoutSpecStyle &style,
-                                                         const ASSizeRange &sizeRange)
-{
+                                                         const ASSizeRange &sizeRange) {
   const auto &lines = layout.lines;
   if (lines.empty()) {
     return {};
   }
-  
+
   const auto numOfLines = lines.size();
   const auto direction = style.direction;
   const auto alignContent = style.alignContent;
   const auto lineSpacing = style.lineSpacing;
   const auto justifyContent = style.justifyContent;
-  const auto crossViolation = ASStackUnpositionedLayout::computeCrossViolation(layout.crossDimensionSum, style, sizeRange);
+  const auto crossViolation =
+      ASStackUnpositionedLayout::computeCrossViolation(layout.crossDimensionSum, style, sizeRange);
   CGFloat crossOffset;
   CGFloat crossSpacing;
   crossOffsetAndSpacingForEachLine(numOfLines, crossViolation, alignContent, crossOffset, crossSpacing);
-  
+
   std::vector<ASStackLayoutSpecItem> positionedItems;
   CGPoint p = directionPoint(direction, 0, crossOffset);
   BOOL first = YES;
@@ -167,17 +169,18 @@ ASStackPositionedLayout ASStackPositionedLayout::compute(const ASStackUnposition
       p = p + directionPoint(direction, 0, crossSpacing + lineSpacing);
     }
     first = NO;
-    
+
     const auto &items = line.items;
-    const auto stackViolation = ASStackUnpositionedLayout::computeStackViolation(line.stackDimensionSum, style, sizeRange);
+    const auto stackViolation =
+        ASStackUnpositionedLayout::computeStackViolation(line.stackDimensionSum, style, sizeRange);
     CGFloat stackOffset;
     CGFloat stackSpacing;
     stackOffsetAndSpacingForEachItem(items.size(), stackViolation, justifyContent, stackOffset, stackSpacing);
-    
+
     setStackValueToPoint(direction, stackOffset, p);
     positionItemsInLine(line, style, p, stackSpacing);
     std::move(items.begin(), items.end(), std::back_inserter(positionedItems));
-    
+
     p = p + directionPoint(direction, -stackOffset, line.crossSize);
   }
 
