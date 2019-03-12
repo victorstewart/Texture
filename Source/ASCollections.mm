@@ -15,7 +15,8 @@
  */
 static CFAllocatorRef gTransferAllocator;
 
-static const void *ASTransferRetain(CFAllocatorRef allocator, const void *val) {
+static const void *ASTransferRetain(CFAllocatorRef allocator, const void *val)
+{
   if (allocator == gTransferAllocator) {
     // Transfer allocator. Ignore retain and pass through.
     return val;
@@ -28,7 +29,8 @@ static const void *ASTransferRetain(CFAllocatorRef allocator, const void *val) {
 
 @implementation NSArray (ASCollections)
 
-+ (NSArray *)arrayByTransferring:(__strong id *)pointers count:(NSUInteger)count NS_RETURNS_RETAINED {
++ (NSArray *)arrayByTransferring:(__strong id *)pointers count:(NSUInteger)count NS_RETURNS_RETAINED
+{
   // Custom callbacks that point to our ASTransferRetain callback.
   static CFArrayCallBacks callbacks;
   static dispatch_once_t onceToken;
@@ -52,8 +54,8 @@ static const void *ASTransferRetain(CFAllocatorRef allocator, const void *val) {
     return result;
   }
 
-  NSArray *result = (__bridge_transfer NSArray *)CFArrayCreate(gTransferAllocator, (const void **)(void *)pointers,
-                                                               count, &callbacks);
+  NSArray *result = (__bridge_transfer NSArray *)CFArrayCreate(
+      gTransferAllocator, (const void **)(void *)pointers, count, &callbacks);
   memset(pointers, 0, count * sizeof(id));
   return result;
 }

@@ -26,9 +26,12 @@ static BOOL __shouldShowImageScalingOverlay = NO;
 @implementation ASImageNode (Debugging)
 
 + (void)setShouldShowImageScalingOverlay:(BOOL)show;
-{ __shouldShowImageScalingOverlay = show; }
+{
+  __shouldShowImageScalingOverlay = show;
+}
 
-+ (BOOL)shouldShowImageScalingOverlay {
++ (BOOL)shouldShowImageScalingOverlay
+{
   return __shouldShowImageScalingOverlay;
 }
 
@@ -46,16 +49,19 @@ static BOOL __enableHitTestDebug = NO;
 
 @implementation ASControlNode (Debugging)
 
-+ (void)setEnableHitTestDebug:(BOOL)enable {
++ (void)setEnableHitTestDebug:(BOOL)enable
+{
   __enableHitTestDebug = enable;
 }
 
-+ (BOOL)enableHitTestDebug {
++ (BOOL)enableHitTestDebug
+{
   return __enableHitTestDebug;
 }
 
 // layout method required ONLY when hitTestDebug is enabled
-- (void)layout {
+- (void)layout
+{
   [super layout];
 
   if ([ASControlNode enableHitTestDebug]) {
@@ -163,7 +169,8 @@ static BOOL __enableHitTestDebug = NO;
 
 - (UIRectEdge)setEdgesOfIntersectionForChildRect:(CGRect)childRect
                                       parentRect:(CGRect)parentRect
-                                        rectEdge:(UIRectEdge)rectEdge {
+                                        rectEdge:(UIRectEdge)rectEdge
+{
   // determine which edges of childRect are outside parentRect (and thus will be clipped)
   if (childRect.origin.y < parentRect.origin.y) {
     rectEdge |= UIRectEdgeTop;
@@ -184,7 +191,8 @@ static BOOL __enableHitTestDebug = NO;
 - (void)drawEdgeIfClippedWithEdges:(UIRectEdge)rectEdge
                              color:(UIColor *)color
                        borderWidth:(CGFloat)borderWidth
-                           imgRect:(CGRect)imgRect {
+                           imgRect:(CGRect)imgRect
+{
   [color setFill];
 
   // highlight individual edges of overlay if edge is restricted by parentRect
@@ -244,11 +252,13 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
 
 @implementation ASDisplayNode (RangeDebugging)
 
-+ (void)setShouldShowRangeDebugOverlay:(BOOL)show {
++ (void)setShouldShowRangeDebugOverlay:(BOOL)show
+{
   __shouldShowRangeDebugOverlay = show;
 }
 
-+ (BOOL)shouldShowRangeDebugOverlay {
++ (BOOL)shouldShowRangeDebugOverlay
+{
   return __shouldShowRangeDebugOverlay;
 }
 
@@ -256,11 +266,13 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
 
 @implementation ASRangeController (DebugInternal)
 
-+ (void)layoutDebugOverlayIfNeeded {
++ (void)layoutDebugOverlayIfNeeded
+{
   [[_ASRangeDebugOverlayView sharedInstance] setNeedsLayout];
 }
 
-- (void)addRangeControllerToRangeDebugOverlay {
+- (void)addRangeControllerToRangeDebugOverlay
+{
   [[_ASRangeDebugOverlayView sharedInstance] addRangeController:self];
 }
 
@@ -270,7 +282,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
                     rangeMode:(ASLayoutRangeMode)mode
       displayTuningParameters:(ASRangeTuningParameters)displayTuningParameters
       preloadTuningParameters:(ASRangeTuningParameters)preloadTuningParameters
-               interfaceState:(ASInterfaceState)interfaceState {
+               interfaceState:(ASInterfaceState)interfaceState
+{
   [[_ASRangeDebugOverlayView sharedInstance] updateRangeController:controller
                                           withScrollableDirections:scrollableDirections
                                                    scrollDirection:direction
@@ -294,12 +307,14 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
   BOOL _animating;
 }
 
-+ (UIWindow *)keyWindow {
++ (UIWindow *)keyWindow
+{
   // hack to work around app extensions not having UIApplication...not sure of a better way to do this?
   return [[NSClassFromString(@"UIApplication") sharedApplication] keyWindow];
 }
 
-+ (_ASRangeDebugOverlayView *)sharedInstance NS_RETURNS_RETAINED {
++ (_ASRangeDebugOverlayView *)sharedInstance NS_RETURNS_RETAINED
+{
   static _ASRangeDebugOverlayView *__rangeDebugOverlay = nil;
 
   if (!__rangeDebugOverlay && ASDisplayNode.shouldShowRangeDebugOverlay) {
@@ -312,7 +327,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
 
 #define OVERLAY_INSET 10
 #define OVERLAY_SCALE 3
-- (instancetype)initWithFrame:(CGRect)frame {
+- (instancetype)initWithFrame:(CGRect)frame
+{
   self = [super initWithFrame:frame];
 
   if (self) {
@@ -323,7 +339,9 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
 
     CGSize windowSize = [[[self class] keyWindow] bounds].size;
     self.frame = CGRectMake(windowSize.width - (windowSize.width / OVERLAY_SCALE) - OVERLAY_INSET,
-                            windowSize.height - OVERLAY_INSET, windowSize.width / OVERLAY_SCALE, 0.0);
+                            windowSize.height - OVERLAY_INSET,
+                            windowSize.width / OVERLAY_SCALE,
+                            0.0);
 
     UIPanGestureRecognizer *panGR =
         [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(rangeDebugOverlayWasPanned:)];
@@ -335,7 +353,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
 
 #define BAR_THICKNESS 24
 
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
   [super layoutSubviews];
   [UIView animateWithDuration:0.2
                         delay:0.0
@@ -348,7 +367,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
                    }];
 }
 
-- (void)layoutToFitAllBarsExcept:(NSInteger)barsToClip {
+- (void)layoutToFitAllBarsExcept:(NSInteger)barsToClip
+{
   CGSize boundsSize = self.bounds.size;
   CGFloat totalHeight = 0.0;
 
@@ -395,19 +415,22 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
   }
 }
 
-- (void)setOrigin:(CGPoint)origin forView:(UIView *)view {
+- (void)setOrigin:(CGPoint)origin forView:(UIView *)view
+{
   CGRect newFrame = view.frame;
   newFrame.origin = origin;
   view.frame = newFrame;
 }
 
-- (void)offsetYOrigin:(CGFloat)offset forView:(UIView *)view {
+- (void)offsetYOrigin:(CGFloat)offset forView:(UIView *)view
+{
   CGRect newFrame = view.frame;
   newFrame.origin = CGPointMake(newFrame.origin.x, newFrame.origin.y + offset);
   view.frame = newFrame;
 }
 
-- (void)addRangeController:(ASRangeController *)rangeController {
+- (void)addRangeController:(ASRangeController *)rangeController
+{
   for (_ASRangeDebugBarView *rangeView in _rangeControllerViews) {
     if (rangeView.rangeController == rangeController) {
       return;
@@ -444,12 +467,12 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
   _ASRangeDebugBarView *viewToUpdate = [self barViewForRangeController:controller];
 
   CGRect boundsRect = self.bounds;
-  CGRect visibleRect = CGRectExpandToRangeWithScrollableDirections(boundsRect, ASRangeTuningParametersZero,
-                                                                   scrollableDirections, scrollDirection);
-  CGRect displayRect = CGRectExpandToRangeWithScrollableDirections(boundsRect, displayTuningParameters,
-                                                                   scrollableDirections, scrollDirection);
-  CGRect preloadRect = CGRectExpandToRangeWithScrollableDirections(boundsRect, preloadTuningParameters,
-                                                                   scrollableDirections, scrollDirection);
+  CGRect visibleRect = CGRectExpandToRangeWithScrollableDirections(
+      boundsRect, ASRangeTuningParametersZero, scrollableDirections, scrollDirection);
+  CGRect displayRect = CGRectExpandToRangeWithScrollableDirections(
+      boundsRect, displayTuningParameters, scrollableDirections, scrollDirection);
+  CGRect preloadRect = CGRectExpandToRangeWithScrollableDirections(
+      boundsRect, preloadTuningParameters, scrollableDirections, scrollDirection);
 
   // figure out which is biggest and assume that is full bounds
   BOOL displayRangeLargerThanPreload = NO;
@@ -515,7 +538,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
   [self setNeedsLayout];
 }
 
-- (_ASRangeDebugBarView *)barViewForRangeController:(ASRangeController *)controller {
+- (_ASRangeDebugBarView *)barViewForRangeController:(ASRangeController *)controller
+{
   _ASRangeDebugBarView *rangeControllerBarView = nil;
 
   for (_ASRangeDebugBarView *rangeView in [[_rangeControllerViews reverseObjectEnumerator] allObjects]) {
@@ -539,7 +563,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
 }
 
 #define MIN_VISIBLE_INSET 40
-- (void)rangeDebugOverlayWasPanned:(UIPanGestureRecognizer *)recognizer {
+- (void)rangeDebugOverlayWasPanned:(UIPanGestureRecognizer *)recognizer
+{
   CGPoint translation = [recognizer translationInView:recognizer.view];
   CGFloat newCenterX = recognizer.view.center.x + translation.x;
   CGFloat newCenterY = recognizer.view.center.y + translation.y;
@@ -587,7 +612,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
   BOOL _firstLayoutOfRects;
 }
 
-- (instancetype)initWithRangeController:(ASRangeController *)rangeController {
+- (instancetype)initWithRangeController:(ASRangeController *)rangeController
+{
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _firstLayoutOfRects = YES;
@@ -604,7 +630,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
 }
 
 #define HORIZONTAL_INSET 10
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
   [super layoutSubviews];
 
   CGSize boundsSize = self.bounds.size;
@@ -683,7 +710,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
            leadingDisplayRatio:(CGFloat)leadingDisplayRatio
                   preloadRatio:(CGFloat)preloadRatio
            leadingpreloadRatio:(CGFloat)leadingpreloadRatio
-                     direction:(ASScrollDirection)scrollDirection {
+                     direction:(ASScrollDirection)scrollDirection
+{
   _visibleRatio = visibleRatio;
   _displayRatio = displayRatio;
   _leadingDisplayRatio = leadingDisplayRatio;
@@ -694,7 +722,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
   [self setNeedsLayout];
 }
 
-- (void)setBarSubviewOrder {
+- (void)setBarSubviewOrder
+{
   if (_preloadRatio == 1.0) {
     [self sendSubviewToBack:_preloadRect.view];
   } else {
@@ -704,7 +733,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
   [self bringSubviewToFront:_visibleRect.view];
 }
 
-- (void)setBarDebugLabelsWithSize:(CGFloat)size {
+- (void)setBarDebugLabelsWithSize:(CGFloat)size
+{
   if (!_debugString) {
     _debugString = [[_rangeController dataSource] nameForRangeControllerDataSource];
   }
@@ -724,7 +754,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
   _rightDebugText.hidden = (_scrollDirection != ASScrollDirectionRight && _scrollDirection != ASScrollDirectionDown);
 }
 
-- (ASTextNode *)createDebugTextNode {
+- (ASTextNode *)createDebugTextNode
+{
   ASTextNode *label = [[ASTextNode alloc] init];
   [self addSubnode:label];
   return label;
@@ -732,7 +763,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
 
 #define RANGE_BAR_CORNER_RADIUS 3
 #define RANGE_BAR_BORDER_WIDTH 1
-- (ASImageNode *)createRangeNodeWithColor:(UIColor *)color {
+- (ASImageNode *)createRangeNodeWithColor:(UIColor *)color
+{
   ASImageNode *rangeBarImageNode = [[ASImageNode alloc] init];
   rangeBarImageNode.image =
       [UIImage as_resizableRoundedImageWithCornerRadius:RANGE_BAR_CORNER_RADIUS
@@ -747,7 +779,8 @@ static BOOL __shouldShowRangeDebugOverlay = NO;
   return rangeBarImageNode;
 }
 
-+ (NSAttributedString *)whiteAttributedStringFromString:(NSString *)string withSize:(CGFloat)size NS_RETURNS_RETAINED {
++ (NSAttributedString *)whiteAttributedStringFromString:(NSString *)string withSize:(CGFloat)size NS_RETURNS_RETAINED
+{
   NSDictionary *attributes =
       @{NSForegroundColorAttributeName : [UIColor whiteColor], NSFontAttributeName : [UIFont systemFontOfSize:size]};
   return [[NSAttributedString alloc] initWithString:string attributes:attributes];

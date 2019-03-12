@@ -28,8 +28,10 @@ NSString *const ASTextGlyphTransformAttributeName = @"ASTextGlyphTransform";
 NSString *const ASTextAttachmentToken = @"\uFFFC";
 NSString *const ASTextTruncationToken = @"\u2026";
 
-ASTextAttributeType ASTextAttributeGetType(NSString *name) {
-  if (name.length == 0) return ASTextAttributeTypeNone;
+ASTextAttributeType ASTextAttributeGetType(NSString *name)
+{
+  if (name.length == 0)
+    return ASTextAttributeTypeNone;
 
   static NSMutableDictionary *dic;
   static dispatch_once_t onceToken;
@@ -99,29 +101,34 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
     dic[ASTextGlyphTransformAttributeName] = ASText;
   });
   NSNumber *num = dic[name];
-  if (num) return num.integerValue;
+  if (num)
+    return num.integerValue;
   return ASTextAttributeTypeNone;
 }
 
 @implementation ASTextBackedString
 
-+ (instancetype)stringWithString:(NSString *)string NS_RETURNS_RETAINED {
++ (instancetype)stringWithString:(NSString *)string NS_RETURNS_RETAINED
+{
   ASTextBackedString *one = [self new];
   one.string = string;
   return one;
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder {
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
   [aCoder encodeObject:self.string forKey:@"string"];
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder {
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
   self = [super init];
   _string = [aDecoder decodeObjectForKey:@"string"];
   return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   __typeof__(self) one = [self.class new];
   one.string = self.string;
   return one;
@@ -131,23 +138,27 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
 
 @implementation ASTextBinding
 
-+ (instancetype)bindingWithDeleteConfirm:(BOOL)deleteConfirm NS_RETURNS_RETAINED {
++ (instancetype)bindingWithDeleteConfirm:(BOOL)deleteConfirm NS_RETURNS_RETAINED
+{
   ASTextBinding *one = [self new];
   one.deleteConfirm = deleteConfirm;
   return one;
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder {
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
   [aCoder encodeObject:@(self.deleteConfirm) forKey:@"deleteConfirm"];
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder {
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
   self = [super init];
   _deleteConfirm = ((NSNumber *)[aDecoder decodeObjectForKey:@"deleteConfirm"]).boolValue;
   return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   __typeof__(self) one = [self.class new];
   one.deleteConfirm = self.deleteConfirm;
   return one;
@@ -157,7 +168,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
 
 @implementation ASTextShadow
 
-+ (instancetype)shadowWithColor:(UIColor *)color offset:(CGSize)offset radius:(CGFloat)radius NS_RETURNS_RETAINED {
++ (instancetype)shadowWithColor:(UIColor *)color offset:(CGSize)offset radius:(CGFloat)radius NS_RETURNS_RETAINED
+{
   ASTextShadow *one = [self new];
   one.color = color;
   one.offset = offset;
@@ -165,8 +177,10 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   return one;
 }
 
-+ (instancetype)shadowWithNSShadow:(NSShadow *)nsShadow NS_RETURNS_RETAINED {
-  if (!nsShadow) return nil;
++ (instancetype)shadowWithNSShadow:(NSShadow *)nsShadow NS_RETURNS_RETAINED
+{
+  if (!nsShadow)
+    return nil;
   ASTextShadow *shadow = [self new];
   shadow.offset = nsShadow.shadowOffset;
   shadow.radius = nsShadow.shadowBlurRadius;
@@ -182,7 +196,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   return shadow;
 }
 
-- (NSShadow *)nsShadow {
+- (NSShadow *)nsShadow
+{
   NSShadow *shadow = [NSShadow new];
   shadow.shadowOffset = self.offset;
   shadow.shadowBlurRadius = self.radius;
@@ -190,14 +205,16 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   return shadow;
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder {
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
   [aCoder encodeObject:self.color forKey:@"color"];
   [aCoder encodeObject:@(self.radius) forKey:@"radius"];
   [aCoder encodeObject:[NSValue valueWithCGSize:self.offset] forKey:@"offset"];
   [aCoder encodeObject:self.subShadow forKey:@"subShadow"];
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder {
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
   self = [super init];
   _color = [aDecoder decodeObjectForKey:@"color"];
   _radius = ((NSNumber *)[aDecoder decodeObjectForKey:@"radius"]).floatValue;
@@ -206,7 +223,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   __typeof__(self) one = [self.class new];
   one.color = self.color;
   one.radius = self.radius;
@@ -219,20 +237,23 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
 
 @implementation ASTextDecoration
 
-- (instancetype)init {
+- (instancetype)init
+{
   self = [super init];
   _style = ASTextLineStyleSingle;
   return self;
 }
 
-+ (instancetype)decorationWithStyle:(ASTextLineStyle)style NS_RETURNS_RETAINED {
++ (instancetype)decorationWithStyle:(ASTextLineStyle)style NS_RETURNS_RETAINED
+{
   ASTextDecoration *one = [self new];
   one.style = style;
   return one;
 }
 + (instancetype)decorationWithStyle:(ASTextLineStyle)style
                               width:(NSNumber *)width
-                              color:(UIColor *)color NS_RETURNS_RETAINED {
+                              color:(UIColor *)color NS_RETURNS_RETAINED
+{
   ASTextDecoration *one = [self new];
   one.style = style;
   one.width = width;
@@ -240,13 +261,15 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   return one;
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder {
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
   [aCoder encodeObject:@(self.style) forKey:@"style"];
   [aCoder encodeObject:self.width forKey:@"width"];
   [aCoder encodeObject:self.color forKey:@"color"];
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder {
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
   self = [super init];
   self.style = ((NSNumber *)[aDecoder decodeObjectForKey:@"style"]).unsignedIntegerValue;
   self.width = [aDecoder decodeObjectForKey:@"width"];
@@ -254,7 +277,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   __typeof__(self) one = [self.class new];
   one.style = self.style;
   one.width = self.width;
@@ -268,7 +292,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
 
 + (instancetype)borderWithLineStyle:(ASTextLineStyle)lineStyle
                           lineWidth:(CGFloat)width
-                        strokeColor:(UIColor *)color NS_RETURNS_RETAINED {
+                        strokeColor:(UIColor *)color NS_RETURNS_RETAINED
+{
   ASTextBorder *one = [self new];
   one.lineStyle = lineStyle;
   one.strokeWidth = width;
@@ -276,7 +301,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   return one;
 }
 
-+ (instancetype)borderWithFillColor:(UIColor *)color cornerRadius:(CGFloat)cornerRadius NS_RETURNS_RETAINED {
++ (instancetype)borderWithFillColor:(UIColor *)color cornerRadius:(CGFloat)cornerRadius NS_RETURNS_RETAINED
+{
   ASTextBorder *one = [self new];
   one.fillColor = color;
   one.cornerRadius = cornerRadius;
@@ -284,13 +310,15 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   return one;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
   self = [super init];
   self.lineStyle = ASTextLineStyleSingle;
   return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder {
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
   [aCoder encodeObject:@(self.lineStyle) forKey:@"lineStyle"];
   [aCoder encodeObject:@(self.strokeWidth) forKey:@"strokeWidth"];
   [aCoder encodeObject:self.strokeColor forKey:@"strokeColor"];
@@ -301,7 +329,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   [aCoder encodeObject:self.fillColor forKey:@"fillColor"];
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder {
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
   self = [super init];
   _lineStyle = ((NSNumber *)[aDecoder decodeObjectForKey:@"lineStyle"]).unsignedIntegerValue;
   _strokeWidth = ((NSNumber *)[aDecoder decodeObjectForKey:@"strokeWidth"]).doubleValue;
@@ -314,7 +343,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   __typeof__(self) one = [self.class new];
   one.lineStyle = self.lineStyle;
   one.strokeWidth = self.strokeWidth;
@@ -331,19 +361,22 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
 
 @implementation ASTextAttachment
 
-+ (instancetype)attachmentWithContent:(id)content NS_RETURNS_RETAINED {
++ (instancetype)attachmentWithContent:(id)content NS_RETURNS_RETAINED
+{
   ASTextAttachment *one = [self new];
   one.content = content;
   return one;
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder {
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
   [aCoder encodeObject:self.content forKey:@"content"];
   [aCoder encodeObject:[NSValue valueWithUIEdgeInsets:self.contentInsets] forKey:@"contentInsets"];
   [aCoder encodeObject:self.userInfo forKey:@"userInfo"];
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder {
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
   self = [super init];
   _content = [aDecoder decodeObjectForKey:@"content"];
   _contentInsets = ((NSValue *)[aDecoder decodeObjectForKey:@"contentInsets"]).UIEdgeInsetsValue;
@@ -351,7 +384,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   __typeof__(self) one = [self.class new];
   if ([self.content respondsToSelector:@selector(copy)]) {
     one.content = [self.content copy];
@@ -367,13 +401,15 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
 
 @implementation ASTextHighlight
 
-+ (instancetype)highlightWithAttributes:(NSDictionary *)attributes NS_RETURNS_RETAINED {
++ (instancetype)highlightWithAttributes:(NSDictionary *)attributes NS_RETURNS_RETAINED
+{
   ASTextHighlight *one = [self new];
   one.attributes = attributes;
   return one;
 }
 
-+ (instancetype)highlightWithBackgroundColor:(UIColor *)color NS_RETURNS_RETAINED {
++ (instancetype)highlightWithBackgroundColor:(UIColor *)color NS_RETURNS_RETAINED
+{
   ASTextBorder *highlightBorder = [ASTextBorder new];
   highlightBorder.insets = UIEdgeInsetsMake(-2, -1, -2, -1);
   highlightBorder.cornerRadius = 3;
@@ -384,17 +420,20 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   return one;
 }
 
-- (void)setAttributes:(NSDictionary *)attributes {
+- (void)setAttributes:(NSDictionary *)attributes
+{
   _attributes = attributes.mutableCopy;
 }
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   __typeof__(self) one = [self.class new];
   one.attributes = self.attributes.mutableCopy;
   return one;
 }
 
-- (void)_makeMutableAttributes {
+- (void)_makeMutableAttributes
+{
   if (!_attributes) {
     _attributes = [NSMutableDictionary new];
   } else if (![_attributes isKindOfClass:[NSMutableDictionary class]]) {
@@ -402,7 +441,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   }
 }
 
-- (void)setFont:(UIFont *)font {
+- (void)setFont:(UIFont *)font
+{
   [self _makeMutableAttributes];
   if (font == (id)[NSNull null] || font == nil) {
     ((NSMutableDictionary *)_attributes)[(id)kCTFontAttributeName] = [NSNull null];
@@ -415,7 +455,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   }
 }
 
-- (void)setColor:(UIColor *)color {
+- (void)setColor:(UIColor *)color
+{
   [self _makeMutableAttributes];
   if (color == (id)[NSNull null] || color == nil) {
     ((NSMutableDictionary *)_attributes)[(id)kCTForegroundColorAttributeName] = [NSNull null];
@@ -426,7 +467,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   }
 }
 
-- (void)setStrokeWidth:(NSNumber *)width {
+- (void)setStrokeWidth:(NSNumber *)width
+{
   [self _makeMutableAttributes];
   if (width == (id)[NSNull null] || width == nil) {
     ((NSMutableDictionary *)_attributes)[(id)kCTStrokeWidthAttributeName] = [NSNull null];
@@ -435,7 +477,8 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   }
 }
 
-- (void)setStrokeColor:(UIColor *)color {
+- (void)setStrokeColor:(UIColor *)color
+{
   [self _makeMutableAttributes];
   if (color == (id)[NSNull null] || color == nil) {
     ((NSMutableDictionary *)_attributes)[(id)kCTStrokeColorAttributeName] = [NSNull null];
@@ -446,37 +489,46 @@ ASTextAttributeType ASTextAttributeGetType(NSString *name) {
   }
 }
 
-- (void)setTextAttribute:(NSString *)attribute value:(id)value {
+- (void)setTextAttribute:(NSString *)attribute value:(id)value
+{
   [self _makeMutableAttributes];
-  if (value == nil) value = [NSNull null];
+  if (value == nil)
+    value = [NSNull null];
   ((NSMutableDictionary *)_attributes)[attribute] = value;
 }
 
-- (void)setShadow:(ASTextShadow *)shadow {
+- (void)setShadow:(ASTextShadow *)shadow
+{
   [self setTextAttribute:ASTextShadowAttributeName value:shadow];
 }
 
-- (void)setInnerShadow:(ASTextShadow *)shadow {
+- (void)setInnerShadow:(ASTextShadow *)shadow
+{
   [self setTextAttribute:ASTextInnerShadowAttributeName value:shadow];
 }
 
-- (void)setUnderline:(ASTextDecoration *)underline {
+- (void)setUnderline:(ASTextDecoration *)underline
+{
   [self setTextAttribute:ASTextUnderlineAttributeName value:underline];
 }
 
-- (void)setStrikethrough:(ASTextDecoration *)strikethrough {
+- (void)setStrikethrough:(ASTextDecoration *)strikethrough
+{
   [self setTextAttribute:ASTextStrikethroughAttributeName value:strikethrough];
 }
 
-- (void)setBackgroundBorder:(ASTextBorder *)border {
+- (void)setBackgroundBorder:(ASTextBorder *)border
+{
   [self setTextAttribute:ASTextBackgroundBorderAttributeName value:border];
 }
 
-- (void)setBorder:(ASTextBorder *)border {
+- (void)setBorder:(ASTextBorder *)border
+{
   [self setTextAttribute:ASTextBorderAttributeName value:border];
 }
 
-- (void)setAttachment:(ASTextAttachment *)attachment {
+- (void)setAttachment:(ASTextAttachment *)attachment
+{
   [self setTextAttribute:ASTextAttachmentAttributeName value:attachment];
 }
 

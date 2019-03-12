@@ -69,7 +69,8 @@
 }
 
 - (ASSizeRange)collectionView:(ASCollectionView *)collectionView
-    constrainedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath {
+    constrainedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath
+{
   ASSizeRange result = ASSizeRangeUnconstrained;
   if (_delegateFlags.implementsConstrainedSizeForItemAtIndexPath) {
     result = [collectionView.asyncDelegate collectionNode:collectionView.collectionNode
@@ -105,7 +106,8 @@
 
 - (ASSizeRange)collectionView:(ASCollectionView *)collectionView
     constrainedSizeForSupplementaryNodeOfKind:(NSString *)kind
-                                  atIndexPath:(NSIndexPath *)indexPath {
+                                  atIndexPath:(NSIndexPath *)indexPath
+{
   ASSizeRange result = ASSizeRangeZero;
   if (ASObjectIsEqual(kind, UICollectionElementKindSectionHeader)) {
     if (_delegateFlags.implementsSizeRangeForHeader) {
@@ -152,7 +154,8 @@
 
 - (NSUInteger)collectionView:(ASCollectionView *)collectionView
     supplementaryNodesOfKind:(NSString *)kind
-                   inSection:(NSUInteger)section {
+                   inSection:(NSUInteger)section
+{
   ASSizeRange constraint = [self collectionView:collectionView
       constrainedSizeForSupplementaryNodeOfKind:kind
                                     atIndexPath:[NSIndexPath indexPathForItem:0 inSection:section]];
@@ -163,7 +166,8 @@
   }
 }
 
-- (ASScrollDirection)scrollableDirections {
+- (ASScrollDirection)scrollableDirections
+{
   return (self.layout.scrollDirection == UICollectionViewScrollDirectionHorizontal)
              ? ASScrollDirectionHorizontalDirections
              : ASScrollDirectionVerticalDirections;
@@ -171,7 +175,8 @@
 
 #pragma mark - Private helpers
 
-- (id<ASCollectionDelegateFlowLayout>)delegateForCollectionView:(ASCollectionView *)collectionView {
+- (id<ASCollectionDelegateFlowLayout>)delegateForCollectionView:(ASCollectionView *)collectionView
+{
   return (id<ASCollectionDelegateFlowLayout>)collectionView.asyncDelegate;
 }
 

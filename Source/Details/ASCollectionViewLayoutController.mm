@@ -33,7 +33,8 @@ typedef struct ASRangeGeometry ASRangeGeometry;
 
 @implementation ASCollectionViewLayoutController
 
-- (instancetype)initWithCollectionView:(ASCollectionView *)collectionView {
+- (instancetype)initWithCollectionView:(ASCollectionView *)collectionView
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -46,7 +47,8 @@ typedef struct ASRangeGeometry ASRangeGeometry;
 - (NSHashTable<ASCollectionElement *> *)elementsForScrolling:(ASScrollDirection)scrollDirection
                                                    rangeMode:(ASLayoutRangeMode)rangeMode
                                                    rangeType:(ASLayoutRangeType)rangeType
-                                                         map:(ASElementMap *)map {
+                                                         map:(ASElementMap *)map
+{
   ASRangeTuningParameters tuningParameters = [self tuningParametersForRangeMode:rangeMode rangeType:rangeType];
   CGRect rangeBounds = [self rangeBoundsWithScrollDirection:scrollDirection rangeTuningParameters:tuningParameters];
   return [self elementsWithinRangeBounds:rangeBounds map:map];
@@ -56,7 +58,8 @@ typedef struct ASRangeGeometry ASRangeGeometry;
                       rangeMode:(ASLayoutRangeMode)rangeMode
                      displaySet:(NSHashTable<ASCollectionElement *> *__autoreleasing _Nullable *)displaySet
                      preloadSet:(NSHashTable<ASCollectionElement *> *__autoreleasing _Nullable *)preloadSet
-                            map:(ASElementMap *)map {
+                            map:(ASElementMap *)map
+{
   if (displaySet == NULL || preloadSet == NULL) {
     return;
   }
@@ -104,7 +107,8 @@ typedef struct ASRangeGeometry ASRangeGeometry;
   return;
 }
 
-- (NSHashTable<ASCollectionElement *> *)elementsWithinRangeBounds:(CGRect)rangeBounds map:(ASElementMap *)map {
+- (NSHashTable<ASCollectionElement *> *)elementsWithinRangeBounds:(CGRect)rangeBounds map:(ASElementMap *)map
+{
   NSArray *layoutAttributes = [_collectionViewLayout layoutAttributesForElementsInRect:rangeBounds];
   NSHashTable<ASCollectionElement *> *elementSet =
       [[NSHashTable alloc] initWithOptions:NSHashTableObjectPointerPersonality capacity:layoutAttributes.count];
@@ -125,11 +129,12 @@ typedef struct ASRangeGeometry ASRangeGeometry;
 }
 
 - (CGRect)rangeBoundsWithScrollDirection:(ASScrollDirection)scrollDirection
-                   rangeTuningParameters:(ASRangeTuningParameters)tuningParameters {
+                   rangeTuningParameters:(ASRangeTuningParameters)tuningParameters
+{
   CGRect rect = _collectionView.bounds;
 
-  return CGRectExpandToRangeWithScrollableDirections(rect, tuningParameters, [_collectionView scrollableDirections],
-                                                     scrollDirection);
+  return CGRectExpandToRangeWithScrollableDirections(
+      rect, tuningParameters, [_collectionView scrollableDirections], scrollDirection);
 }
 
 @end

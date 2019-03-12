@@ -18,7 +18,8 @@
 
 @implementation ASTipProvider
 
-- (ASTip *)tipForNode:(ASDisplayNode *)node {
+- (ASTip *)tipForNode:(ASDisplayNode *)node
+{
   ASDisplayNodeFailAssert(@"Subclasses must override %@", NSStringFromSelector(_cmd));
   return nil;
 }
@@ -27,7 +28,8 @@
 
 @implementation ASTipProvider (Lookup)
 
-+ (NSArray<ASTipProvider *> *)all {
++ (NSArray<ASTipProvider *> *)all
+{
   static NSArray<ASTipProvider *> *providers;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{

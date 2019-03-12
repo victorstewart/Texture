@@ -13,13 +13,15 @@
 
 ASRangeTuningParameters const ASRangeTuningParametersZero = {};
 
-BOOL ASRangeTuningParametersEqualToRangeTuningParameters(ASRangeTuningParameters lhs, ASRangeTuningParameters rhs) {
+BOOL ASRangeTuningParametersEqualToRangeTuningParameters(ASRangeTuningParameters lhs, ASRangeTuningParameters rhs)
+{
   return lhs.leadingBufferScreenfuls == rhs.leadingBufferScreenfuls &&
          lhs.trailingBufferScreenfuls == rhs.trailingBufferScreenfuls;
 }
 
 ASDirectionalScreenfulBuffer ASDirectionalScreenfulBufferHorizontal(ASScrollDirection scrollDirection,
-                                                                    ASRangeTuningParameters rangeTuningParameters) {
+                                                                    ASRangeTuningParameters rangeTuningParameters)
+{
   ASDirectionalScreenfulBuffer horizontalBuffer = {0, 0};
   BOOL movingRight = ASScrollDirectionContainsRight(scrollDirection);
 
@@ -31,7 +33,8 @@ ASDirectionalScreenfulBuffer ASDirectionalScreenfulBufferHorizontal(ASScrollDire
 }
 
 ASDirectionalScreenfulBuffer ASDirectionalScreenfulBufferVertical(ASScrollDirection scrollDirection,
-                                                                  ASRangeTuningParameters rangeTuningParameters) {
+                                                                  ASRangeTuningParameters rangeTuningParameters)
+{
   ASDirectionalScreenfulBuffer verticalBuffer = {0, 0};
   BOOL movingDown = ASScrollDirectionContainsDown(scrollDirection);
 
@@ -42,7 +45,8 @@ ASDirectionalScreenfulBuffer ASDirectionalScreenfulBufferVertical(ASScrollDirect
   return verticalBuffer;
 }
 
-CGRect CGRectExpandHorizontally(CGRect rect, ASDirectionalScreenfulBuffer buffer) {
+CGRect CGRectExpandHorizontally(CGRect rect, ASDirectionalScreenfulBuffer buffer)
+{
   CGFloat negativeDirectionWidth = buffer.negativeDirection * rect.size.width;
   CGFloat positiveDirectionWidth = buffer.positiveDirection * rect.size.width;
   rect.size.width = negativeDirectionWidth + rect.size.width + positiveDirectionWidth;
@@ -50,7 +54,8 @@ CGRect CGRectExpandHorizontally(CGRect rect, ASDirectionalScreenfulBuffer buffer
   return rect;
 }
 
-CGRect CGRectExpandVertically(CGRect rect, ASDirectionalScreenfulBuffer buffer) {
+CGRect CGRectExpandVertically(CGRect rect, ASDirectionalScreenfulBuffer buffer)
+{
   CGFloat negativeDirectionHeight = buffer.negativeDirection * rect.size.height;
   CGFloat positiveDirectionHeight = buffer.positiveDirection * rect.size.height;
   rect.size.height = negativeDirectionHeight + rect.size.height + positiveDirectionHeight;
@@ -61,7 +66,8 @@ CGRect CGRectExpandVertically(CGRect rect, ASDirectionalScreenfulBuffer buffer) 
 CGRect CGRectExpandToRangeWithScrollableDirections(CGRect rect,
                                                    ASRangeTuningParameters tuningParameters,
                                                    ASScrollDirection scrollableDirections,
-                                                   ASScrollDirection scrollDirection) {
+                                                   ASScrollDirection scrollDirection)
+{
   // Can scroll horizontally - expand the range appropriately
   if (ASScrollDirectionContainsHorizontalDirection(scrollableDirections)) {
     ASDirectionalScreenfulBuffer horizontalBuffer =
@@ -86,7 +92,8 @@ CGRect CGRectExpandToRangeWithScrollableDirections(CGRect rect,
 
 @implementation ASAbstractLayoutController
 
-+ (std::vector<std::vector<ASRangeTuningParameters>>)defaultTuningParameters {
++ (std::vector<std::vector<ASRangeTuningParameters>>)defaultTuningParameters
+{
   auto tuningParameters = std::vector<std::vector<ASRangeTuningParameters>>(
       ASLayoutRangeModeCount, std::vector<ASRangeTuningParameters>(ASLayoutRangeTypeCount));
 
@@ -117,7 +124,8 @@ CGRect CGRectExpandToRangeWithScrollableDirections(CGRect rect,
   return tuningParameters;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -131,16 +139,19 @@ CGRect CGRectExpandToRangeWithScrollableDirections(CGRect rect,
 
 #pragma mark - Tuning Parameters
 
-- (ASRangeTuningParameters)tuningParametersForRangeType:(ASLayoutRangeType)rangeType {
+- (ASRangeTuningParameters)tuningParametersForRangeType:(ASLayoutRangeType)rangeType
+{
   return [self tuningParametersForRangeMode:ASLayoutRangeModeFull rangeType:rangeType];
 }
 
-- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeType:(ASLayoutRangeType)rangeType {
+- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeType:(ASLayoutRangeType)rangeType
+{
   return [self setTuningParameters:tuningParameters forRangeMode:ASLayoutRangeModeFull rangeType:rangeType];
 }
 
 - (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode
-                                              rangeType:(ASLayoutRangeType)rangeType {
+                                              rangeType:(ASLayoutRangeType)rangeType
+{
   ASDisplayNodeAssert(rangeMode < _tuningParameters.size() && rangeType < _tuningParameters[rangeMode].size(),
                       @"Requesting a range that is OOB for the configured tuning parameters");
   return _tuningParameters[rangeMode][rangeType];
@@ -148,7 +159,8 @@ CGRect CGRectExpandToRangeWithScrollableDirections(CGRect rect,
 
 - (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters
                forRangeMode:(ASLayoutRangeMode)rangeMode
-                  rangeType:(ASLayoutRangeType)rangeType {
+                  rangeType:(ASLayoutRangeType)rangeType
+{
   ASDisplayNodeAssert(rangeMode < _tuningParameters.size() && rangeType < _tuningParameters[rangeMode].size(),
                       @"Setting a range that is OOB for the configured tuning parameters");
   _tuningParameters[rangeMode][rangeType] = tuningParameters;
@@ -159,7 +171,8 @@ CGRect CGRectExpandToRangeWithScrollableDirections(CGRect rect,
 - (NSHashTable<ASCollectionElement *> *)elementsForScrolling:(ASScrollDirection)scrollDirection
                                                    rangeMode:(ASLayoutRangeMode)rangeMode
                                                    rangeType:(ASLayoutRangeType)rangeType
-                                                         map:(ASElementMap *)map {
+                                                         map:(ASElementMap *)map
+{
   ASDisplayNodeAssertNotSupported();
   return nil;
 }
@@ -168,7 +181,8 @@ CGRect CGRectExpandToRangeWithScrollableDirections(CGRect rect,
                       rangeMode:(ASLayoutRangeMode)rangeMode
                      displaySet:(NSHashTable<ASCollectionElement *> *__autoreleasing _Nullable *)displaySet
                      preloadSet:(NSHashTable<ASCollectionElement *> *__autoreleasing _Nullable *)preloadSet
-                            map:(ASElementMap *)map {
+                            map:(ASElementMap *)map
+{
   ASDisplayNodeAssertNotSupported();
 }
 

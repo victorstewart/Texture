@@ -16,7 +16,8 @@
 
 typedef BOOL (^compareBlock)(id _Nonnull lhs, id _Nonnull rhs);
 
-- (void)asdk_diffWithArray:(NSArray *)array insertions:(NSIndexSet **)insertions deletions:(NSIndexSet **)deletions {
+- (void)asdk_diffWithArray:(NSArray *)array insertions:(NSIndexSet **)insertions deletions:(NSIndexSet **)deletions
+{
   [self asdk_diffWithArray:array
                 insertions:insertions
                  deletions:deletions
@@ -27,14 +28,16 @@ typedef BOOL (^compareBlock)(id _Nonnull lhs, id _Nonnull rhs);
 - (void)asdk_diffWithArray:(NSArray *)array
                 insertions:(NSIndexSet **)insertions
                  deletions:(NSIndexSet **)deletions
-              compareBlock:(compareBlock)comparison {
+              compareBlock:(compareBlock)comparison
+{
   [self asdk_diffWithArray:array insertions:insertions deletions:deletions moves:nil compareBlock:comparison];
 }
 
 - (void)asdk_diffWithArray:(NSArray *)array
                 insertions:(NSIndexSet **)insertions
                  deletions:(NSIndexSet **)deletions
-                     moves:(NSArray<NSIndexPath *> **)moves {
+                     moves:(NSArray<NSIndexPath *> **)moves
+{
   [self asdk_diffWithArray:array
                 insertions:insertions
                  deletions:deletions
@@ -46,12 +49,19 @@ typedef BOOL (^compareBlock)(id _Nonnull lhs, id _Nonnull rhs);
                 insertions:(NSIndexSet **)insertions
                  deletions:(NSIndexSet **)deletions
                      moves:(NSArray<NSIndexPath *> **)moves
-              compareBlock:(compareBlock)comparison {
+              compareBlock:(compareBlock)comparison
+{
   struct NSObjectHash {
-    std::size_t operator()(id<NSObject> k) const { return (std::size_t)[k hash]; };
+    std::size_t operator()(id<NSObject> k) const
+    {
+      return (std::size_t)[k hash];
+    };
   };
   struct NSObjectCompare {
-    bool operator()(id<NSObject> lhs, id<NSObject> rhs) const { return (bool)[lhs isEqual:rhs]; };
+    bool operator()(id<NSObject> lhs, id<NSObject> rhs) const
+    {
+      return (bool)[lhs isEqual:rhs];
+    };
   };
   std::unordered_multimap<unowned id, NSUInteger, NSObjectHash, NSObjectCompare> potentialMoves;
 
@@ -121,7 +131,8 @@ typedef BOOL (^compareBlock)(id _Nonnull lhs, id _Nonnull rhs);
 
 // https://github.com/raywenderlich/swift-algorithm-club/tree/master/Longest%20Common%20Subsequence is not exactly this
 // code (obviously), but is a good commentary on the algorithm.
-- (NSMutableIndexSet *)_asdk_commonIndexesWithArray:(NSArray *)array compareBlock:(BOOL (^)(id lhs, id rhs))comparison {
+- (NSMutableIndexSet *)_asdk_commonIndexesWithArray:(NSArray *)array compareBlock:(BOOL (^)(id lhs, id rhs))comparison
+{
   NSAssert(comparison != nil, @"Comparison block is required");
 
   NSInteger selfCount = self.count;
@@ -176,7 +187,8 @@ typedef BOOL (^compareBlock)(id _Nonnull lhs, id _Nonnull rhs);
 
 static compareBlock defaultCompare = nil;
 
-+ (compareBlock)defaultCompareBlock {
++ (compareBlock)defaultCompareBlock
+{
   static dispatch_once_t onceToken;
 
   dispatch_once(&onceToken, ^{

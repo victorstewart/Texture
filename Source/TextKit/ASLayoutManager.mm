@@ -17,7 +17,8 @@
                 font:(UIFont *)font
               matrix:(CGAffineTransform)textMatrix
           attributes:(NSDictionary *)attributes
-           inContext:(CGContextRef)graphicsContext {
+           inContext:(CGContextRef)graphicsContext
+{
   // NSLayoutManager has a hard coded internal color for hyperlinks which ignores
   // NSForegroundColorAttributeName. To get around this, we force the fill color
   // in the current context to match NSForegroundColorAttributeName.

@@ -18,7 +18,8 @@
   NSHashTable<id<ASAsyncTransactionContainer>> *_containers;
 }
 
-+ (_ASAsyncTransactionGroup *)mainTransactionGroup {
++ (_ASAsyncTransactionGroup *)mainTransactionGroup
+{
   ASDisplayNodeAssertMainThread();
   static _ASAsyncTransactionGroup *mainTransactionGroup;
 
@@ -29,7 +30,8 @@
   return mainTransactionGroup;
 }
 
-- (void)registerAsMainRunloopObserver {
+- (void)registerAsMainRunloopObserver
+{
   ASDisplayNodeAssertMainThread();
   static CFRunLoopObserverRef observer;
   ASDisplayNodeAssert(observer == NULL,
@@ -51,20 +53,23 @@
   CFRelease(observer);
 }
 
-- (instancetype)_init {
+- (instancetype)_init
+{
   if ((self = [super init])) {
     _containers = [NSHashTable hashTableWithOptions:NSHashTableObjectPointerPersonality];
   }
   return self;
 }
 
-- (void)addTransactionContainer:(id<ASAsyncTransactionContainer>)container {
+- (void)addTransactionContainer:(id<ASAsyncTransactionContainer>)container
+{
   ASDisplayNodeAssertMainThread();
   ASDisplayNodeAssert(container != nil, @"No container");
   [_containers addObject:container];
 }
 
-- (void)commit {
+- (void)commit
+{
   ASDisplayNodeAssertMainThread();
 
   if ([_containers count]) {

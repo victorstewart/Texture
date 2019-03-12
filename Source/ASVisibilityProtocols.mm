@@ -9,7 +9,8 @@
 
 #import <AsyncDisplayKit/ASVisibilityProtocols.h>
 
-ASLayoutRangeMode ASLayoutRangeModeForVisibilityDepth(NSUInteger visibilityDepth) {
+ASLayoutRangeMode ASLayoutRangeModeForVisibilityDepth(NSUInteger visibilityDepth)
+{
   if (visibilityDepth == 0) {
     return ASLayoutRangeModeFull;
   } else if (visibilityDepth == 1) {

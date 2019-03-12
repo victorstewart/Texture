@@ -14,7 +14,8 @@
   BOOL _createdWithNoTarget;
 }
 
-- (void)setTarget:(id)target {
+- (void)setTarget:(id)target
+{
   _target = target;
 
   if (!target) {
@@ -22,11 +23,13 @@
   }
 }
 
-- (id)target {
+- (id)target
+{
   return _target;
 }
 
-- (BOOL)isEqual:(id)object {
+- (BOOL)isEqual:(id)object
+{
   if (![object isKindOfClass:[ASControlTargetAction class]]) {
     return NO;
   }
@@ -55,7 +58,8 @@
   }
 }
 
-- (NSUInteger)hash {
+- (NSUInteger)hash
+{
   return [self.target hash];
 }
 

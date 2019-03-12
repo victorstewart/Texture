@@ -16,7 +16,8 @@
 static CGSize _ASSizeFillWithAspectRatio(CGFloat aspectRatio, CGSize constraints);
 static CGSize _ASSizeFitWithAspectRatio(CGFloat aspectRatio, CGSize constraints);
 
-static CGSize _ASSizeFillWithAspectRatio(CGFloat sizeToScaleAspectRatio, CGSize destinationSize) {
+static CGSize _ASSizeFillWithAspectRatio(CGFloat sizeToScaleAspectRatio, CGSize destinationSize)
+{
   CGFloat destinationAspectRatio = destinationSize.width / destinationSize.height;
   if (sizeToScaleAspectRatio > destinationAspectRatio) {
     return CGSizeMake(destinationSize.height * sizeToScaleAspectRatio, destinationSize.height);
@@ -25,7 +26,8 @@ static CGSize _ASSizeFillWithAspectRatio(CGFloat sizeToScaleAspectRatio, CGSize 
   }
 }
 
-static CGSize _ASSizeFitWithAspectRatio(CGFloat aspectRatio, CGSize constraints) {
+static CGSize _ASSizeFitWithAspectRatio(CGFloat aspectRatio, CGSize constraints)
+{
   CGFloat constraintAspectRatio = constraints.width / constraints.height;
   if (aspectRatio > constraintAspectRatio) {
     return CGSizeMake(constraints.width, constraints.width / aspectRatio);
@@ -41,7 +43,8 @@ void ASCroppedImageBackingSizeAndDrawRectInBounds(CGSize sourceImageSize,
                                                   BOOL forceUpscaling,
                                                   CGSize forcedSize,
                                                   CGSize *outBackingSize,
-                                                  CGRect *outDrawRect) {
+                                                  CGRect *outDrawRect)
+{
   size_t destinationWidth = boundsSize.width;
   size_t destinationHeight = boundsSize.height;
 
@@ -96,21 +99,24 @@ void ASCroppedImageBackingSizeAndDrawRectInBounds(CGSize sourceImageSize,
   CGRect drawRect = CGRectZero;
   if (cropToRectDimensions) {
     drawRect = CGRectMake(-cropRect.origin.x * scaledSizeForDestination.width,
-                          -cropRect.origin.y * scaledSizeForDestination.height, scaledSizeForDestination.width,
+                          -cropRect.origin.y * scaledSizeForDestination.height,
+                          scaledSizeForDestination.width,
                           scaledSizeForDestination.height);
   } else {
     // We want to obey the origin of cropRect in aspect-fill mode.
     if (contentMode == UIViewContentModeScaleAspectFill) {
       drawRect = CGRectMake(((destinationWidth - scaledSizeForDestination.width) * cropRect.origin.x),
                             ((destinationHeight - scaledSizeForDestination.height) * cropRect.origin.y),
-                            scaledSizeForDestination.width, scaledSizeForDestination.height);
+                            scaledSizeForDestination.width,
+                            scaledSizeForDestination.height);
 
     }
     // And otherwise just center it.
     else {
       drawRect = CGRectMake(((destinationWidth - scaledSizeForDestination.width) / 2.0),
                             ((destinationHeight - scaledSizeForDestination.height) / 2.0),
-                            scaledSizeForDestination.width, scaledSizeForDestination.height);
+                            scaledSizeForDestination.width,
+                            scaledSizeForDestination.height);
     }
   }
 

@@ -89,7 +89,8 @@ struct ASTextKitAttributes {
    We provide an explicit copy function so we can use aggregate initializer syntax while providing copy semantics for
    the NSObjects inside.
    */
-  const ASTextKitAttributes copy() const {
+  const ASTextKitAttributes copy() const
+  {
     return {
         [attributedString copy],
         [truncationAttributedString copy],
@@ -105,7 +106,8 @@ struct ASTextKitAttributes {
     };
   };
 
-  bool operator==(const ASTextKitAttributes &other) const {
+  bool operator==(const ASTextKitAttributes &other) const
+  {
     // These comparisons are in a specific order to reduce the overall cost of this function.
     return lineBreakMode == other.lineBreakMode && maximumNumberOfLines == other.maximumNumberOfLines &&
            shadowOpacity == other.shadowOpacity && shadowRadius == other.shadowRadius &&

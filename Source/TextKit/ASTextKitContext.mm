@@ -69,7 +69,8 @@
 }
 
 - (void)performBlockWithLockedTextKitComponents:
-    (NS_NOESCAPE void (^)(NSLayoutManager *, NSTextStorage *, NSTextContainer *))block {
+    (NS_NOESCAPE void (^)(NSLayoutManager *, NSTextStorage *, NSTextContainer *))block
+{
   AS::MutexLocker l(*__instanceLock__);
   if (block) {
     block(_layoutManager, _textStorage, _textContainer);

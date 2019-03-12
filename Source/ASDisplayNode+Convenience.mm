@@ -16,7 +16,8 @@
 
 @implementation ASDisplayNode (Convenience)
 
-- (__kindof UIViewController *)closestViewController {
+- (__kindof UIViewController *)closestViewController
+{
   ASDisplayNodeAssertMainThread();
 
   // Careful not to trigger node loading here.

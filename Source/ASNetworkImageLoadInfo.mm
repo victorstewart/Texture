@@ -14,7 +14,8 @@
 - (instancetype)initWithURL:(NSURL *)url
                  sourceType:(ASNetworkImageSourceType)sourceType
          downloadIdentifier:(id)downloadIdentifier
-                   userInfo:(id)userInfo {
+                   userInfo:(id)userInfo
+{
   if (self = [super init]) {
     _url = [url copy];
     _sourceType = sourceType;
@@ -26,7 +27,8 @@
 
 #pragma mark - NSCopying
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   return self;
 }
 

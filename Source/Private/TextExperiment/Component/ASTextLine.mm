@@ -16,8 +16,10 @@
 
 + (instancetype)lineWithCTLine:(CTLineRef)CTLine
                       position:(CGPoint)position
-                      vertical:(BOOL)isVertical NS_RETURNS_RETAINED {
-  if (!CTLine) return nil;
+                      vertical:(BOOL)isVertical NS_RETURNS_RETAINED
+{
+  if (!CTLine)
+    return nil;
   ASTextLine *line = [self new];
   line->_position = position;
   line->_vertical = isVertical;
@@ -25,14 +27,19 @@
   return line;
 }
 
-- (void)dealloc {
-  if (_CTLine) CFRelease(_CTLine);
+- (void)dealloc
+{
+  if (_CTLine)
+    CFRelease(_CTLine);
 }
 
-- (void)setCTLine:(_Nonnull CTLineRef)CTLine {
+- (void)setCTLine:(_Nonnull CTLineRef)CTLine
+{
   if (_CTLine != CTLine) {
-    if (CTLine) CFRetain(CTLine);
-    if (_CTLine) CFRelease(_CTLine);
+    if (CTLine)
+      CFRetain(CTLine);
+    if (_CTLine)
+      CFRelease(_CTLine);
     _CTLine = CTLine;
     if (_CTLine) {
       _lineWidth = CTLineGetTypographicBounds(_CTLine, &_ascent, &_descent, &_leading);
@@ -56,12 +63,14 @@
   }
 }
 
-- (void)setPosition:(CGPoint)position {
+- (void)setPosition:(CGPoint)position
+{
   _position = position;
   [self reloadBounds];
 }
 
-- (void)reloadBounds {
+- (void)reloadBounds
+{
   if (_vertical) {
     _bounds = CGRectMake(_position.x - _descent, _position.y, _ascent + _descent, _lineWidth);
     _bounds.origin.y += _firstGlyphPos;
@@ -73,10 +82,12 @@
   _attachments = nil;
   _attachmentRanges = nil;
   _attachmentRects = nil;
-  if (!_CTLine) return;
+  if (!_CTLine)
+    return;
   CFArrayRef runs = CTLineGetGlyphRuns(_CTLine);
   NSUInteger runCount = CFArrayGetCount(runs);
-  if (runCount == 0) return;
+  if (runCount == 0)
+    return;
 
   NSMutableArray *attachments = [NSMutableArray new];
   NSMutableArray *attachmentRanges = [NSMutableArray new];
@@ -84,7 +95,8 @@
   for (NSUInteger r = 0; r < runCount; r++) {
     CTRunRef run = (CTRunRef)CFArrayGetValueAtIndex(runs, r);
     CFIndex glyphCount = CTRunGetGlyphCount(run);
-    if (glyphCount == 0) continue;
+    if (glyphCount == 0)
+      continue;
     NSDictionary *attrs = (id)CTRunGetAttributes(run);
     ASTextAttachment *attachment = attrs[ASTextAttachmentAttributeName];
     if (attachment) {
@@ -116,35 +128,43 @@
   _attachmentRects = attachmentRects.count ? attachmentRects : nil;
 }
 
-- (CGSize)size {
+- (CGSize)size
+{
   return _bounds.size;
 }
 
-- (CGFloat)width {
+- (CGFloat)width
+{
   return CGRectGetWidth(_bounds);
 }
 
-- (CGFloat)height {
+- (CGFloat)height
+{
   return CGRectGetHeight(_bounds);
 }
 
-- (CGFloat)top {
+- (CGFloat)top
+{
   return CGRectGetMinY(_bounds);
 }
 
-- (CGFloat)bottom {
+- (CGFloat)bottom
+{
   return CGRectGetMaxY(_bounds);
 }
 
-- (CGFloat)left {
+- (CGFloat)left
+{
   return CGRectGetMinX(_bounds);
 }
 
-- (CGFloat)right {
+- (CGFloat)right
+{
   return CGRectGetMaxX(_bounds);
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
   NSMutableString *desc = @"".mutableCopy;
   NSRange range = self.range;
   [desc appendFormat:@"<ASTextLine: %p> row:%ld range:%tu,%tu", self, (long)self.row, range.location, range.length];
@@ -156,7 +176,8 @@
 @end
 
 @implementation ASTextRunGlyphRange
-+ (instancetype)rangeWithRange:(NSRange)range drawMode:(ASTextRunGlyphDrawMode)mode NS_RETURNS_RETAINED {
++ (instancetype)rangeWithRange:(NSRange)range drawMode:(ASTextRunGlyphDrawMode)mode NS_RETURNS_RETAINED
+{
   ASTextRunGlyphRange *one = [self new];
   one.glyphRangeInRun = range;
   one.drawMode = mode;

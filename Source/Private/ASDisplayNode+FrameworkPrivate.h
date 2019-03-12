@@ -51,23 +51,28 @@ typedef NS_OPTIONS(NSUInteger, ASHierarchyState) {
   ASHierarchyStateLayoutPending = 1 << 3,
 };
 
-ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesLayoutPending(ASHierarchyState hierarchyState) {
+ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesLayoutPending(ASHierarchyState hierarchyState)
+{
   return ((hierarchyState & ASHierarchyStateLayoutPending) == ASHierarchyStateLayoutPending);
 }
 
-ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesRangeManaged(ASHierarchyState hierarchyState) {
+ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesRangeManaged(ASHierarchyState hierarchyState)
+{
   return ((hierarchyState & ASHierarchyStateRangeManaged) == ASHierarchyStateRangeManaged);
 }
 
-ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesRasterized(ASHierarchyState hierarchyState) {
+ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesRasterized(ASHierarchyState hierarchyState)
+{
   return ((hierarchyState & ASHierarchyStateRasterized) == ASHierarchyStateRasterized);
 }
 
-ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesTransitioningSupernodes(ASHierarchyState hierarchyState) {
+ASDISPLAYNODE_INLINE BOOL ASHierarchyStateIncludesTransitioningSupernodes(ASHierarchyState hierarchyState)
+{
   return ((hierarchyState & ASHierarchyStateTransitioningSupernodes) == ASHierarchyStateTransitioningSupernodes);
 }
 
-__unused static NSString *_Nonnull NSStringFromASHierarchyState(ASHierarchyState hierarchyState) {
+__unused static NSString *_Nonnull NSStringFromASHierarchyState(ASHierarchyState hierarchyState)
+{
   NSMutableArray *states = [NSMutableArray array];
   if (hierarchyState == ASHierarchyStateNormal) {
     [states addObject:@"Normal"];
@@ -95,7 +100,8 @@ __unused static NSString *_Nonnull NSStringFromASHierarchyState(ASHierarchyState
   })
 
 __unused static NSString *_Nonnull NSStringFromASHierarchyStateChange(ASHierarchyState oldState,
-                                                                      ASHierarchyState newState) {
+                                                                      ASHierarchyState newState)
+{
   if (oldState == newState) {
     return @"{ }";
   }

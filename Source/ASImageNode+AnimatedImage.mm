@@ -33,12 +33,14 @@
 
 #pragma mark - GIF support
 
-- (void)setAnimatedImage:(id<ASAnimatedImageProtocol>)animatedImage {
+- (void)setAnimatedImage:(id<ASAnimatedImageProtocol>)animatedImage
+{
   ASLockScopeSelf();
   [self _locked_setAnimatedImage:animatedImage];
 }
 
-- (void)_locked_setAnimatedImage:(id<ASAnimatedImageProtocol>)animatedImage {
+- (void)_locked_setAnimatedImage:(id<ASAnimatedImageProtocol>)animatedImage
+{
   ASAssertLocked(__instanceLock__);
 
   if (ASObjectIsEqual(_animatedImage, animatedImage) && (animatedImage == nil || animatedImage.playbackReady)) {
@@ -90,19 +92,22 @@
 }
 
 - (void)animatedImageSet:(id<ASAnimatedImageProtocol>)newAnimatedImage
-    previousAnimatedImage:(id<ASAnimatedImageProtocol>)previousAnimatedImage {
+    previousAnimatedImage:(id<ASAnimatedImageProtocol>)previousAnimatedImage
+{
   // Subclass hook should not be called with the lock held
   ASAssertUnlocked(__instanceLock__);
 
   // Subclasses may override
 }
 
-- (id<ASAnimatedImageProtocol>)animatedImage {
+- (id<ASAnimatedImageProtocol>)animatedImage
+{
   ASLockScopeSelf();
   return _animatedImage;
 }
 
-- (void)setAnimatedImagePaused:(BOOL)animatedImagePaused {
+- (void)setAnimatedImagePaused:(BOOL)animatedImagePaused
+{
   ASLockScopeSelf();
 
   _animatedImagePaused = animatedImagePaused;
@@ -110,19 +115,22 @@
   [self _locked_setShouldAnimate:!animatedImagePaused];
 }
 
-- (BOOL)animatedImagePaused {
+- (BOOL)animatedImagePaused
+{
   ASLockScopeSelf();
   return _animatedImagePaused;
 }
 
-- (void)setCoverImageCompleted:(UIImage *)coverImage {
+- (void)setCoverImageCompleted:(UIImage *)coverImage
+{
   if (ASInterfaceStateIncludesDisplay(self.interfaceState)) {
     ASLockScopeSelf();
     [self _locked_setCoverImageCompleted:coverImage];
   }
 }
 
-- (void)_locked_setCoverImageCompleted:(UIImage *)coverImage {
+- (void)_locked_setCoverImageCompleted:(UIImage *)coverImage
+{
   ASAssertLocked(__instanceLock__);
 
   _displayLinkLock.lock();
@@ -134,12 +142,14 @@
   }
 }
 
-- (void)setCoverImage:(UIImage *)coverImage {
+- (void)setCoverImage:(UIImage *)coverImage
+{
   ASLockScopeSelf();
   [self _locked_setCoverImage:coverImage];
 }
 
-- (void)_locked_setCoverImage:(UIImage *)coverImage {
+- (void)_locked_setCoverImage:(UIImage *)coverImage
+{
   ASAssertLocked(__instanceLock__);
 
   // If we're a network image node, we want to set the default image so
@@ -154,12 +164,14 @@
   }
 }
 
-- (NSString *)animatedImageRunLoopMode {
+- (NSString *)animatedImageRunLoopMode
+{
   AS::MutexLocker l(_displayLinkLock);
   return _animatedImageRunLoopMode;
 }
 
-- (void)setAnimatedImageRunLoopMode:(NSString *)runLoopMode {
+- (void)setAnimatedImageRunLoopMode:(NSString *)runLoopMode
+{
   AS::MutexLocker l(_displayLinkLock);
 
   if (runLoopMode == nil) {
@@ -173,12 +185,14 @@
   _animatedImageRunLoopMode = [runLoopMode copy];
 }
 
-- (void)setShouldAnimate:(BOOL)shouldAnimate {
+- (void)setShouldAnimate:(BOOL)shouldAnimate
+{
   ASLockScopeSelf();
   [self _locked_setShouldAnimate:shouldAnimate];
 }
 
-- (void)_locked_setShouldAnimate:(BOOL)shouldAnimate {
+- (void)_locked_setShouldAnimate:(BOOL)shouldAnimate
+{
   ASAssertLocked(__instanceLock__);
 
   // This test is explicitly done and not ASPerformBlockOnMainThread as this would perform the block immediately
@@ -204,14 +218,16 @@
 
 #pragma mark - Animating
 
-- (void)startAnimating {
+- (void)startAnimating
+{
   ASDisplayNodeAssertMainThread();
 
   ASLockScopeSelf();
   [self _locked_startAnimating];
 }
 
-- (void)_locked_startAnimating {
+- (void)_locked_startAnimating
+{
   ASAssertLocked(__instanceLock__);
 
   // It should be safe to call self.interfaceState in this case as it will only grab the lock of the superclass
@@ -247,14 +263,16 @@
   }
 }
 
-- (void)stopAnimating {
+- (void)stopAnimating
+{
   ASDisplayNodeAssertMainThread();
 
   ASLockScopeSelf();
   [self _locked_stopAnimating];
 }
 
-- (void)_locked_stopAnimating {
+- (void)_locked_stopAnimating
+{
   ASDisplayNodeAssertMainThread();
   ASAssertLocked(__instanceLock__);
 
@@ -271,7 +289,8 @@
 
 #pragma mark - ASDisplayNode
 
-- (void)didEnterVisibleState {
+- (void)didEnterVisibleState
+{
   ASDisplayNodeAssertMainThread();
   [super didEnterVisibleState];
 
@@ -283,14 +302,16 @@
   }
 }
 
-- (void)didExitVisibleState {
+- (void)didExitVisibleState
+{
   ASDisplayNodeAssertMainThread();
   [super didExitVisibleState];
 
   [self stopAnimating];
 }
 
-- (void)didExitDisplayState {
+- (void)didExitDisplayState
+{
   ASDisplayNodeAssertMainThread();
 #if ASAnimatedImageDebug
   NSLog(@"exiting display state: %p", self);
@@ -311,7 +332,8 @@
 
 #pragma mark - Display Link Callbacks
 
-- (void)displayLinkFired:(CADisplayLink *)displayLink {
+- (void)displayLinkFired:(CADisplayLink *)displayLink
+{
   ASDisplayNodeAssertMainThread();
 
   CFTimeInterval timeBetweenLastFire;
@@ -354,7 +376,8 @@
   }
 }
 
-- (NSUInteger)frameIndexAtPlayHeadPosition:(CFTimeInterval)playHead {
+- (NSUInteger)frameIndexAtPlayHeadPosition:(CFTimeInterval)playHead
+{
   ASDisplayNodeAssertMainThread();
   NSUInteger frameIndex = 0;
   for (NSUInteger durationIndex = 0; durationIndex < self.animatedImage.frameCount; durationIndex++) {
@@ -374,7 +397,8 @@
 
 @implementation ASImageNode (AnimatedImageInvalidation)
 
-- (void)invalidateAnimatedImage {
+- (void)invalidateAnimatedImage
+{
   AS::MutexLocker l(_displayLinkLock);
 #if ASAnimatedImageDebug
   if (_displayLink) {

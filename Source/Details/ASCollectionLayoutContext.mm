@@ -27,7 +27,8 @@
                             elements:(ASElementMap *)elements
                  layoutDelegateClass:(Class<ASCollectionLayoutDelegate>)layoutDelegateClass
                          layoutCache:(ASCollectionLayoutCache *)layoutCache
-                      additionalInfo:(id)additionalInfo {
+                      additionalInfo:(id)additionalInfo
+{
   self = [super init];
   if (self) {
     _viewportSize = viewportSize;
@@ -41,17 +42,20 @@
   return self;
 }
 
-- (Class<ASCollectionLayoutDelegate>)layoutDelegateClass {
+- (Class<ASCollectionLayoutDelegate>)layoutDelegateClass
+{
   return _layoutDelegateClass;
 }
 
-- (ASCollectionLayoutCache *)layoutCache {
+- (ASCollectionLayoutCache *)layoutCache
+{
   return _layoutCache;
 }
 
 // NOTE: Some properties, like initialContentOffset and layoutCache are ignored in -isEqualToContext: and -hash.
 // That is because contexts can be equal regardless of the content offsets or layout caches.
-- (BOOL)isEqualToContext:(ASCollectionLayoutContext *)context {
+- (BOOL)isEqualToContext:(ASCollectionLayoutContext *)context
+{
   if (context == nil) {
     return NO;
   }
@@ -66,7 +70,8 @@
          ASObjectIsEqual(_additionalInfo, context.additionalInfo);
 }
 
-- (BOOL)isEqual:(id)other {
+- (BOOL)isEqual:(id)other
+{
   if (self == other) {
     return YES;
   }
@@ -76,7 +81,8 @@
   return [self isEqualToContext:other];
 }
 
-- (NSUInteger)hash {
+- (NSUInteger)hash
+{
   struct {
     CGSize viewportSize;
     ASScrollDirection scrollableDirections;

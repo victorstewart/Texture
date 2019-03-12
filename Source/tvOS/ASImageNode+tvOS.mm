@@ -20,7 +20,8 @@
 
 @implementation ASImageNode (tvOS)
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
   [super touchesBegan:touches withEvent:event];
   self.isDefaultFocusAppearance = NO;
   UIView *view = [self getView];
@@ -55,7 +56,8 @@
   [CATransaction commit];
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
   [super touchesMoved:touches withEvent:event];
 
   // TODO: Clean up, and improve visuals.
@@ -120,12 +122,14 @@
   }
 }
 
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
   [super touchesEnded:touches withEvent:event];
   [self finishTouches];
 }
 
-- (void)finishTouches {
+- (void)finishTouches
+{
   if (!self.isDefaultFocusAppearance) {
     UIView *view = [self getView];
     CALayer *layer = view.layer;
@@ -155,7 +159,8 @@
   }
 }
 
-- (void)setFocusedState {
+- (void)setFocusedState
+{
   UIView *view = [self getView];
   CALayer *layer = view.layer;
   layer.shadowOffset = CGSizeMake(2, 10);
@@ -166,7 +171,8 @@
   view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.25, 1.25);
 }
 
-- (void)setDefaultFocusAppearance {
+- (void)setDefaultFocusAppearance
+{
   UIView *view = [self getView];
   CALayer *layer = view.layer;
   view.transform = CGAffineTransformIdentity;
@@ -179,7 +185,8 @@
   self.isDefaultFocusAppearance = YES;
 }
 
-- (UIView *)getView {
+- (UIView *)getView
+{
   // TODO: This needs to be re-visited to handle all possibilities.
   // If we are inside a ASCellNode, then we need to apply our focus effects to the ASCellNode view/layer rather than the
   // ASImageNode view/layer.

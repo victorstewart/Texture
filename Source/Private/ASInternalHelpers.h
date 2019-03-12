@@ -54,7 +54,8 @@ AS_EXTERN CGFloat ASRoundPixelValue(CGFloat f);
 
 AS_EXTERN Class _Nullable ASGetClassFromType(const char *_Nullable type);
 
-ASDISPLAYNODE_INLINE BOOL ASImageAlphaInfoIsOpaque(CGImageAlphaInfo info) {
+ASDISPLAYNODE_INLINE BOOL ASImageAlphaInfoIsOpaque(CGImageAlphaInfo info)
+{
   switch (info) {
     case kCGImageAlphaNone:
     case kCGImageAlphaNoneSkipLast:
@@ -74,7 +75,8 @@ ASDISPLAYNODE_INLINE BOOL ASImageAlphaInfoIsOpaque(CGImageAlphaInfo info) {
  @param withoutAnimation Set to `YES` to perform given block without animation
  @param block Perform UIView geometry changes within the passed block
  */
-ASDISPLAYNODE_INLINE void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)(void)) {
+ASDISPLAYNODE_INLINE void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)(void))
+{
   if (withoutAnimation) {
     [UIView performWithoutAnimation:block];
   } else {
@@ -83,13 +85,15 @@ ASDISPLAYNODE_INLINE void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, 
 }
 
 ASDISPLAYNODE_INLINE void ASBoundsAndPositionForFrame(
-    CGRect rect, CGPoint origin, CGPoint anchorPoint, CGRect *bounds, CGPoint *position) {
+    CGRect rect, CGPoint origin, CGPoint anchorPoint, CGRect *bounds, CGPoint *position)
+{
   *bounds = (CGRect){origin, rect.size};
   *position =
       CGPointMake(rect.origin.x + rect.size.width * anchorPoint.x, rect.origin.y + rect.size.height * anchorPoint.y);
 }
 
-ASDISPLAYNODE_INLINE UIEdgeInsets ASConcatInsets(UIEdgeInsets insetsA, UIEdgeInsets insetsB) {
+ASDISPLAYNODE_INLINE UIEdgeInsets ASConcatInsets(UIEdgeInsets insetsA, UIEdgeInsets insetsB)
+{
   insetsA.top += insetsB.top;
   insetsA.left += insetsB.left;
   insetsA.bottom += insetsB.bottom;
@@ -98,7 +102,8 @@ ASDISPLAYNODE_INLINE UIEdgeInsets ASConcatInsets(UIEdgeInsets insetsA, UIEdgeIns
 }
 
 ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT ASImageDownloaderPriority
-ASImageDownloaderPriorityWithInterfaceState(ASInterfaceState interfaceState) {
+ASImageDownloaderPriorityWithInterfaceState(ASInterfaceState interfaceState)
+{
   if (ASInterfaceStateIncludesVisible(interfaceState)) {
     return ASImageDownloaderPriorityVisible;
   }

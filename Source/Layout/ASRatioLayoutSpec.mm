@@ -26,7 +26,8 @@
 
 #pragma mark - Lifecycle
 
-+ (instancetype)ratioLayoutSpecWithRatio:(CGFloat)ratio child:(id<ASLayoutElement>)child NS_RETURNS_RETAINED {
++ (instancetype)ratioLayoutSpecWithRatio:(CGFloat)ratio child:(id<ASLayoutElement>)child NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithRatio:ratio child:child];
 }
 
@@ -46,14 +47,16 @@
 
 #pragma mark - Setter / Getter
 
-- (void)setRatio:(CGFloat)ratio {
+- (void)setRatio:(CGFloat)ratio
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
   _ratio = ratio;
 }
 
 #pragma mark - ASLayoutElement
 
-- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize {
+- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize
+{
   std::vector<CGSize> sizeOptions;
 
   if (ASPointsValidForSize(constrainedSize.max.width)) {
@@ -90,7 +93,8 @@
 
 #pragma mark - ASLayoutElementAsciiArtProtocol
 
-- (NSString *)asciiArtName {
+- (NSString *)asciiArtName
+{
   return [NSString stringWithFormat:@"%@ (%.1f)", NSStringFromClass([self class]), self.ratio];
 }
 

@@ -42,7 +42,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 
 @implementation ASCollectionLayout
 
-- (instancetype)initWithLayoutDelegate:(id<ASCollectionLayoutDelegate>)layoutDelegate {
+- (instancetype)initWithLayoutDelegate:(id<ASCollectionLayoutDelegate>)layoutDelegate
+{
   self = [super init];
   if (self) {
     ASDisplayNodeAssertNotNil(layoutDelegate, @"Collection layout delegate cannot be nil");
@@ -56,7 +57,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 
 #pragma mark - ASDataControllerLayoutDelegate
 
-- (ASCollectionLayoutContext *)layoutContextWithElements:(ASElementMap *)elements {
+- (ASCollectionLayoutContext *)layoutContextWithElements:(ASElementMap *)elements
+{
   ASDisplayNodeAssertMainThread();
 
   Class<ASCollectionLayoutDelegate> layoutDelegateClass = [_layoutDelegate class];
@@ -91,7 +93,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
                                                   additionalInfo:additionalInfo];
 }
 
-+ (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context {
++ (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context
+{
   if (context.elements == nil) {
     return [[ASCollectionLayoutState alloc] initWithContext:context];
   }
@@ -117,7 +120,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 
 #pragma mark - UICollectionViewLayout overrides
 
-- (void)prepareLayout {
+- (void)prepareLayout
+{
   ASDisplayNodeAssertMainThread();
   [super prepareLayout];
 
@@ -135,7 +139,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   }
 }
 
-- (void)invalidateLayout {
+- (void)invalidateLayout
+{
   ASDisplayNodeAssertMainThread();
   [super invalidateLayout];
   if (_layout != nil) {
@@ -162,23 +167,26 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
  * data.
  */
 
-- (CGSize)collectionViewContentSize {
+- (CGSize)collectionViewContentSize
+{
   ASDisplayNodeAssertMainThread();
   // The content size can be queried right after a layout invalidation
   // (https://github.com/TextureGroup/Texture/pull/509). In that case, return zero.
   return _layout ? _layout.contentSize : CGSizeZero;
 }
 
-- (NSArray<UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)blockingRect {
+- (NSArray<UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)blockingRect
+{
   ASDisplayNodeAssertMainThread();
   if (CGRectIsEmpty(blockingRect)) {
     return nil;
   }
 
   // Measure elements in the measure range, block on the requested rect
-  CGRect measureRect =
-      CGRectExpandToRangeWithScrollableDirections(blockingRect, kASDefaultMeasureRangeTuningParameters,
-                                                  _layout.context.scrollableDirections, kASStaticScrollDirection);
+  CGRect measureRect = CGRectExpandToRangeWithScrollableDirections(blockingRect,
+                                                                   kASDefaultMeasureRangeTuningParameters,
+                                                                   _layout.context.scrollableDirections,
+                                                                   kASStaticScrollDirection);
   [ASCollectionLayout _measureElementsInRect:measureRect blockingRect:blockingRect layout:_layout];
 
   NSArray<UICollectionViewLayoutAttributes *> *result = [_layout layoutAttributesForElementsInRect:blockingRect];
@@ -192,7 +200,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   return result;
 }
 
-- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
+- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
+{
   ASDisplayNodeAssertMainThread();
 
   ASCollectionElement *element = [_layout.context.elements elementForItemAtIndexPath:indexPath];
@@ -209,7 +218,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 }
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)elementKind
-                                                                     atIndexPath:(NSIndexPath *)indexPath {
+                                                                     atIndexPath:(NSIndexPath *)indexPath
+{
   ASCollectionElement *element = [_layout.context.elements supplementaryElementOfKind:elementKind
                                                                           atIndexPath:indexPath];
   UICollectionViewLayoutAttributes *attrs = [_layout layoutAttributesForElement:element];
@@ -224,13 +234,15 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   return attrs;
 }
 
-- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
+- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
+{
   return (!CGSizeEqualToSize([ASCollectionLayout _boundsForCollectionNode:_collectionNode], newBounds.size));
 }
 
 #pragma mark - Private methods
 
-+ (CGSize)_boundsForCollectionNode:(nonnull ASCollectionNode *)collectionNode {
++ (CGSize)_boundsForCollectionNode:(nonnull ASCollectionNode *)collectionNode
+{
   if (collectionNode == nil) {
     return CGSizeZero;
   }
@@ -245,7 +257,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 }
 
 + (CGSize)_viewportSizeForCollectionNode:(nonnull ASCollectionNode *)collectionNode
-                    scrollableDirections:(ASScrollDirection)scrollableDirections {
+                    scrollableDirections:(ASScrollDirection)scrollableDirections
+{
   if (collectionNode == nil) {
     return CGSizeZero;
   }
@@ -264,7 +277,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 /**
  * Measures all elements in the specified rect and blocks the calling thread while measuring those in the blocking rect.
  */
-+ (void)_measureElementsInRect:(CGRect)rect blockingRect:(CGRect)blockingRect layout:(ASCollectionLayoutState *)layout {
++ (void)_measureElementsInRect:(CGRect)rect blockingRect:(CGRect)blockingRect layout:(ASCollectionLayoutState *)layout
+{
   if (CGRectIsEmpty(rect) || layout.context.elements == nil) {
     return;
   }
@@ -358,13 +372,15 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 
 #pragma mark - Convenient inline functions
 
-ASDISPLAYNODE_INLINE ASSizeRange ASCollectionLayoutElementSizeRangeFromSize(CGSize size) {
+ASDISPLAYNODE_INLINE ASSizeRange ASCollectionLayoutElementSizeRangeFromSize(CGSize size)
+{
   // The layout delegate consulted us that this element must fit within this size,
   // and the only way to achieve that without asking it again is to use an exact size range here.
   return ASSizeRangeMake(size);
 }
 
-ASDISPLAYNODE_INLINE void ASCollectionLayoutSetSizeToElement(CGSize size, ASCollectionElement *element) {
+ASDISPLAYNODE_INLINE void ASCollectionLayoutSetSizeToElement(CGSize size, ASCollectionElement *element)
+{
   if (ASCellNode *node = element.node) {
     if (!CGSizeEqualToSize(size, node.frame.size)) {
       CGRect frame = CGRectZero;

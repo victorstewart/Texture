@@ -27,7 +27,8 @@
 
 #pragma mark Lifecycle & Singleton
 
-- (instancetype)init {
+- (instancetype)init
+{
   self = [super init];
   if (self) {
     _dirtyNodes = [[ASWeakSet alloc] init];
@@ -35,7 +36,8 @@
   return self;
 }
 
-+ (ASPendingStateController *)sharedInstance {
++ (ASPendingStateController *)sharedInstance
+{
   static dispatch_once_t onceToken;
   static ASPendingStateController *controller = nil;
   dispatch_once(&onceToken, ^{
@@ -46,17 +48,20 @@
 
 #pragma mark External API
 
-- (void)registerNode:(ASDisplayNode *)node {
+- (void)registerNode:(ASDisplayNode *)node
+{
   ASDisplayNodeAssert(
       node.nodeLoaded,
-      @"Expected display node to be loaded before it was registered with ASPendingStateController. Node: %@", node);
+      @"Expected display node to be loaded before it was registered with ASPendingStateController. Node: %@",
+      node);
   AS::MutexLocker l(_lock);
   [_dirtyNodes addObject:node];
 
   [self scheduleFlushIfNeeded];
 }
 
-- (void)flush {
+- (void)flush
+{
   ASDisplayNodeAssertMainThread();
   _lock.lock();
   ASWeakSet *dirtyNodes = _dirtyNodes;
@@ -74,7 +79,8 @@
 /**
  This method is assumed to be called with the lock held.
  */
-- (void)scheduleFlushIfNeeded {
+- (void)scheduleFlushIfNeeded
+{
   if (_flags.pendingFlush) {
     return;
   }
@@ -89,7 +95,8 @@
 
 @implementation ASPendingStateController (Testing)
 
-- (BOOL)test_isFlushScheduled {
+- (BOOL)test_isFlushScheduled
+{
   return _flags.pendingFlush;
 }
 

@@ -27,7 +27,8 @@ typedef NS_ENUM(NSUInteger, PIDebugBoxPaddingLocation) {
 @implementation NSString (PIDebugBox)
 
 + (instancetype)debugbox_stringWithString:(NSString *)stringToRepeat
-                            repeatedCount:(NSUInteger)repeatCount NS_RETURNS_RETAINED {
+                            repeatedCount:(NSUInteger)repeatCount NS_RETURNS_RETAINED
+{
   NSMutableString *string = [[NSMutableString alloc] initWithCapacity:[stringToRepeat length] * repeatCount];
   for (NSUInteger index = 0; index < repeatCount; index++) {
     [string appendString:stringToRepeat];
@@ -37,7 +38,8 @@ typedef NS_ENUM(NSUInteger, PIDebugBoxPaddingLocation) {
 
 - (NSString *)debugbox_stringByAddingPadding:(NSString *)padding
                                        count:(NSUInteger)count
-                                    location:(PIDebugBoxPaddingLocation)location {
+                                    location:(PIDebugBoxPaddingLocation)location
+{
   NSString *paddingString = [NSString debugbox_stringWithString:padding repeatedCount:count];
   switch (location) {
     case PIDebugBoxPaddingLocationFront:
@@ -54,7 +56,8 @@ typedef NS_ENUM(NSUInteger, PIDebugBoxPaddingLocation) {
 
 @implementation ASAsciiArtBoxCreator
 
-+ (NSString *)horizontalBoxStringForChildren:(NSArray *)children parent:(NSString *)parent {
++ (NSString *)horizontalBoxStringForChildren:(NSArray *)children parent:(NSString *)parent
+{
   if ([children count] == 0) {
     return parent;
   }
@@ -128,7 +131,8 @@ typedef NS_ENUM(NSUInteger, PIDebugBoxPaddingLocation) {
   return [concatenatedLines componentsJoinedByString:@"\n"];
 }
 
-+ (NSString *)verticalBoxStringForChildren:(NSArray *)children parent:(NSString *)parent {
++ (NSString *)verticalBoxStringForChildren:(NSArray *)children parent:(NSString *)parent
+{
   if ([children count] == 0) {
     return parent;
   }
@@ -177,7 +181,8 @@ typedef NS_ENUM(NSUInteger, PIDebugBoxPaddingLocation) {
   return [childrenLines componentsJoinedByString:@"\n"];
 }
 
-+ (NSMutableArray *)appendTopAndBottomToBoxString:(NSMutableArray *)boxStrings parent:(NSString *)parent {
++ (NSMutableArray *)appendTopAndBottomToBoxString:(NSMutableArray *)boxStrings parent:(NSString *)parent
+{
   NSUInteger totalLineLength = [boxStrings[0] length];
   [boxStrings addObject:[NSString debugbox_stringWithString:@"-" repeatedCount:totalLineLength]];
 

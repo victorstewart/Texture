@@ -16,7 +16,8 @@
 
 @implementation UIImage (ASDKFastImageNamed)
 
-UIImage *cachedImageNamed(NSString *imageName, UITraitCollection *traitCollection) NS_RETURNS_RETAINED {
+UIImage *cachedImageNamed(NSString *imageName, UITraitCollection *traitCollection) NS_RETURNS_RETAINED
+{
   static NSCache *imageCache = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -31,8 +32,12 @@ UIImage *cachedImageNamed(NSString *imageName, UITraitCollection *traitCollectio
     NSString *imageKey = imageName;
     if (traitCollection) {
       char imageKeyBuffer[256];
-      snprintf(imageKeyBuffer, sizeof(imageKeyBuffer), "%s|%ld|%ld", imageName.UTF8String,
-               (long)traitCollection.horizontalSizeClass, (long)traitCollection.verticalSizeClass);
+      snprintf(imageKeyBuffer,
+               sizeof(imageKeyBuffer),
+               "%s|%ld|%ld",
+               imageName.UTF8String,
+               (long)traitCollection.horizontalSizeClass,
+               (long)traitCollection.verticalSizeClass);
       imageKey = [NSString stringWithUTF8String:imageKeyBuffer];
     }
 
@@ -47,12 +52,14 @@ UIImage *cachedImageNamed(NSString *imageName, UITraitCollection *traitCollectio
   return image;
 }
 
-+ (UIImage *)as_imageNamed:(NSString *)imageName NS_RETURNS_RETAINED {
++ (UIImage *)as_imageNamed:(NSString *)imageName NS_RETURNS_RETAINED
+{
   return cachedImageNamed(imageName, nil);
 }
 
 + (UIImage *)as_imageNamed:(NSString *)imageName
-    compatibleWithTraitCollection:(UITraitCollection *)traitCollection NS_RETURNS_RETAINED {
+    compatibleWithTraitCollection:(UITraitCollection *)traitCollection NS_RETURNS_RETAINED
+{
   return cachedImageNamed(imageName, traitCollection);
 }
 
@@ -64,7 +71,8 @@ UIImage *cachedImageNamed(NSString *imageName, UITraitCollection *traitCollectio
 
 + (UIImage *)as_resizableRoundedImageWithCornerRadius:(CGFloat)cornerRadius
                                           cornerColor:(UIColor *)cornerColor
-                                            fillColor:(UIColor *)fillColor NS_RETURNS_RETAINED {
+                                            fillColor:(UIColor *)fillColor NS_RETURNS_RETAINED
+{
   return [self as_resizableRoundedImageWithCornerRadius:cornerRadius
                                             cornerColor:cornerColor
                                               fillColor:fillColor
@@ -78,7 +86,8 @@ UIImage *cachedImageNamed(NSString *imageName, UITraitCollection *traitCollectio
                                           cornerColor:(UIColor *)cornerColor
                                             fillColor:(UIColor *)fillColor
                                           borderColor:(UIColor *)borderColor
-                                          borderWidth:(CGFloat)borderWidth NS_RETURNS_RETAINED {
+                                          borderWidth:(CGFloat)borderWidth NS_RETURNS_RETAINED
+{
   return [self as_resizableRoundedImageWithCornerRadius:cornerRadius
                                             cornerColor:cornerColor
                                               fillColor:fillColor
@@ -94,7 +103,8 @@ UIImage *cachedImageNamed(NSString *imageName, UITraitCollection *traitCollectio
                                           borderColor:(UIColor *)borderColor
                                           borderWidth:(CGFloat)borderWidth
                                        roundedCorners:(UIRectCorner)roundedCorners
-                                                scale:(CGFloat)scale NS_RETURNS_RETAINED {
+                                                scale:(CGFloat)scale NS_RETURNS_RETAINED
+{
   static NSCache *__pathCache = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{

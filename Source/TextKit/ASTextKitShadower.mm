@@ -13,13 +13,15 @@
 
 #import <tgmath.h>
 
-static inline CGSize _insetSize(CGSize size, UIEdgeInsets insets) {
+static inline CGSize _insetSize(CGSize size, UIEdgeInsets insets)
+{
   size.width -= (insets.left + insets.right);
   size.height -= (insets.top + insets.bottom);
   return size;
 }
 
-static inline UIEdgeInsets _invertInsets(UIEdgeInsets insets) {
+static inline UIEdgeInsets _invertInsets(UIEdgeInsets insets)
+{
   return {.top = -insets.top, .left = -insets.left, .bottom = -insets.bottom, .right = -insets.right};
 }
 
@@ -30,7 +32,8 @@ static inline UIEdgeInsets _invertInsets(UIEdgeInsets insets) {
 + (ASTextKitShadower *)shadowerWithShadowOffset:(CGSize)shadowOffset
                                     shadowColor:(UIColor *)shadowColor
                                   shadowOpacity:(CGFloat)shadowOpacity
-                                   shadowRadius:(CGFloat)shadowRadius {
+                                   shadowRadius:(CGFloat)shadowRadius
+{
   /**
    * For all cases where no shadow is drawn, we share this singleton shadower to save resources.
    */
@@ -58,7 +61,8 @@ static inline UIEdgeInsets _invertInsets(UIEdgeInsets insets) {
 - (instancetype)initWithShadowOffset:(CGSize)shadowOffset
                          shadowColor:(UIColor *)shadowColor
                        shadowOpacity:(CGFloat)shadowOpacity
-                        shadowRadius:(CGFloat)shadowRadius {
+                        shadowRadius:(CGFloat)shadowRadius
+{
   if (self = [super init]) {
     _shadowOffset = shadowOffset;
     _shadowColor = shadowColor;
@@ -73,12 +77,14 @@ static inline UIEdgeInsets _invertInsets(UIEdgeInsets insets) {
  * This method is duplicated here because it gets called frequently, and we were
  * wasting valuable time constructing a state object to ask it.
  */
-- (BOOL)_shouldDrawShadow {
+- (BOOL)_shouldDrawShadow
+{
   return _shadowOpacity != 0.0 && (_shadowRadius != 0 || !CGSizeEqualToSize(_shadowOffset, CGSizeZero)) &&
          CGColorGetAlpha(_shadowColor.CGColor) > 0;
 }
 
-- (void)setShadowInContext:(CGContextRef)context {
+- (void)setShadowInContext:(CGContextRef)context
+{
   if ([self _shouldDrawShadow]) {
     CGColorRef textShadowColor = CGColorRetain(_shadowColor.CGColor);
     CGSize textShadowOffset = _shadowOffset;
@@ -99,7 +105,8 @@ static inline UIEdgeInsets _invertInsets(UIEdgeInsets insets) {
   }
 }
 
-- (UIEdgeInsets)shadowPadding {
+- (UIEdgeInsets)shadowPadding
+{
   if (_calculatedShadowPadding.top == -INFINITY) {
     if (![self _shouldDrawShadow]) {
       return UIEdgeInsetsZero;
@@ -121,32 +128,39 @@ static inline UIEdgeInsets _invertInsets(UIEdgeInsets insets) {
   return _calculatedShadowPadding;
 }
 
-- (CGSize)insetSizeWithConstrainedSize:(CGSize)constrainedSize {
+- (CGSize)insetSizeWithConstrainedSize:(CGSize)constrainedSize
+{
   return _insetSize(constrainedSize, _invertInsets([self shadowPadding]));
 }
 
-- (CGRect)insetRectWithConstrainedRect:(CGRect)constrainedRect {
+- (CGRect)insetRectWithConstrainedRect:(CGRect)constrainedRect
+{
   return UIEdgeInsetsInsetRect(constrainedRect, _invertInsets([self shadowPadding]));
 }
 
-- (CGSize)outsetSizeWithInsetSize:(CGSize)insetSize {
+- (CGSize)outsetSizeWithInsetSize:(CGSize)insetSize
+{
   return _insetSize(insetSize, [self shadowPadding]);
 }
 
-- (CGRect)outsetRectWithInsetRect:(CGRect)insetRect {
+- (CGRect)outsetRectWithInsetRect:(CGRect)insetRect
+{
   return UIEdgeInsetsInsetRect(insetRect, [self shadowPadding]);
 }
 
-- (CGRect)offsetRectWithInternalRect:(CGRect)internalRect {
+- (CGRect)offsetRectWithInternalRect:(CGRect)internalRect
+{
   return (CGRect){.origin = [self offsetPointWithInternalPoint:internalRect.origin], .size = internalRect.size};
 }
 
-- (CGPoint)offsetPointWithInternalPoint:(CGPoint)internalPoint {
+- (CGPoint)offsetPointWithInternalPoint:(CGPoint)internalPoint
+{
   UIEdgeInsets shadowPadding = [self shadowPadding];
   return (CGPoint){internalPoint.x + shadowPadding.left, internalPoint.y + shadowPadding.top};
 }
 
-- (CGPoint)offsetPointWithExternalPoint:(CGPoint)externalPoint {
+- (CGPoint)offsetPointWithExternalPoint:(CGPoint)externalPoint
+{
   UIEdgeInsets shadowPadding = [self shadowPadding];
   return (CGPoint){externalPoint.x - shadowPadding.left, externalPoint.y - shadowPadding.top};
 }

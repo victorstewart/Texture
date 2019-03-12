@@ -37,7 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
  @param c  A character
  @return YES or NO.
  */
-static inline BOOL ASTextIsLinebreakChar(unichar c) {
+static inline BOOL ASTextIsLinebreakChar(unichar c)
+{
   switch (c) {
     case 0x000D:
     case 0x2028:
@@ -60,8 +61,10 @@ static inline BOOL ASTextIsLinebreakChar(unichar c) {
  @param str A string
  @return YES or NO.
  */
-static inline BOOL ASTextIsLinebreakString(NSString *_Nullable str) {
-  if (str.length > 2 || str.length == 0) return NO;
+static inline BOOL ASTextIsLinebreakString(NSString *_Nullable str)
+{
+  if (str.length > 2 || str.length == 0)
+    return NO;
   if (str.length == 1) {
     unichar c = [str characterAtIndex:0];
     return ASTextIsLinebreakChar(c);
@@ -76,7 +79,8 @@ static inline BOOL ASTextIsLinebreakString(NSString *_Nullable str) {
  @param str  A string.
  @return The length of the tail line break: 0, 1 or 2.
  */
-static inline NSUInteger ASTextLinebreakTailLength(NSString *_Nullable str) {
+static inline NSUInteger ASTextLinebreakTailLength(NSString *_Nullable str)
+{
   if (str.length >= 2) {
     unichar c2 = [str characterAtIndex:str.length - 1];
     if (ASTextIsLinebreakChar(c2)) {
@@ -102,7 +106,8 @@ static inline NSUInteger ASTextLinebreakTailLength(NSString *_Nullable str) {
  @param font  A font.
  @return YES: the font contains color bitmap glyphs, NO: the font has no color bitmap glyph.
  */
-static inline BOOL ASTextCTFontContainsColorBitmapGlyphs(CTFontRef font) {
+static inline BOOL ASTextCTFontContainsColorBitmapGlyphs(CTFontRef font)
+{
   return (CTFontGetSymbolicTraits(font) & kCTFontTraitColorGlyphs) != 0;
 }
 
@@ -113,7 +118,8 @@ static inline BOOL ASTextCTFontContainsColorBitmapGlyphs(CTFontRef font) {
  @param fontSize  The specified font size.
  @return The font ascent.
  */
-static inline CGFloat ASTextEmojiGetAscentWithFontSize(CGFloat fontSize) {
+static inline CGFloat ASTextEmojiGetAscentWithFontSize(CGFloat fontSize)
+{
   if (fontSize < 16) {
     return 1.25 * fontSize;
   } else if (16 <= fontSize && fontSize <= 24) {
@@ -130,7 +136,8 @@ static inline CGFloat ASTextEmojiGetAscentWithFontSize(CGFloat fontSize) {
  @param fontSize  The specified font size.
  @return The font descent.
  */
-static inline CGFloat ASTextEmojiGetDescentWithFontSize(CGFloat fontSize) {
+static inline CGFloat ASTextEmojiGetDescentWithFontSize(CGFloat fontSize)
+{
   if (fontSize < 16) {
     return 0.390625 * fontSize;
   } else if (16 <= fontSize && fontSize <= 24) {
@@ -148,7 +155,8 @@ static inline CGFloat ASTextEmojiGetDescentWithFontSize(CGFloat fontSize) {
  @param fontSize  The specified font size.
  @return The font glyph bounding rect.
  */
-static inline CGRect ASTextEmojiGetGlyphBoundingRectWithFontSize(CGFloat fontSize) {
+static inline CGRect ASTextEmojiGetGlyphBoundingRectWithFontSize(CGFloat fontSize)
+{
   CGRect rect;
   rect.origin.x = 0.75;
   rect.size.width = rect.size.height = ASTextEmojiGetAscentWithFontSize(fontSize);
@@ -176,12 +184,14 @@ NSCharacterSet *ASTextVerticalFormRotateAndMoveCharacterSet(void);
 
 /// Get the transform rotation.
 /// @return the rotation in radians [-PI,PI] ([-180°,180°])
-static inline CGFloat ASTextCGAffineTransformGetRotation(CGAffineTransform transform) {
+static inline CGFloat ASTextCGAffineTransformGetRotation(CGAffineTransform transform)
+{
   return atan2(transform.b, transform.a);
 }
 
 /// Negates/inverts a UIEdgeInsets.
-static inline UIEdgeInsets ASTextUIEdgeInsetsInvert(UIEdgeInsets insets) {
+static inline UIEdgeInsets ASTextUIEdgeInsetsInvert(UIEdgeInsets insets)
+{
   return UIEdgeInsetsMake(-insets.top, -insets.left, -insets.bottom, -insets.right);
 }
 
@@ -197,21 +207,26 @@ static inline UIEdgeInsets ASTextUIEdgeInsetsInvert(UIEdgeInsets insets) {
 CGRect ASTextCGRectFitWithContentMode(CGRect rect, CGSize size, UIViewContentMode mode);
 
 /// Returns the center for the rectangle.
-static inline CGPoint ASTextCGRectGetCenter(CGRect rect) {
+static inline CGPoint ASTextCGRectGetCenter(CGRect rect)
+{
   return CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
 }
 
 /// Returns the area of the rectangle.
-static inline CGFloat ASTextCGRectGetArea(CGRect rect) {
-  if (CGRectIsNull(rect)) return 0;
+static inline CGFloat ASTextCGRectGetArea(CGRect rect)
+{
+  if (CGRectIsNull(rect))
+    return 0;
   rect = CGRectStandardize(rect);
   return rect.size.width * rect.size.height;
 }
 
 /// Returns the minmium distance between a point to a rectangle.
-static inline CGFloat ASTextCGPointGetDistanceToRect(CGPoint p, CGRect r) {
+static inline CGFloat ASTextCGPointGetDistanceToRect(CGPoint p, CGRect r)
+{
   r = CGRectStandardize(r);
-  if (CGRectContainsPoint(r, p)) return 0;
+  if (CGRectContainsPoint(r, p))
+    return 0;
   CGFloat distV, distH;
   if (CGRectGetMinY(r) <= p.y && p.y <= CGRectGetMaxY(r)) {
     distV = 0;
@@ -227,43 +242,55 @@ static inline CGFloat ASTextCGPointGetDistanceToRect(CGPoint p, CGRect r) {
 }
 
 /// Convert point to pixel.
-static inline CGFloat ASTextCGFloatToPixel(CGFloat value) { return value * ASScreenScale(); }
+static inline CGFloat ASTextCGFloatToPixel(CGFloat value)
+{
+  return value * ASScreenScale();
+}
 
 /// Convert pixel to point.
-static inline CGFloat ASTextCGFloatFromPixel(CGFloat value) { return value / ASScreenScale(); }
+static inline CGFloat ASTextCGFloatFromPixel(CGFloat value)
+{
+  return value / ASScreenScale();
+}
 
 /// round point value to .5 pixel for path stroke (odd pixel line width pixel-aligned)
-static inline CGFloat ASTextCGFloatPixelHalf(CGFloat value) {
+static inline CGFloat ASTextCGFloatPixelHalf(CGFloat value)
+{
   CGFloat scale = ASScreenScale();
   return (floor(value * scale) + 0.5) / scale;
 }
 
 /// floor point value for pixel-aligned
-static inline CGPoint ASTextCGPointPixelFloor(CGPoint point) {
+static inline CGPoint ASTextCGPointPixelFloor(CGPoint point)
+{
   CGFloat scale = ASScreenScale();
   return CGPointMake(floor(point.x * scale) / scale, floor(point.y * scale) / scale);
 }
 
 /// round point value for pixel-aligned
-static inline CGPoint ASTextCGPointPixelRound(CGPoint point) {
+static inline CGPoint ASTextCGPointPixelRound(CGPoint point)
+{
   CGFloat scale = ASScreenScale();
   return CGPointMake(round(point.x * scale) / scale, round(point.y * scale) / scale);
 }
 
 /// ceil point value for pixel-aligned
-static inline CGPoint ASTextCGPointPixelCeil(CGPoint point) {
+static inline CGPoint ASTextCGPointPixelCeil(CGPoint point)
+{
   CGFloat scale = ASScreenScale();
   return CGPointMake(ceil(point.x * scale) / scale, ceil(point.y * scale) / scale);
 }
 
 /// round point value to .5 pixel for path stroke (odd pixel line width pixel-aligned)
-static inline CGPoint ASTextCGPointPixelHalf(CGPoint point) {
+static inline CGPoint ASTextCGPointPixelHalf(CGPoint point)
+{
   CGFloat scale = ASScreenScale();
   return CGPointMake((floor(point.x * scale) + 0.5) / scale, (floor(point.y * scale) + 0.5) / scale);
 }
 
 /// round point value for pixel-aligned
-static inline CGRect ASTextCGRectPixelRound(CGRect rect) {
+static inline CGRect ASTextCGRectPixelRound(CGRect rect)
+{
   CGPoint origin = ASTextCGPointPixelRound(rect.origin);
   CGPoint corner =
       ASTextCGPointPixelRound(CGPointMake(rect.origin.x + rect.size.width, rect.origin.y + rect.size.height));
@@ -271,24 +298,28 @@ static inline CGRect ASTextCGRectPixelRound(CGRect rect) {
 }
 
 /// round point value to .5 pixel for path stroke (odd pixel line width pixel-aligned)
-static inline CGRect ASTextCGRectPixelHalf(CGRect rect) {
+static inline CGRect ASTextCGRectPixelHalf(CGRect rect)
+{
   CGPoint origin = ASTextCGPointPixelHalf(rect.origin);
   CGPoint corner =
       ASTextCGPointPixelHalf(CGPointMake(rect.origin.x + rect.size.width, rect.origin.y + rect.size.height));
   return CGRectMake(origin.x, origin.y, corner.x - origin.x, corner.y - origin.y);
 }
 
-static inline UIFont *_Nullable ASTextFontWithBold(UIFont *font) {
+static inline UIFont *_Nullable ASTextFontWithBold(UIFont *font)
+{
   return [UIFont fontWithDescriptor:[font.fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold]
                                size:font.pointSize];
 }
 
-static inline UIFont *_Nullable ASTextFontWithItalic(UIFont *font) {
+static inline UIFont *_Nullable ASTextFontWithItalic(UIFont *font)
+{
   return [UIFont fontWithDescriptor:[font.fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitItalic]
                                size:font.pointSize];
 }
 
-static inline UIFont *_Nullable ASTextFontWithBoldItalic(UIFont *font) {
+static inline UIFont *_Nullable ASTextFontWithBoldItalic(UIFont *font)
+{
   return [UIFont fontWithDescriptor:[font.fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold |
                                                                                           UIFontDescriptorTraitItalic]
                                size:font.pointSize];
@@ -298,12 +329,18 @@ static inline UIFont *_Nullable ASTextFontWithBoldItalic(UIFont *font) {
  Convert CFRange to NSRange
  @param range CFRange @return NSRange
  */
-static inline NSRange ASTextNSRangeFromCFRange(CFRange range) { return NSMakeRange(range.location, range.length); }
+static inline NSRange ASTextNSRangeFromCFRange(CFRange range)
+{
+  return NSMakeRange(range.location, range.length);
+}
 
 /**
  Convert NSRange to CFRange
  @param range NSRange @return CFRange
  */
-static inline CFRange ASTextCFRangeFromNSRange(NSRange range) { return CFRangeMake(range.location, range.length); }
+static inline CFRange ASTextCFRangeFromNSRange(NSRange range)
+{
+  return CFRangeMake(range.location, range.length);
+}
 
 NS_ASSUME_NONNULL_END

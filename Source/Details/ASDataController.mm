@@ -41,7 +41,8 @@
 
 #define ASSERT_ON_EDITING_QUEUE                                                       \
   ASDisplayNodeAssertNotNil(dispatch_get_specific(&kASDataControllerEditingQueueKey), \
-                            @"%@ must be called on the editing transaction queue.", NSStringFromSelector(_cmd))
+                            @"%@ must be called on the editing transaction queue.",   \
+                            NSStringFromSelector(_cmd))
 
 const static char *kASDataControllerEditingQueueKey = "kASDataControllerEditingQueueKey";
 const static char *kASDataControllerEditingQueueContext = "kASDataControllerEditingQueueContext";
@@ -93,7 +94,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 
 - (instancetype)initWithDataSource:(id<ASDataControllerSource>)dataSource
                               node:(nullable id<ASRangeManagingNode>)node
-                          eventLog:(ASEventLog *)eventLog {
+                          eventLog:(ASEventLog *)eventLog
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -130,19 +132,21 @@ typedef void (^ASDataControllerSynchronizationBlock)();
       [[NSString stringWithFormat:@"org.AsyncDisplayKit.ASDataController.editingTransactionQueue:%p", self]
           cStringUsingEncoding:NSASCIIStringEncoding];
   _editingTransactionQueue = dispatch_queue_create(queueName, DISPATCH_QUEUE_SERIAL);
-  dispatch_queue_set_specific(_editingTransactionQueue, &kASDataControllerEditingQueueKey,
-                              &kASDataControllerEditingQueueContext, NULL);
+  dispatch_queue_set_specific(
+      _editingTransactionQueue, &kASDataControllerEditingQueueKey, &kASDataControllerEditingQueueContext, NULL);
   _editingTransactionGroup = dispatch_group_create();
 
   return self;
 }
 
-- (id<ASDataControllerLayoutDelegate>)layoutDelegate {
+- (id<ASDataControllerLayoutDelegate>)layoutDelegate
+{
   ASDisplayNodeAssertMainThread();
   return _layoutDelegate;
 }
 
-- (void)setLayoutDelegate:(id<ASDataControllerLayoutDelegate>)layoutDelegate {
+- (void)setLayoutDelegate:(id<ASDataControllerLayoutDelegate>)layoutDelegate
+{
   ASDisplayNodeAssertMainThread();
   if (layoutDelegate != _layoutDelegate) {
     _layoutDelegate = layoutDelegate;
@@ -151,7 +155,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 
 #pragma mark - Cell Layout
 
-- (void)_allocateNodesFromElements:(NSArray<ASCollectionElement *> *)elements {
+- (void)_allocateNodesFromElements:(NSArray<ASCollectionElement *> *)elements
+{
   ASSERT_ON_EDITING_QUEUE;
 
   NSUInteger nodeCount = elements.count;
@@ -191,14 +196,15 @@ typedef void (^ASDataControllerSynchronizationBlock)();
     });
   }
 
-  ASSignpostEndCustom(ASSignpostDataControllerBatch, self, 0,
-                      (weakDataSource != nil ? ASSignpostColorDefault : ASSignpostColorRed));
+  ASSignpostEndCustom(
+      ASSignpostDataControllerBatch, self, 0, (weakDataSource != nil ? ASSignpostColorDefault : ASSignpostColorRed));
 }
 
 /**
  * Measure and layout the given node with the constrained size range.
  */
-- (void)_layoutNode:(ASCellNode *)node withConstrainedSize:(ASSizeRange)constrainedSize {
+- (void)_layoutNode:(ASCellNode *)node withConstrainedSize:(ASSizeRange)constrainedSize
+{
   if (![_dataSource dataController:self shouldEagerlyLayoutNode:node]) {
     return;
   }
@@ -214,7 +220,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 
 #pragma mark - Data Source Access (Calling _dataSource)
 
-- (NSArray<NSIndexPath *> *)_allIndexPathsForItemsOfKind:(NSString *)kind inSections:(NSIndexSet *)sections {
+- (NSArray<NSIndexPath *> *)_allIndexPathsForItemsOfKind:(NSString *)kind inSections:(NSIndexSet *)sections
+{
   ASDisplayNodeAssertMainThread();
 
   if (sections.count == 0 || _dataSource == nil) {
@@ -263,7 +270,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
                              traitCollection:(ASPrimitiveTraitCollection)traitCollection
                             indexPathsAreNew:(BOOL)indexPathsAreNew
                        shouldFetchSizeRanges:(BOOL)shouldFetchSizeRanges
-                                 previousMap:(ASElementMap *)previousMap {
+                                 previousMap:(ASElementMap *)previousMap
+{
   ASDisplayNodeAssertMainThread();
 
   if (indexPaths.count == 0) {
@@ -304,7 +312,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 - (void)_updateSupplementaryNodesIntoMap:(ASMutableElementMap *)map
                          traitCollection:(ASPrimitiveTraitCollection)traitCollection
                    shouldFetchSizeRanges:(BOOL)shouldFetchSizeRanges
-                             previousMap:(ASElementMap *)previousMap {
+                             previousMap:(ASElementMap *)previousMap
+{
   ASDisplayNodeAssertMainThread();
   if (self.layoutDelegate != nil) {
     // TODO: https://github.com/TextureGroup/Texture/issues/948
@@ -357,7 +366,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
                traitCollection:(ASPrimitiveTraitCollection)traitCollection
          shouldFetchSizeRanges:(BOOL)shouldFetchSizeRanges
                      changeSet:(_ASHierarchyChangeSet *)changeSet
-                   previousMap:(ASElementMap *)previousMap {
+                   previousMap:(ASElementMap *)previousMap
+{
   ASDisplayNodeAssertMainThread();
 
   if (sections.count == 0 || _dataSource == nil) {
@@ -389,7 +399,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
                traitCollection:(ASPrimitiveTraitCollection)traitCollection
          shouldFetchSizeRanges:(BOOL)shouldFetchSizeRanges
                      changeSet:(_ASHierarchyChangeSet *)changeSet
-                   previousMap:(ASElementMap *)previousMap {
+                   previousMap:(ASElementMap *)previousMap
+{
   ASDisplayNodeAssertMainThread();
 
   if (indexPaths.count == 0 || _dataSource == nil) {
@@ -454,12 +465,14 @@ typedef void (^ASDataControllerSynchronizationBlock)();
   }
 }
 
-- (void)invalidateDataSourceItemCounts {
+- (void)invalidateDataSourceItemCounts
+{
   ASDisplayNodeAssertMainThread();
   _itemCountsFromDataSourceAreValid = NO;
 }
 
-- (std::vector<NSInteger>)itemCountsFromDataSource {
+- (std::vector<NSInteger>)itemCountsFromDataSource
+{
   ASDisplayNodeAssertMainThread();
   if (NO == _itemCountsFromDataSourceAreValid) {
     id<ASDataControllerSource> source = self.dataSource;
@@ -475,7 +488,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
   return _itemCountsFromDataSource;
 }
 
-- (NSArray<NSString *> *)supplementaryKindsInSections:(NSIndexSet *)sections {
+- (NSArray<NSString *> *)supplementaryKindsInSections:(NSIndexSet *)sections
+{
   if (_dataSourceFlags.supplementaryNodeKindsInSections) {
     return [_dataSource dataController:self supplementaryNodeKindsInSections:sections];
   }
@@ -487,7 +501,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
  * Returns constrained size for the node of the given kind and at the given index path.
  * NOTE: index path must be in the data-source index space.
  */
-- (ASSizeRange)constrainedSizeForNodeOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+- (ASSizeRange)constrainedSizeForNodeOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
   ASDisplayNodeAssertMainThread();
 
   id<ASDataControllerSource> dataSource = _dataSource;
@@ -511,19 +526,22 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 
 #pragma mark - Batching (External API)
 
-- (void)waitUntilAllUpdatesAreProcessed {
+- (void)waitUntilAllUpdatesAreProcessed
+{
   // Schedule block in main serial queue to wait until all operations are finished that are
   // where scheduled while waiting for the _editingTransactionQueue to finish
   [self _scheduleBlockOnMainSerialQueue:^{
   }];
 }
 
-- (BOOL)isProcessingUpdates {
+- (BOOL)isProcessingUpdates
+{
   ASDisplayNodeAssertMainThread();
   return _mainSerialQueue.numberOfScheduledBlocks > 0 || _editingTransactionGroupCount > 0;
 }
 
-- (void)onDidFinishProcessingUpdates:(void (^)())completion {
+- (void)onDidFinishProcessingUpdates:(void (^)())completion
+{
   ASDisplayNodeAssertMainThread();
   if (!completion) {
     return;
@@ -542,11 +560,13 @@ typedef void (^ASDataControllerSynchronizationBlock)();
   }
 }
 
-- (BOOL)isSynchronized {
+- (BOOL)isSynchronized
+{
   return _synchronized;
 }
 
-- (void)onDidFinishSynchronizing:(void (^)())completion {
+- (void)onDidFinishSynchronizing:(void (^)())completion
+{
   ASDisplayNodeAssertMainThread();
   if (!completion) {
     return;
@@ -559,7 +579,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
   }
 }
 
-- (void)updateWithChangeSet:(_ASHierarchyChangeSet *)changeSet {
+- (void)updateWithChangeSet:(_ASHierarchyChangeSet *)changeSet
+{
   ASDisplayNodeAssertMainThread();
 
   _synchronized = NO;
@@ -580,13 +601,15 @@ typedef void (^ASDataControllerSynchronizationBlock)();
     if (_initialReloadDataHasBeenCalled) {
       as_log_debug(ASCollectionLog(), "reloadData %@", ASViewToDisplayNode(ASDynamicCast(self.dataSource, UIView)));
     } else {
-      as_log_debug(ASCollectionLog(), "Initial reloadData %@",
-                   ASViewToDisplayNode(ASDynamicCast(self.dataSource, UIView)));
+      as_log_debug(
+          ASCollectionLog(), "Initial reloadData %@", ASViewToDisplayNode(ASDynamicCast(self.dataSource, UIView)));
       _initialReloadDataHasBeenCalled = YES;
     }
   } else {
-    as_log_debug(ASCollectionLog(), "performBatchUpdates %@ %@",
-                 ASViewToDisplayNode(ASDynamicCast(self.dataSource, UIView)), changeSet);
+    as_log_debug(ASCollectionLog(),
+                 "performBatchUpdates %@ %@",
+                 ASViewToDisplayNode(ASDynamicCast(self.dataSource, UIView)),
+                 changeSet);
   }
 
   NSTimeInterval transactionQueueFlushDuration = 0.0f;
@@ -599,8 +622,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
   // See ASUICollectionViewTests.testThatIssuingAnUpdateBeforeInitialReloadIsUnacceptable
   // for the issue that UICollectionView has that we're choosing to workaround.
   if (!_initialReloadDataHasBeenCalled) {
-    as_log_debug(ASCollectionLog(), "%@ Skipped update because load hasn't happened.",
-                 ASObjectDescriptionMakeTiny(_dataSource));
+    as_log_debug(
+        ASCollectionLog(), "%@ Skipped update because load hasn't happened.", ASObjectDescriptionMakeTiny(_dataSource));
     [changeSet executeCompletionHandlerWithFinished:YES];
     return;
   }
@@ -609,12 +632,16 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 
   // Log events
 #if ASEVENTLOG_ENABLE
-  ASDataControllerLogEvent(self, @"updateWithChangeSet waited on previous update for %fms. changeSet: %@",
-                           transactionQueueFlushDuration * 1000.0f, changeSet);
+  ASDataControllerLogEvent(self,
+                           @"updateWithChangeSet waited on previous update for %fms. changeSet: %@",
+                           transactionQueueFlushDuration * 1000.0f,
+                           changeSet);
   NSTimeInterval changeSetStartTime = CACurrentMediaTime();
   NSString *changeSetDescription = ASObjectDescriptionMakeTiny(changeSet);
   [changeSet addCompletionHandler:^(BOOL finished) {
-    ASDataControllerLogEvent(self, @"finishedUpdate in %fms: %@", (CACurrentMediaTime() - changeSetStartTime) * 1000.0f,
+    ASDataControllerLogEvent(self,
+                             @"finishedUpdate in %fms: %@",
+                             (CACurrentMediaTime() - changeSetStartTime) * 1000.0f,
                              changeSetDescription);
   }];
 #endif
@@ -730,7 +757,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 /**
  * Update sections based on the given change set.
  */
-- (void)_updateSectionsInMap:(ASMutableElementMap *)map changeSet:(_ASHierarchyChangeSet *)changeSet {
+- (void)_updateSectionsInMap:(ASMutableElementMap *)map changeSet:(_ASHierarchyChangeSet *)changeSet
+{
   ASDisplayNodeAssertMainThread();
 
   if (changeSet.includesReloadData) {
@@ -752,7 +780,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
   }
 }
 
-- (void)_insertSectionsIntoMap:(ASMutableElementMap *)map indexes:(NSIndexSet *)sectionIndexes {
+- (void)_insertSectionsIntoMap:(ASMutableElementMap *)map indexes:(NSIndexSet *)sectionIndexes
+{
   ASDisplayNodeAssertMainThread();
 
   [sectionIndexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *_Nonnull stop) {
@@ -773,7 +802,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
                    changeSet:(_ASHierarchyChangeSet *)changeSet
              traitCollection:(ASPrimitiveTraitCollection)traitCollection
        shouldFetchSizeRanges:(BOOL)shouldFetchSizeRanges
-                 previousMap:(ASElementMap *)previousMap {
+                 previousMap:(ASElementMap *)previousMap
+{
   ASDisplayNodeAssertMainThread();
 
   if (changeSet.includesReloadData) {
@@ -846,7 +876,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
                traitCollection:(ASPrimitiveTraitCollection)traitCollection
          shouldFetchSizeRanges:(BOOL)shouldFetchSizeRanges
                      changeSet:(_ASHierarchyChangeSet *)changeSet
-                   previousMap:(ASElementMap *)previousMap {
+                   previousMap:(ASElementMap *)previousMap
+{
   ASDisplayNodeAssertMainThread();
 
   if (sectionIndexes.count == 0 || _dataSource == nil) {
@@ -878,7 +909,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 
 #pragma mark - Relayout
 
-- (void)relayoutNodes:(id<NSFastEnumeration>)nodes nodesSizeChanged:(NSMutableArray<ASCellNode *> *)nodesSizesChanged {
+- (void)relayoutNodes:(id<NSFastEnumeration>)nodes nodesSizeChanged:(NSMutableArray<ASCellNode *> *)nodesSizesChanged
+{
   NSParameterAssert(nodes);
   NSParameterAssert(nodesSizesChanged);
 
@@ -911,7 +943,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
   }
 }
 
-- (void)relayoutAllNodesWithInvalidationBlock:(nullable void (^)())invalidationBlock {
+- (void)relayoutAllNodesWithInvalidationBlock:(nullable void (^)())invalidationBlock
+{
   ASDisplayNodeAssertMainThread();
   if (!_initialReloadDataHasBeenCalled) {
     return;
@@ -934,7 +967,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
   }];
 }
 
-- (void)_relayoutAllNodes {
+- (void)_relayoutAllNodes
+{
   ASDisplayNodeAssertMainThread();
   // Aggressively repopulate all supplemtary elements
   // Assuming this method is run on the main serial queue, _pending and _visible maps are synced and can be manipulated
@@ -975,7 +1009,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 
 #pragma mark - ASPrimitiveTraitCollection
 
-- (void)environmentDidChange {
+- (void)environmentDidChange
+{
   ASPerformBlockOnMainThread(^{
     if (!_initialReloadDataHasBeenCalled) {
       return;
@@ -993,7 +1028,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
   });
 }
 
-- (void)clearData {
+- (void)clearData
+{
   ASDisplayNodeAssertMainThread();
   if (_initialReloadDataHasBeenCalled) {
     [self waitUntilAllUpdatesAreProcessed];
@@ -1003,7 +1039,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 
 #pragma mark - Helper methods
 
-- (void)_scheduleBlockOnMainSerialQueue:(dispatch_block_t)block {
+- (void)_scheduleBlockOnMainSerialQueue:(dispatch_block_t)block
+{
   ASDisplayNodeAssertMainThread();
   dispatch_group_wait(_editingTransactionGroup, DISPATCH_TIME_FOREVER);
   [_mainSerialQueue performBlockOnMainThread:block];

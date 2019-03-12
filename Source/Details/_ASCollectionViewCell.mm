@@ -16,11 +16,13 @@
 
 @implementation _ASCollectionViewCell
 
-- (ASCellNode *)node {
+- (ASCellNode *)node
+{
   return self.element.node;
 }
 
-- (void)setElement:(ASCollectionElement *)element {
+- (void)setElement:(ASCollectionElement *)element
+{
   ASDisplayNodeAssertMainThread();
   ASCellNode *node = element.node;
   node.layoutAttributes = _layoutAttributes;
@@ -30,35 +32,41 @@
   [node __setHighlightedFromUIKit:self.highlighted];
 }
 
-- (BOOL)consumesCellNodeVisibilityEvents {
+- (BOOL)consumesCellNodeVisibilityEvents
+{
   ASCellNode *node = self.node;
   if (node == nil) {
     return NO;
   }
-  return ASSubclassOverridesSelector([ASCellNode class], [node class],
-                                     @selector(cellNodeVisibilityEvent:inScrollView:withCellFrame:));
+  return ASSubclassOverridesSelector(
+      [ASCellNode class], [node class], @selector(cellNodeVisibilityEvent:inScrollView:withCellFrame:));
 }
 
-- (void)cellNodeVisibilityEvent:(ASCellNodeVisibilityEvent)event inScrollView:(UIScrollView *)scrollView {
+- (void)cellNodeVisibilityEvent:(ASCellNodeVisibilityEvent)event inScrollView:(UIScrollView *)scrollView
+{
   [self.node cellNodeVisibilityEvent:event inScrollView:scrollView withCellFrame:self.frame];
 }
 
-- (void)setSelected:(BOOL)selected {
+- (void)setSelected:(BOOL)selected
+{
   [super setSelected:selected];
   [self.node __setSelectedFromUIKit:selected];
 }
 
-- (void)setHighlighted:(BOOL)highlighted {
+- (void)setHighlighted:(BOOL)highlighted
+{
   [super setHighlighted:highlighted];
   [self.node __setHighlightedFromUIKit:highlighted];
 }
 
-- (void)setLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes {
+- (void)setLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes
+{
   _layoutAttributes = layoutAttributes;
   self.node.layoutAttributes = layoutAttributes;
 }
 
-- (void)prepareForReuse {
+- (void)prepareForReuse
+{
   self.layoutAttributes = nil;
 
   // Need to clear element before UIKit calls setSelected:NO / setHighlighted:NO on its cells
@@ -73,7 +81,8 @@
  *   have our node assigned e.g. during a layout update for existing cells, we also attempt
  *   to update it now.
  */
-- (void)applyLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes {
+- (void)applyLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes
+{
   [super applyLayoutAttributes:layoutAttributes];
   self.layoutAttributes = layoutAttributes;
 }
@@ -81,12 +90,14 @@
 /**
  * Keep our node filling our content view.
  */
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
   [super layoutSubviews];
   self.node.frame = self.contentView.bounds;
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
   /**
    * The documentation for hitTest:withEvent: on an UIView explicitly states the fact that:
    * it ignores view objects that are hidden, that have disabled user interactions, or have an
@@ -104,7 +115,8 @@
   return [self.node hitTest:pointOnNode withEvent:event];
 }
 
-- (BOOL)pointInside:(CGPoint)point withEvent:(nullable UIEvent *)event {
+- (BOOL)pointInside:(CGPoint)point withEvent:(nullable UIEvent *)event
+{
   CGPoint pointOnNode = [self.node.view convertPoint:point fromView:self];
   return [self.node pointInside:pointOnNode withEvent:event];
 }
@@ -126,7 +138,8 @@
 
 @implementation _ASCollectionViewCell (IGListBindable)
 
-- (void)bindViewModel:(id)viewModel {
+- (void)bindViewModel:(id)viewModel
+{
   // nop
 }
 

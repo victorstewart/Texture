@@ -28,13 +28,18 @@
   NSUInteger _length;
 }
 
-- (instancetype)initWithLength:(NSUInteger)length {
+- (instancetype)initWithLength:(NSUInteger)length
+{
   if (self = [super init]) {
     _length = length;
     _isVM = (length >= vm_page_size);
     if (_isVM) {
-      _mutableBytes = mmap(NULL, length, PROT_WRITE | PROT_READ, MAP_ANONYMOUS | MAP_PRIVATE,
-                           VM_MAKE_TAG(VM_MEMORY_COREGRAPHICS_DATA), 0);
+      _mutableBytes = mmap(NULL,
+                           length,
+                           PROT_WRITE | PROT_READ,
+                           MAP_ANONYMOUS | MAP_PRIVATE,
+                           VM_MAKE_TAG(VM_MEMORY_COREGRAPHICS_DATA),
+                           0);
       if (_mutableBytes == MAP_FAILED) {
         NSAssert(NO, @"Failed to map for CG image data.");
         _isVM = NO;
@@ -49,13 +54,15 @@
   return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
   if (!_createdData) {
     [ASCGImageBuffer deallocateBuffer:_mutableBytes length:_length isVM:_isVM];
   }
 }
 
-- (CGDataProviderRef)createDataProviderAndInvalidate {
+- (CGDataProviderRef)createDataProviderAndInvalidate
+{
   NSAssert(!_createdData, @"Should not create data provider from buffer multiple times.");
   _createdData = YES;
 
@@ -63,7 +70,8 @@
   if (_isVM) {
     __unused kern_return_t result =
         vm_protect(mach_task_self(), (vm_address_t)_mutableBytes, _length, true, VM_PROT_READ);
-    NSAssert(result == noErr, @"Error marking buffer as read-only: %@",
+    NSAssert(result == noErr,
+             @"Error marking buffer as read-only: %@",
              [NSError errorWithDomain:NSMachErrorDomain code:result userInfo:nil]);
   }
 
@@ -77,10 +85,12 @@
   return CGDataProviderCreateWithCFData((__bridge CFDataRef)d);
 }
 
-+ (void)deallocateBuffer:(void *)buf length:(NSUInteger)length isVM:(BOOL)isVM {
++ (void)deallocateBuffer:(void *)buf length:(NSUInteger)length isVM:(BOOL)isVM
+{
   if (isVM) {
     __unused kern_return_t result = vm_deallocate(mach_task_self(), (vm_address_t)buf, length);
-    NSAssert(result == noErr, @"Failed to unmap cg image buffer: %@",
+    NSAssert(result == noErr,
+             @"Failed to unmap cg image buffer: %@",
              [NSError errorWithDomain:NSMachErrorDomain code:result userInfo:nil]);
   } else {
     free(buf);

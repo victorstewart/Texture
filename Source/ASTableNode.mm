@@ -50,7 +50,8 @@
 
 #pragma mark - Lifecycle
 
-- (instancetype)init {
+- (instancetype)init
+{
   self = [super init];
   if (self) {
     _rangeMode = ASLayoutRangeModeUnspecified;
@@ -71,16 +72,19 @@
 
 #pragma mark Tuning Parameters
 
-- (ASRangeTuningParameters)tuningParametersForRangeType:(ASLayoutRangeType)rangeType {
+- (ASRangeTuningParameters)tuningParametersForRangeType:(ASLayoutRangeType)rangeType
+{
   return [self tuningParametersForRangeMode:ASLayoutRangeModeFull rangeType:rangeType];
 }
 
-- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeType:(ASLayoutRangeType)rangeType {
+- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeType:(ASLayoutRangeType)rangeType
+{
   return [self setTuningParameters:tuningParameters forRangeMode:ASLayoutRangeModeFull rangeType:rangeType];
 }
 
 - (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode
-                                              rangeType:(ASLayoutRangeType)rangeType {
+                                              rangeType:(ASLayoutRangeType)rangeType
+{
   ASDisplayNodeAssert(rangeMode < _tuningParameters.size() && rangeType < _tuningParameters[rangeMode].size(),
                       @"Requesting a range that is OOB for the configured tuning parameters");
   return _tuningParameters[rangeMode][rangeType];
@@ -88,7 +92,8 @@
 
 - (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters
                forRangeMode:(ASLayoutRangeMode)rangeMode
-                  rangeType:(ASLayoutRangeType)rangeType {
+                  rangeType:(ASLayoutRangeType)rangeType
+{
   ASDisplayNodeAssert(rangeMode < _tuningParameters.size() && rangeType < _tuningParameters[rangeMode].size(),
                       @"Setting a range that is OOB for the configured tuning parameters");
   _tuningParameters[rangeMode][rangeType] = tuningParameters;
@@ -111,7 +116,8 @@
 
 #pragma mark Lifecycle
 
-- (instancetype)initWithStyle:(UITableViewStyle)style {
+- (instancetype)initWithStyle:(UITableViewStyle)style
+{
   if (self = [super init]) {
     __weak __typeof__(self) weakSelf = self;
     [self setViewBlock:^{
@@ -127,12 +133,14 @@
   return self;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
   return [self initWithStyle:UITableViewStylePlain];
 }
 
 #if ASDISPLAYNODE_ASSERTIONS_ENABLED
-- (void)dealloc {
+- (void)dealloc
+{
   if (self.nodeLoaded) {
     __weak UIView *view = self.view;
     ASPerformBlockOnMainThread(^{
@@ -144,7 +152,8 @@
 
 #pragma mark ASDisplayNode
 
-- (void)didLoad {
+- (void)didLoad
+{
   [super didLoad];
 
   ASTableView *view = self.view;
@@ -193,21 +202,25 @@
   }
 }
 
-- (ASTableView *)view {
+- (ASTableView *)view
+{
   return (ASTableView *)[super view];
 }
 
-- (void)clearContents {
+- (void)clearContents
+{
   [super clearContents];
   [self.rangeController clearContents];
 }
 
-- (void)interfaceStateDidChange:(ASInterfaceState)newState fromState:(ASInterfaceState)oldState {
+- (void)interfaceStateDidChange:(ASInterfaceState)newState fromState:(ASInterfaceState)oldState
+{
   [super interfaceStateDidChange:newState fromState:oldState];
   [ASRangeController layoutDebugOverlayIfNeeded];
 }
 
-- (void)didEnterPreloadState {
+- (void)didEnterPreloadState
+{
   [super didEnterPreloadState];
   // Intentionally allocate the view here and trigger a layout pass on it, which in turn will trigger the intial data
   // load. We can get rid of this call later when ASDataController, ASRangeController and ASCollectionLayout can operate
@@ -216,18 +229,21 @@
 }
 
 #if ASRangeControllerLoggingEnabled
-- (void)didEnterVisibleState {
+- (void)didEnterVisibleState
+{
   [super didEnterVisibleState];
   NSLog(@"%@ - visible: YES", self);
 }
 
-- (void)didExitVisibleState {
+- (void)didExitVisibleState
+{
   [super didExitVisibleState];
   NSLog(@"%@ - visible: NO", self);
 }
 #endif
 
-- (void)didExitPreloadState {
+- (void)didExitPreloadState
+{
   [super didExitPreloadState];
   [self.rangeController clearPreloadedData];
 }
@@ -235,11 +251,13 @@
 #pragma mark Setter / Getter
 
 // TODO: Implement this without the view. Then revisit ASLayoutElementCollectionTableSetTraitCollection
-- (ASDataController *)dataController {
+- (ASDataController *)dataController
+{
   return self.view.dataController;
 }
 
-- (_ASTablePendingState *)pendingState {
+- (_ASTablePendingState *)pendingState
+{
   if (!_pendingState && ![self isNodeLoaded]) {
     _pendingState = [[_ASTablePendingState alloc] init];
   }
@@ -248,7 +266,8 @@
   return _pendingState;
 }
 
-- (void)setInverted:(BOOL)inverted {
+- (void)setInverted:(BOOL)inverted
+{
   self.transform = inverted ? CATransform3DMakeScale(1, -1, 1) : CATransform3DIdentity;
   if ([self pendingState]) {
     _pendingState.inverted = inverted;
@@ -258,7 +277,8 @@
   }
 }
 
-- (BOOL)inverted {
+- (BOOL)inverted
+{
   if ([self pendingState]) {
     return _pendingState.inverted;
   } else {
@@ -266,7 +286,8 @@
   }
 }
 
-- (void)setLeadingScreensForBatching:(CGFloat)leadingScreensForBatching {
+- (void)setLeadingScreensForBatching:(CGFloat)leadingScreensForBatching
+{
   _ASTablePendingState *pendingState = self.pendingState;
   if (pendingState) {
     pendingState.leadingScreensForBatching = leadingScreensForBatching;
@@ -276,7 +297,8 @@
   }
 }
 
-- (CGFloat)leadingScreensForBatching {
+- (CGFloat)leadingScreensForBatching
+{
   _ASTablePendingState *pendingState = self.pendingState;
   if (pendingState) {
     return pendingState.leadingScreensForBatching;
@@ -285,7 +307,8 @@
   }
 }
 
-- (void)setContentInset:(UIEdgeInsets)contentInset {
+- (void)setContentInset:(UIEdgeInsets)contentInset
+{
   _ASTablePendingState *pendingState = self.pendingState;
   if (pendingState) {
     pendingState.contentInset = contentInset;
@@ -295,7 +318,8 @@
   }
 }
 
-- (UIEdgeInsets)contentInset {
+- (UIEdgeInsets)contentInset
+{
   _ASTablePendingState *pendingState = self.pendingState;
   if (pendingState) {
     return pendingState.contentInset;
@@ -304,11 +328,13 @@
   }
 }
 
-- (void)setContentOffset:(CGPoint)contentOffset {
+- (void)setContentOffset:(CGPoint)contentOffset
+{
   [self setContentOffset:contentOffset animated:NO];
 }
 
-- (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated {
+- (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated
+{
   _ASTablePendingState *pendingState = self.pendingState;
   if (pendingState) {
     pendingState.contentOffset = contentOffset;
@@ -319,7 +345,8 @@
   }
 }
 
-- (CGPoint)contentOffset {
+- (CGPoint)contentOffset
+{
   _ASTablePendingState *pendingState = self.pendingState;
   if (pendingState) {
     return pendingState.contentOffset;
@@ -328,7 +355,8 @@
   }
 }
 
-- (void)setAutomaticallyAdjustsContentOffset:(BOOL)automaticallyAdjustsContentOffset {
+- (void)setAutomaticallyAdjustsContentOffset:(BOOL)automaticallyAdjustsContentOffset
+{
   _ASTablePendingState *pendingState = self.pendingState;
   if (pendingState) {
     pendingState.automaticallyAdjustsContentOffset = automaticallyAdjustsContentOffset;
@@ -338,7 +366,8 @@
   }
 }
 
-- (BOOL)automaticallyAdjustsContentOffset {
+- (BOOL)automaticallyAdjustsContentOffset
+{
   _ASTablePendingState *pendingState = self.pendingState;
   if (pendingState) {
     return pendingState.automaticallyAdjustsContentOffset;
@@ -347,7 +376,8 @@
   }
 }
 
-- (void)setDelegate:(id<ASTableDelegate>)delegate {
+- (void)setDelegate:(id<ASTableDelegate>)delegate
+{
   if ([self pendingState]) {
     _pendingState.delegate = delegate;
   } else {
@@ -364,7 +394,8 @@
   }
 }
 
-- (id<ASTableDelegate>)delegate {
+- (id<ASTableDelegate>)delegate
+{
   if ([self pendingState]) {
     return _pendingState.delegate;
   } else {
@@ -372,7 +403,8 @@
   }
 }
 
-- (void)setDataSource:(id<ASTableDataSource>)dataSource {
+- (void)setDataSource:(id<ASTableDataSource>)dataSource
+{
   if ([self pendingState]) {
     _pendingState.dataSource = dataSource;
   } else {
@@ -389,7 +421,8 @@
   }
 }
 
-- (id<ASTableDataSource>)dataSource {
+- (id<ASTableDataSource>)dataSource
+{
   if ([self pendingState]) {
     return _pendingState.dataSource;
   } else {
@@ -398,7 +431,8 @@
   }
 }
 
-- (void)setAllowsSelection:(BOOL)allowsSelection {
+- (void)setAllowsSelection:(BOOL)allowsSelection
+{
   if ([self pendingState]) {
     _pendingState.allowsSelection = allowsSelection;
   } else {
@@ -407,7 +441,8 @@
   }
 }
 
-- (BOOL)allowsSelection {
+- (BOOL)allowsSelection
+{
   if ([self pendingState]) {
     return _pendingState.allowsSelection;
   } else {
@@ -415,7 +450,8 @@
   }
 }
 
-- (void)setAllowsSelectionDuringEditing:(BOOL)allowsSelectionDuringEditing {
+- (void)setAllowsSelectionDuringEditing:(BOOL)allowsSelectionDuringEditing
+{
   if ([self pendingState]) {
     _pendingState.allowsSelectionDuringEditing = allowsSelectionDuringEditing;
   } else {
@@ -424,7 +460,8 @@
   }
 }
 
-- (BOOL)allowsSelectionDuringEditing {
+- (BOOL)allowsSelectionDuringEditing
+{
   if ([self pendingState]) {
     return _pendingState.allowsSelectionDuringEditing;
   } else {
@@ -432,7 +469,8 @@
   }
 }
 
-- (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection {
+- (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection
+{
   if ([self pendingState]) {
     _pendingState.allowsMultipleSelection = allowsMultipleSelection;
   } else {
@@ -441,7 +479,8 @@
   }
 }
 
-- (BOOL)allowsMultipleSelection {
+- (BOOL)allowsMultipleSelection
+{
   if ([self pendingState]) {
     return _pendingState.allowsMultipleSelection;
   } else {
@@ -449,7 +488,8 @@
   }
 }
 
-- (void)setAllowsMultipleSelectionDuringEditing:(BOOL)allowsMultipleSelectionDuringEditing {
+- (void)setAllowsMultipleSelectionDuringEditing:(BOOL)allowsMultipleSelectionDuringEditing
+{
   if ([self pendingState]) {
     _pendingState.allowsMultipleSelectionDuringEditing = allowsMultipleSelectionDuringEditing;
   } else {
@@ -458,7 +498,8 @@
   }
 }
 
-- (BOOL)allowsMultipleSelectionDuringEditing {
+- (BOOL)allowsMultipleSelectionDuringEditing
+{
   if ([self pendingState]) {
     return _pendingState.allowsMultipleSelectionDuringEditing;
   } else {
@@ -466,17 +507,20 @@
   }
 }
 
-- (void)setBatchFetchingDelegate:(id<ASBatchFetchingDelegate>)batchFetchingDelegate {
+- (void)setBatchFetchingDelegate:(id<ASBatchFetchingDelegate>)batchFetchingDelegate
+{
   _batchFetchingDelegate = batchFetchingDelegate;
 }
 
-- (id<ASBatchFetchingDelegate>)batchFetchingDelegate {
+- (id<ASBatchFetchingDelegate>)batchFetchingDelegate
+{
   return _batchFetchingDelegate;
 }
 
 #pragma mark ASRangeControllerUpdateRangeProtocol
 
-- (void)updateCurrentRangeWithMode:(ASLayoutRangeMode)rangeMode {
+- (void)updateCurrentRangeWithMode:(ASLayoutRangeMode)rangeMode
+{
   if ([self pendingState]) {
     _pendingState.rangeMode = rangeMode;
   } else {
@@ -490,16 +534,19 @@
 ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
 #pragma mark - Range Tuning
 
-    - (ASRangeTuningParameters)tuningParametersForRangeType : (ASLayoutRangeType)rangeType {
+    - (ASRangeTuningParameters)tuningParametersForRangeType : (ASLayoutRangeType)rangeType
+{
   return [self tuningParametersForRangeMode:ASLayoutRangeModeFull rangeType:rangeType];
 }
 
-- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeType:(ASLayoutRangeType)rangeType {
+- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeType:(ASLayoutRangeType)rangeType
+{
   [self setTuningParameters:tuningParameters forRangeMode:ASLayoutRangeModeFull rangeType:rangeType];
 }
 
 - (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode
-                                              rangeType:(ASLayoutRangeType)rangeType {
+                                              rangeType:(ASLayoutRangeType)rangeType
+{
   if ([self pendingState]) {
     return [_pendingState tuningParametersForRangeMode:rangeMode rangeType:rangeType];
   } else {
@@ -509,7 +556,8 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
 
 - (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters
                forRangeMode:(ASLayoutRangeMode)rangeMode
-                  rangeType:(ASLayoutRangeType)rangeType {
+                  rangeType:(ASLayoutRangeType)rangeType
+{
   if ([self pendingState]) {
     [_pendingState setTuningParameters:tuningParameters forRangeMode:rangeMode rangeType:rangeType];
   } else {
@@ -521,7 +569,8 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
 
 - (void)selectRowAtIndexPath:(nullable NSIndexPath *)indexPath
                     animated:(BOOL)animated
-              scrollPosition:(UITableViewScrollPosition)scrollPosition {
+              scrollPosition:(UITableViewScrollPosition)scrollPosition
+{
   ASDisplayNodeAssertMainThread();
   ASTableView *tableView = self.view;
 
@@ -533,7 +582,8 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
   }
 }
 
-- (void)deselectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated {
+- (void)deselectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated
+{
   ASDisplayNodeAssertMainThread();
   ASTableView *tableView = self.view;
 
@@ -547,7 +597,8 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
 
 - (void)scrollToRowAtIndexPath:(NSIndexPath *)indexPath
               atScrollPosition:(UITableViewScrollPosition)scrollPosition
-                      animated:(BOOL)animated {
+                      animated:(BOOL)animated
+{
   ASDisplayNodeAssertMainThread();
   ASTableView *tableView = self.view;
 
@@ -562,7 +613,8 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
 
 #pragma mark - Querying Data
 
-- (void)reloadDataInitiallyIfNeeded {
+- (void)reloadDataInitiallyIfNeeded
+{
   ASDisplayNodeAssertMainThread();
   if (!self.dataController.initialReloadDataHasBeenCalled) {
     // Note: Just calling reloadData isn't enough here – we need to
@@ -571,33 +623,39 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
   }
 }
 
-- (NSInteger)numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)numberOfRowsInSection:(NSInteger)section
+{
   ASDisplayNodeAssertMainThread();
   [self reloadDataInitiallyIfNeeded];
   return [self.dataController.pendingMap numberOfItemsInSection:section];
 }
 
-- (NSInteger)numberOfSections {
+- (NSInteger)numberOfSections
+{
   ASDisplayNodeAssertMainThread();
   [self reloadDataInitiallyIfNeeded];
   return [self.dataController.pendingMap numberOfSections];
 }
 
-- (NSArray<__kindof ASCellNode *> *)visibleNodes {
+- (NSArray<__kindof ASCellNode *> *)visibleNodes
+{
   ASDisplayNodeAssertMainThread();
   return self.isNodeLoaded ? [self.view visibleNodes] : @[];
 }
 
-- (NSIndexPath *)indexPathForNode:(ASCellNode *)cellNode {
+- (NSIndexPath *)indexPathForNode:(ASCellNode *)cellNode
+{
   return [self.dataController.pendingMap indexPathForElement:cellNode.collectionElement];
 }
 
-- (ASCellNode *)nodeForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (ASCellNode *)nodeForRowAtIndexPath:(NSIndexPath *)indexPath
+{
   [self reloadDataInitiallyIfNeeded];
   return [self.dataController.pendingMap elementForItemAtIndexPath:indexPath].node;
 }
 
-- (CGRect)rectForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGRect)rectForRowAtIndexPath:(NSIndexPath *)indexPath
+{
   ASDisplayNodeAssertMainThread();
   ASTableView *tableView = self.view;
 
@@ -605,7 +663,8 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
   return [tableView rectForRowAtIndexPath:indexPath];
 }
 
-- (nullable __kindof UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (nullable __kindof UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
   ASDisplayNodeAssertMainThread();
   ASTableView *tableView = self.view;
 
@@ -616,7 +675,8 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
   return [tableView cellForRowAtIndexPath:indexPath];
 }
 
-- (nullable NSIndexPath *)indexPathForSelectedRow {
+- (nullable NSIndexPath *)indexPathForSelectedRow
+{
   ASDisplayNodeAssertMainThread();
   ASTableView *tableView = self.view;
 
@@ -627,14 +687,16 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
   return indexPath;
 }
 
-- (NSArray<NSIndexPath *> *)indexPathsForSelectedRows {
+- (NSArray<NSIndexPath *> *)indexPathsForSelectedRows
+{
   ASDisplayNodeAssertMainThread();
   ASTableView *tableView = self.view;
 
   return [tableView convertIndexPathsToTableNode:tableView.indexPathsForSelectedRows];
 }
 
-- (nullable NSIndexPath *)indexPathForRowAtPoint:(CGPoint)point {
+- (nullable NSIndexPath *)indexPathForRowAtPoint:(CGPoint)point
+{
   ASDisplayNodeAssertMainThread();
   ASTableView *tableView = self.view;
 
@@ -645,13 +707,15 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
   return indexPath;
 }
 
-- (nullable NSArray<NSIndexPath *> *)indexPathsForRowsInRect:(CGRect)rect {
+- (nullable NSArray<NSIndexPath *> *)indexPathsForRowsInRect:(CGRect)rect
+{
   ASDisplayNodeAssertMainThread();
   ASTableView *tableView = self.view;
   return [tableView convertIndexPathsToTableNode:[tableView indexPathsForRowsInRect:rect]];
 }
 
-- (NSArray<NSIndexPath *> *)indexPathsForVisibleRows {
+- (NSArray<NSIndexPath *> *)indexPathsForVisibleRows
+{
   ASDisplayNodeAssertMainThread();
   NSMutableArray *indexPathsArray = [NSMutableArray new];
   for (ASCellNode *cell in [self visibleNodes]) {
@@ -665,7 +729,8 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
 
 #pragma mark - Editing
 
-- (void)reloadDataWithCompletion:(void (^)())completion {
+- (void)reloadDataWithCompletion:(void (^)())completion
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view reloadDataWithCompletion:completion];
@@ -676,17 +741,20 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
   }
 }
 
-- (void)reloadData {
+- (void)reloadData
+{
   [self reloadDataWithCompletion:nil];
 }
 
-- (void)relayoutItems {
+- (void)relayoutItems
+{
   [self.view relayoutItems];
 }
 
 - (void)performBatchAnimated:(BOOL)animated
                      updates:(NS_NOESCAPE void (^)())updates
-                  completion:(void (^)(BOOL))completion {
+                  completion:(void (^)(BOOL))completion
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     ASTableView *tableView = self.view;
@@ -702,71 +770,82 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
   }
 }
 
-- (void)performBatchUpdates:(NS_NOESCAPE void (^)())updates completion:(void (^)(BOOL))completion {
+- (void)performBatchUpdates:(NS_NOESCAPE void (^)())updates completion:(void (^)(BOOL))completion
+{
   [self performBatchAnimated:YES updates:updates completion:completion];
 }
 
-- (void)insertSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation {
+- (void)insertSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view insertSections:sections withRowAnimation:animation];
   }
 }
 
-- (void)deleteSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation {
+- (void)deleteSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view deleteSections:sections withRowAnimation:animation];
   }
 }
 
-- (void)reloadSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation {
+- (void)reloadSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view reloadSections:sections withRowAnimation:animation];
   }
 }
 
-- (void)moveSection:(NSInteger)section toSection:(NSInteger)newSection {
+- (void)moveSection:(NSInteger)section toSection:(NSInteger)newSection
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view moveSection:section toSection:newSection];
   }
 }
 
-- (void)insertRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation {
+- (void)insertRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view insertRowsAtIndexPaths:indexPaths withRowAnimation:animation];
   }
 }
 
-- (void)deleteRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation {
+- (void)deleteRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view deleteRowsAtIndexPaths:indexPaths withRowAnimation:animation];
   }
 }
 
-- (void)reloadRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation {
+- (void)reloadRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view reloadRowsAtIndexPaths:indexPaths withRowAnimation:animation];
   }
 }
 
-- (void)moveRowAtIndexPath:(NSIndexPath *)indexPath toIndexPath:(NSIndexPath *)newIndexPath {
+- (void)moveRowAtIndexPath:(NSIndexPath *)indexPath toIndexPath:(NSIndexPath *)newIndexPath
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view moveRowAtIndexPath:indexPath toIndexPath:newIndexPath];
   }
 }
 
-- (BOOL)isProcessingUpdates {
+- (BOOL)isProcessingUpdates
+{
   return (self.nodeLoaded ? [self.view isProcessingUpdates] : NO);
 }
 
-- (void)onDidFinishProcessingUpdates:(void (^)())completion {
+- (void)onDidFinishProcessingUpdates:(void (^)())completion
+{
   if (!completion) {
     return;
   }
@@ -777,7 +856,8 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
   }
 }
 
-- (void)waitUntilAllUpdatesAreProcessed {
+- (void)waitUntilAllUpdatesAreProcessed
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view waitUntilAllUpdatesAreCommitted];
@@ -786,14 +866,16 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
-- (void)waitUntilAllUpdatesAreCommitted {
+- (void)waitUntilAllUpdatesAreCommitted
+{
   [self waitUntilAllUpdatesAreProcessed];
 }
 #pragma clang diagnostic pop
 
 #pragma mark - Debugging (Private)
 
-- (NSMutableArray<NSDictionary *> *)propertiesForDebugDescription {
+- (NSMutableArray<NSDictionary *> *)propertiesForDebugDescription
+{
   NSMutableArray<NSDictionary *> *result = [super propertiesForDebugDescription];
   [result addObject:@{@"dataSource" : ASObjectDescriptionMakeTiny(self.dataSource)}];
   [result addObject:@{@"delegate" : ASObjectDescriptionMakeTiny(self.delegate)}];

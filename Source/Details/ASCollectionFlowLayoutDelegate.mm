@@ -23,11 +23,13 @@
   ASScrollDirection _scrollableDirections;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
   return [self initWithScrollableDirections:ASScrollDirectionVerticalDirections];
 }
 
-- (instancetype)initWithScrollableDirections:(ASScrollDirection)scrollableDirections {
+- (instancetype)initWithScrollableDirections:(ASScrollDirection)scrollableDirections
+{
   self = [super init];
   if (self) {
     _scrollableDirections = scrollableDirections;
@@ -35,17 +37,20 @@
   return self;
 }
 
-- (ASScrollDirection)scrollableDirections {
+- (ASScrollDirection)scrollableDirections
+{
   ASDisplayNodeAssertMainThread();
   return _scrollableDirections;
 }
 
-- (id)additionalInfoForLayoutWithElements:(ASElementMap *)elements {
+- (id)additionalInfoForLayoutWithElements:(ASElementMap *)elements
+{
   ASDisplayNodeAssertMainThread();
   return nil;
 }
 
-+ (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context {
++ (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context
+{
   ASElementMap *elements = context.elements;
   NSArray<ASCellNode *> *children =
       ASArrayByFlatMapping(elements.itemElements, ASCollectionElement * element, element.node);

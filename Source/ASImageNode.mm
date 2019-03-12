@@ -79,7 +79,8 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
 
 @implementation ASImageNodeContentsKey
 
-- (BOOL)isEqual:(id)object {
+- (BOOL)isEqual:(id)object
+{
   if (self == object) {
     return YES;
   }
@@ -101,7 +102,8 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
   }
 }
 
-- (NSUInteger)hash {
+- (NSUInteger)hash
+{
 #pragma clang diagnostic push
 #pragma clang diagnostic warning "-Wpadded"
   struct {
@@ -151,8 +153,10 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
 
 #pragma mark - Lifecycle
 
-- (instancetype)init {
-  if (!(self = [super init])) return nil;
+- (instancetype)init
+{
+  if (!(self = [super init]))
+    return nil;
 
   // TODO can this be removed?
   self.contentsScale = ASScreenScale();
@@ -175,14 +179,16 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
   return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
   // Invalidate all components around animated images
   [self invalidateAnimatedImage];
 }
 
 #pragma mark - Placeholder
 
-- (UIImage *)placeholderImage {
+- (UIImage *)placeholderImage
+{
   // FIXME: Replace this implementation with reusable CALayers that have .backgroundColor set.
   // This would completely eliminate the memory and performance cost of the backing store.
   CGSize size = self.calculatedSize;
@@ -202,7 +208,8 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
 
 #pragma mark - Layout and Sizing
 
-- (CGSize)calculateSizeThatFits:(CGSize)constrainedSize {
+- (CGSize)calculateSizeThatFits:(CGSize)constrainedSize
+{
   const auto image = ASLockedSelf(_image);
 
   if (image == nil) {
@@ -214,12 +221,14 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
 
 #pragma mark - Setter / Getter
 
-- (void)setImage:(UIImage *)image {
+- (void)setImage:(UIImage *)image
+{
   AS::MutexLocker l(__instanceLock__);
   [self _locked_setImage:image];
 }
 
-- (void)_locked_setImage:(UIImage *)image {
+- (void)_locked_setImage:(UIImage *)image
+{
   ASAssertLocked(__instanceLock__);
   if (ASObjectIsEqual(_image, image)) {
     return;
@@ -258,15 +267,18 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
   }
 }
 
-- (UIImage *)image {
+- (UIImage *)image
+{
   return ASLockedSelf(_image);
 }
 
-- (UIColor *)placeholderColor {
+- (UIColor *)placeholderColor
+{
   return ASLockedSelf(_placeholderColor);
 }
 
-- (void)setPlaceholderColor:(UIColor *)placeholderColor {
+- (void)setPlaceholderColor:(UIColor *)placeholderColor
+{
   ASLockScopeSelf();
   if (ASCompareAssignCopy(_placeholderColor, placeholderColor)) {
     _placeholderEnabled = (placeholderColor != nil);
@@ -275,7 +287,8 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
 
 #pragma mark - Drawing
 
-- (NSObject *)drawParametersForAsyncLayer:(_ASDisplayLayer *)layer {
+- (NSObject *)drawParametersForAsyncLayer:(_ASDisplayLayer *)layer
+{
   ASLockScopeSelf();
 
   ASImageNodeDrawParameters *drawParameters = [[ASImageNodeDrawParameters alloc] init];
@@ -304,7 +317,8 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
 }
 
 + (UIImage *)displayWithParameters:(id<NSObject>)parameter
-                       isCancelled:(NS_NOESCAPE asdisplaynode_iscancelled_block_t)isCancelled {
+                       isCancelled:(NS_NOESCAPE asdisplaynode_iscancelled_block_t)isCancelled
+{
   ASImageNodeDrawParameters *drawParameter = (ASImageNodeDrawParameters *)parameter;
 
   UIImage *image = drawParameter->_image;
@@ -368,8 +382,14 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
       forcedSize.width *= contentsScale;
       forcedSize.height *= contentsScale;
     }
-    ASCroppedImageBackingSizeAndDrawRectInBounds(imageSizeInPixels, boundsSizeInPixels, contentMode, cropRect,
-                                                 forceUpscaling, forcedSize, &backingSize, &imageDrawRect);
+    ASCroppedImageBackingSizeAndDrawRectInBounds(imageSizeInPixels,
+                                                 boundsSizeInPixels,
+                                                 contentMode,
+                                                 cropRect,
+                                                 forceUpscaling,
+                                                 forcedSize,
+                                                 &backingSize,
+                                                 &imageDrawRect);
   }
 
   if (backingSize.width <= 0.0f || backingSize.height <= 0.0f || imageDrawRect.size.width <= 0.0f ||
@@ -410,7 +430,8 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
 
 + (ASWeakMapEntry *)contentsForkey:(ASImageNodeContentsKey *)key
                     drawParameters:(id)drawParameters
-                       isCancelled:(asdisplaynode_iscancelled_block_t)isCancelled {
+                       isCancelled:(asdisplaynode_iscancelled_block_t)isCancelled
+{
   static dispatch_once_t onceToken;
   static AS::Mutex *cacheLock = nil;
   dispatch_once(&onceToken, ^{
@@ -442,7 +463,8 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
 
 + (UIImage *)createContentsForkey:(ASImageNodeContentsKey *)key
                    drawParameters:(id)drawParameters
-                      isCancelled:(asdisplaynode_iscancelled_block_t)isCancelled {
+                      isCancelled:(asdisplaynode_iscancelled_block_t)isCancelled
+{
   // The following `ASGraphicsBeginImageContextWithOptions` call will sometimes take take longer than 5ms on an
   // A5 processor for a 400x800 backingSize.
   // Check for cancellation before we call it.
@@ -508,7 +530,8 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
   return result;
 }
 
-- (void)displayDidFinish {
+- (void)displayDidFinish
+{
   [super displayDidFinish];
 
   __instanceLock__.lock();
@@ -550,9 +573,11 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
   }
 }
 
-- (void)setNeedsDisplayWithCompletion:(void (^_Nullable)(BOOL canceled))displayCompletionBlock {
+- (void)setNeedsDisplayWithCompletion:(void (^_Nullable)(BOOL canceled))displayCompletionBlock
+{
   if (self.displaySuspended) {
-    if (displayCompletionBlock) displayCompletionBlock(YES);
+    if (displayCompletionBlock)
+      displayCompletionBlock(YES);
     return;
   }
 
@@ -569,7 +594,8 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
 
 #pragma mark Interface State
 
-- (void)clearContents {
+- (void)clearContents
+{
   [super clearContents];
 
   AS::MutexLocker l(__instanceLock__);
@@ -578,16 +604,19 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
 
 #pragma mark - Cropping
 
-- (BOOL)isCropEnabled {
+- (BOOL)isCropEnabled
+{
   AS::MutexLocker l(__instanceLock__);
   return _cropEnabled;
 }
 
-- (void)setCropEnabled:(BOOL)cropEnabled {
+- (void)setCropEnabled:(BOOL)cropEnabled
+{
   [self setCropEnabled:cropEnabled recropImmediately:NO inBounds:self.bounds];
 }
 
-- (void)setCropEnabled:(BOOL)cropEnabled recropImmediately:(BOOL)recropImmediately inBounds:(CGRect)cropBounds {
+- (void)setCropEnabled:(BOOL)cropEnabled recropImmediately:(BOOL)recropImmediately inBounds:(CGRect)cropBounds
+{
   __instanceLock__.lock();
   if (_cropEnabled == cropEnabled) {
     __instanceLock__.unlock();
@@ -611,12 +640,14 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
   }
 }
 
-- (CGRect)cropRect {
+- (CGRect)cropRect
+{
   AS::MutexLocker l(__instanceLock__);
   return _cropRect;
 }
 
-- (void)setCropRect:(CGRect)cropRect {
+- (void)setCropRect:(CGRect)cropRect
+{
   {
     AS::MutexLocker l(__instanceLock__);
     if (CGRectEqualToRect(_cropRect, cropRect)) {
@@ -639,39 +670,46 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
   });
 }
 
-- (BOOL)forceUpscaling {
+- (BOOL)forceUpscaling
+{
   AS::MutexLocker l(__instanceLock__);
   return _forceUpscaling;
 }
 
-- (void)setForceUpscaling:(BOOL)forceUpscaling {
+- (void)setForceUpscaling:(BOOL)forceUpscaling
+{
   AS::MutexLocker l(__instanceLock__);
   _forceUpscaling = forceUpscaling;
 }
 
-- (CGSize)forcedSize {
+- (CGSize)forcedSize
+{
   AS::MutexLocker l(__instanceLock__);
   return _forcedSize;
 }
 
-- (void)setForcedSize:(CGSize)forcedSize {
+- (void)setForcedSize:(CGSize)forcedSize
+{
   AS::MutexLocker l(__instanceLock__);
   _forcedSize = forcedSize;
 }
 
-- (asimagenode_modification_block_t)imageModificationBlock {
+- (asimagenode_modification_block_t)imageModificationBlock
+{
   AS::MutexLocker l(__instanceLock__);
   return _imageModificationBlock;
 }
 
-- (void)setImageModificationBlock:(asimagenode_modification_block_t)imageModificationBlock {
+- (void)setImageModificationBlock:(asimagenode_modification_block_t)imageModificationBlock
+{
   AS::MutexLocker l(__instanceLock__);
   _imageModificationBlock = imageModificationBlock;
 }
 
 #pragma mark - Debug
 
-- (void)layout {
+- (void)layout
+{
   [super layout];
 
   if (_debugLabelNode) {
@@ -683,7 +721,8 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
   }
 }
 
-- (NSDictionary *)debugLabelAttributes {
+- (NSDictionary *)debugLabelAttributes
+{
   return @{NSFontAttributeName : [UIFont systemFontOfSize:15.0], NSForegroundColorAttributeName : [UIColor redColor]};
 }
 
@@ -691,7 +730,8 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
 
 #pragma mark - Extras
 
-asimagenode_modification_block_t ASImageNodeRoundBorderModificationBlock(CGFloat borderWidth, UIColor *borderColor) {
+asimagenode_modification_block_t ASImageNodeRoundBorderModificationBlock(CGFloat borderWidth, UIColor *borderColor)
+{
   return ^(UIImage *originalImage) {
     ASGraphicsBeginImageContextWithOptions(originalImage.size, NO, originalImage.scale);
     UIBezierPath *roundOutline = [UIBezierPath bezierPathWithOvalInRect:(CGRect){CGPointZero, originalImage.size}];
@@ -713,7 +753,8 @@ asimagenode_modification_block_t ASImageNodeRoundBorderModificationBlock(CGFloat
   };
 }
 
-asimagenode_modification_block_t ASImageNodeTintColorModificationBlock(UIColor *color) {
+asimagenode_modification_block_t ASImageNodeTintColorModificationBlock(UIColor *color)
+{
   return ^(UIImage *originalImage) {
     ASGraphicsBeginImageContextWithOptions(originalImage.size, NO, originalImage.scale);
 

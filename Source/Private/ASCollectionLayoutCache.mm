@@ -32,7 +32,8 @@ using AS::MutexLocker;
   NSMapTable<ASElementMap *, NSMapTable<ASCollectionLayoutContext *, ASCollectionLayoutState *> *> *_map;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
   self = [super init];
   if (self) {
     _map = [NSMapTable mapTableWithKeyOptions:(NSMapTableWeakMemory | NSMapTableObjectPointerPersonality)
@@ -41,7 +42,8 @@ using AS::MutexLocker;
   return self;
 }
 
-- (ASCollectionLayoutState *)layoutForContext:(ASCollectionLayoutContext *)context {
+- (ASCollectionLayoutState *)layoutForContext:(ASCollectionLayoutContext *)context
+{
   ASElementMap *elements = context.elements;
   if (elements == nil) {
     return nil;
@@ -51,7 +53,8 @@ using AS::MutexLocker;
   return [[_map objectForKey:elements] objectForKey:context];
 }
 
-- (void)setLayout:(ASCollectionLayoutState *)layout forContext:(ASCollectionLayoutContext *)context {
+- (void)setLayout:(ASCollectionLayoutState *)layout forContext:(ASCollectionLayoutContext *)context
+{
   ASElementMap *elements = context.elements;
   if (layout == nil || elements == nil) {
     return;
@@ -66,7 +69,8 @@ using AS::MutexLocker;
   [innerMap setObject:layout forKey:context];
 }
 
-- (void)removeLayoutForContext:(ASCollectionLayoutContext *)context {
+- (void)removeLayoutForContext:(ASCollectionLayoutContext *)context
+{
   ASElementMap *elements = context.elements;
   if (elements == nil) {
     return;
@@ -76,7 +80,8 @@ using AS::MutexLocker;
   [[_map objectForKey:elements] removeObjectForKey:context];
 }
 
-- (void)removeAllLayouts {
+- (void)removeAllLayouts
+{
   MutexLocker l(__instanceLock__);
   [_map removeAllObjects];
 }

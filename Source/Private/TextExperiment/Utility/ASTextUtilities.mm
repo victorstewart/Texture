@@ -9,7 +9,8 @@
 #import "ASTextUtilities.h"
 #import <Accelerate/Accelerate.h>
 
-NSCharacterSet *ASTextVerticalFormRotateCharacterSet() {
+NSCharacterSet *ASTextVerticalFormRotateCharacterSet()
+{
   static NSMutableCharacterSet *set;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -52,7 +53,8 @@ NSCharacterSet *ASTextVerticalFormRotateCharacterSet() {
   return set;
 }
 
-NSCharacterSet *ASTextVerticalFormRotateAndMoveCharacterSet() {
+NSCharacterSet *ASTextVerticalFormRotateAndMoveCharacterSet()
+{
   static NSMutableCharacterSet *set;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -62,7 +64,8 @@ NSCharacterSet *ASTextVerticalFormRotateAndMoveCharacterSet() {
   return set;
 }
 
-CGRect ASTextCGRectFitWithContentMode(CGRect rect, CGSize size, UIViewContentMode mode) {
+CGRect ASTextCGRectFitWithContentMode(CGRect rect, CGSize size, UIViewContentMode mode)
+{
   rect = CGRectStandardize(rect);
   size.width = size.width < 0 ? -size.width : size.width;
   size.height = size.height < 0 ? -size.height : size.height;

@@ -15,7 +15,8 @@
 #import <AsyncDisplayKit/ASRunLoopQueue.h>
 #import <queue>
 
-void ASPerformMainThreadDeallocation(id _Nullable __strong *_Nonnull objectPtr) {
+void ASPerformMainThreadDeallocation(id _Nullable __strong *_Nonnull objectPtr)
+{
   /**
    * UIKit components must be deallocated on the main thread. We use this shared
    * run loop queue to gradually deallocate them across many turns of the main run loop.
@@ -40,7 +41,8 @@ void ASPerformMainThreadDeallocation(id _Nullable __strong *_Nonnull objectPtr) 
   }
 }
 
-void _ASSetDebugNames(Class _Nonnull owningClass, NSString *_Nonnull names, ASDisplayNode *_Nullable object, ...) {
+void _ASSetDebugNames(Class _Nonnull owningClass, NSString *_Nonnull names, ASDisplayNode *_Nullable object, ...)
+{
   NSString *owningClassName = NSStringFromClass(owningClass);
   NSArray *nameArray = [names componentsSeparatedByString:@", "];
   va_list args;
@@ -63,7 +65,8 @@ void _ASSetDebugNames(Class _Nonnull owningClass, NSString *_Nonnull names, ASDi
   va_end(args);
 }
 
-ASInterfaceState ASInterfaceStateForDisplayNode(ASDisplayNode *displayNode, UIWindow *window) {
+ASInterfaceState ASInterfaceStateForDisplayNode(ASDisplayNode *displayNode, UIWindow *window)
+{
   ASDisplayNodeCAssert(![displayNode isLayerBacked],
                        @"displayNode must not be layer backed as it may have a nil window");
   if (displayNode && [displayNode supportsRangeManagedInterfaceState]) {
@@ -78,14 +81,21 @@ ASInterfaceState ASInterfaceStateForDisplayNode(ASDisplayNode *displayNode, UIWi
   }
 }
 
-ASDisplayNode *ASLayerToDisplayNode(CALayer *layer) { return layer.asyncdisplaykit_node; }
+ASDisplayNode *ASLayerToDisplayNode(CALayer *layer)
+{
+  return layer.asyncdisplaykit_node;
+}
 
-ASDisplayNode *ASViewToDisplayNode(UIView *view) { return view.asyncdisplaykit_node; }
+ASDisplayNode *ASViewToDisplayNode(UIView *view)
+{
+  return view.asyncdisplaykit_node;
+}
 
 void ASDisplayNodePerformBlockOnEveryNode(CALayer *_Nullable layer,
                                           ASDisplayNode *_Nullable node,
                                           BOOL traverseSublayers,
-                                          void (^block)(ASDisplayNode *node)) {
+                                          void (^block)(ASDisplayNode *node))
+{
   if (!node) {
     ASDisplayNodeCAssertNotNil(layer, @"Cannot recursively perform with nil node and nil layer");
     ASDisplayNodeCAssertMainThread();
@@ -113,7 +123,8 @@ void ASDisplayNodePerformBlockOnEveryNode(CALayer *_Nullable layer,
   }
 }
 
-void ASDisplayNodePerformBlockOnEveryNodeBFS(ASDisplayNode *node, void (^block)(ASDisplayNode *node)) {
+void ASDisplayNodePerformBlockOnEveryNodeBFS(ASDisplayNode *node, void (^block)(ASDisplayNode *node))
+{
   // Queue used to keep track of subnodes while traversing this layout in a BFS fashion.
   std::queue<ASDisplayNode *> queue;
   queue.push(node);
@@ -133,13 +144,15 @@ void ASDisplayNodePerformBlockOnEveryNodeBFS(ASDisplayNode *node, void (^block)(
 
 void ASDisplayNodePerformBlockOnEverySubnode(ASDisplayNode *node,
                                              BOOL traverseSublayers,
-                                             void (^block)(ASDisplayNode *node)) {
+                                             void (^block)(ASDisplayNode *node))
+{
   for (ASDisplayNode *subnode in node.subnodes) {
     ASDisplayNodePerformBlockOnEveryNode(nil, subnode, YES, block);
   }
 }
 
-ASDisplayNode *ASDisplayNodeFindFirstSupernode(ASDisplayNode *node, BOOL (^block)(ASDisplayNode *node)) {
+ASDisplayNode *ASDisplayNodeFindFirstSupernode(ASDisplayNode *node, BOOL (^block)(ASDisplayNode *node))
+{
   // This function has historically started with `self` but the name suggests
   // that it wouldn't. Perhaps we should change the behavior.
   for (ASDisplayNode *ancestor in node.supernodesIncludingSelf) {
@@ -150,23 +163,27 @@ ASDisplayNode *ASDisplayNodeFindFirstSupernode(ASDisplayNode *node, BOOL (^block
   return nil;
 }
 
-__kindof ASDisplayNode *ASDisplayNodeFindFirstSupernodeOfClass(ASDisplayNode *start, Class c) {
+__kindof ASDisplayNode *ASDisplayNodeFindFirstSupernodeOfClass(ASDisplayNode *start, Class c)
+{
   // This function has historically started with `self` but the name suggests
   // that it wouldn't. Perhaps we should change the behavior.
   return [start supernodeOfClass:c includingSelf:YES];
 }
 
-static void _ASCollectDisplayNodes(NSMutableArray *array, CALayer *layer) {
+static void _ASCollectDisplayNodes(NSMutableArray *array, CALayer *layer)
+{
   ASDisplayNode *node = ASLayerToDisplayNode(layer);
 
   if (nil != node) {
     [array addObject:node];
   }
 
-  for (CALayer *sublayer in layer.sublayers) _ASCollectDisplayNodes(array, sublayer);
+  for (CALayer *sublayer in layer.sublayers)
+    _ASCollectDisplayNodes(array, sublayer);
 }
 
-NSArray<ASDisplayNode *> *ASCollectDisplayNodes(ASDisplayNode *node) {
+NSArray<ASDisplayNode *> *ASCollectDisplayNodes(ASDisplayNode *node)
+{
   NSMutableArray *list = [[NSMutableArray alloc] init];
   for (CALayer *sublayer in node.layer.sublayers) {
     _ASCollectDisplayNodes(list, sublayer);
@@ -178,8 +195,10 @@ NSArray<ASDisplayNode *> *ASCollectDisplayNodes(ASDisplayNode *node) {
 
 static void _ASDisplayNodeFindAllSubnodes(NSMutableArray *array,
                                           ASDisplayNode *node,
-                                          BOOL (^block)(ASDisplayNode *node)) {
-  if (!node) return;
+                                          BOOL (^block)(ASDisplayNode *node))
+{
+  if (!node)
+    return;
 
   for (ASDisplayNode *subnode in node.subnodes) {
     if (block(subnode)) {
@@ -190,13 +209,15 @@ static void _ASDisplayNodeFindAllSubnodes(NSMutableArray *array,
   }
 }
 
-NSArray<ASDisplayNode *> *ASDisplayNodeFindAllSubnodes(ASDisplayNode *start, BOOL (^block)(ASDisplayNode *node)) {
+NSArray<ASDisplayNode *> *ASDisplayNodeFindAllSubnodes(ASDisplayNode *start, BOOL (^block)(ASDisplayNode *node))
+{
   NSMutableArray *list = [[NSMutableArray alloc] init];
   _ASDisplayNodeFindAllSubnodes(list, start, block);
   return list;
 }
 
-NSArray<__kindof ASDisplayNode *> *ASDisplayNodeFindAllSubnodesOfClass(ASDisplayNode *start, Class c) {
+NSArray<__kindof ASDisplayNode *> *ASDisplayNodeFindAllSubnodesOfClass(ASDisplayNode *start, Class c)
+{
   return ASDisplayNodeFindAllSubnodes(start, ^(ASDisplayNode *n) {
     return [n isKindOfClass:c];
   });
@@ -206,7 +227,8 @@ NSArray<__kindof ASDisplayNode *> *ASDisplayNodeFindAllSubnodesOfClass(ASDisplay
 
 static ASDisplayNode *_ASDisplayNodeFindFirstNode(ASDisplayNode *startNode,
                                                   BOOL includeStartNode,
-                                                  BOOL (^block)(ASDisplayNode *node)) {
+                                                  BOOL (^block)(ASDisplayNode *node))
+{
   for (ASDisplayNode *subnode in startNode.subnodes) {
     ASDisplayNode *foundNode = _ASDisplayNodeFindFirstNode(subnode, YES, block);
     if (foundNode) {
@@ -214,27 +236,32 @@ static ASDisplayNode *_ASDisplayNodeFindFirstNode(ASDisplayNode *startNode,
     }
   }
 
-  if (includeStartNode && block(startNode)) return startNode;
+  if (includeStartNode && block(startNode))
+    return startNode;
 
   return nil;
 }
 
-__kindof ASDisplayNode *ASDisplayNodeFindFirstNode(ASDisplayNode *startNode, BOOL (^block)(ASDisplayNode *node)) {
+__kindof ASDisplayNode *ASDisplayNodeFindFirstNode(ASDisplayNode *startNode, BOOL (^block)(ASDisplayNode *node))
+{
   return _ASDisplayNodeFindFirstNode(startNode, YES, block);
 }
 
-__kindof ASDisplayNode *ASDisplayNodeFindFirstSubnode(ASDisplayNode *startNode, BOOL (^block)(ASDisplayNode *node)) {
+__kindof ASDisplayNode *ASDisplayNodeFindFirstSubnode(ASDisplayNode *startNode, BOOL (^block)(ASDisplayNode *node))
+{
   return _ASDisplayNodeFindFirstNode(startNode, NO, block);
 }
 
-__kindof ASDisplayNode *ASDisplayNodeFindFirstSubnodeOfClass(ASDisplayNode *start, Class c) {
+__kindof ASDisplayNode *ASDisplayNodeFindFirstSubnodeOfClass(ASDisplayNode *start, Class c)
+{
   return ASDisplayNodeFindFirstSubnode(start, ^(ASDisplayNode *n) {
     return [n isKindOfClass:c];
   });
 }
 
 static inline BOOL _ASDisplayNodeIsAncestorOfDisplayNode(ASDisplayNode *possibleAncestor,
-                                                         ASDisplayNode *possibleDescendant) {
+                                                         ASDisplayNode *possibleDescendant)
+{
   ASDisplayNode *supernode = possibleDescendant;
   while (supernode) {
     if (supernode == possibleAncestor) {
@@ -246,7 +273,8 @@ static inline BOOL _ASDisplayNodeIsAncestorOfDisplayNode(ASDisplayNode *possible
   return NO;
 }
 
-UIWindow *_Nullable ASFindWindowOfLayer(CALayer *layer) {
+UIWindow *_Nullable ASFindWindowOfLayer(CALayer *layer)
+{
   UIView *view = ASFindClosestViewOfLayer(layer);
   if (UIWindow *window = ASDynamicCast(view, UIWindow)) {
     return window;
@@ -255,7 +283,8 @@ UIWindow *_Nullable ASFindWindowOfLayer(CALayer *layer) {
   }
 }
 
-UIView *_Nullable ASFindClosestViewOfLayer(CALayer *layer) {
+UIView *_Nullable ASFindClosestViewOfLayer(CALayer *layer)
+{
   while (layer != nil) {
     if (UIView *view = ASDynamicCast(layer.delegate, UIView)) {
       return view;
@@ -265,7 +294,8 @@ UIView *_Nullable ASFindClosestViewOfLayer(CALayer *layer) {
   return nil;
 }
 
-ASDisplayNode *ASDisplayNodeFindClosestCommonAncestor(ASDisplayNode *node1, ASDisplayNode *node2) {
+ASDisplayNode *ASDisplayNodeFindClosestCommonAncestor(ASDisplayNode *node1, ASDisplayNode *node2)
+{
   ASDisplayNode *possibleAncestor = node1;
   while (possibleAncestor) {
     if (_ASDisplayNodeIsAncestorOfDisplayNode(possibleAncestor, node2)) {
@@ -274,12 +304,13 @@ ASDisplayNode *ASDisplayNodeFindClosestCommonAncestor(ASDisplayNode *node1, ASDi
     possibleAncestor = possibleAncestor.supernode;
   }
 
-  ASDisplayNodeCAssertNotNil(possibleAncestor, @"Could not find a common ancestor between node1: %@ and node2: %@",
-                             node1, node2);
+  ASDisplayNodeCAssertNotNil(
+      possibleAncestor, @"Could not find a common ancestor between node1: %@ and node2: %@", node1, node2);
   return possibleAncestor;
 }
 
-ASDisplayNode *ASDisplayNodeUltimateParentOfNode(ASDisplayNode *node) {
+ASDisplayNode *ASDisplayNodeUltimateParentOfNode(ASDisplayNode *node)
+{
   // node <- supernode on each loop
   // previous <- node on each loop where node is not nil
   // previous is the final non-nil value of supernode, i.e. the root node
@@ -292,7 +323,8 @@ ASDisplayNode *ASDisplayNodeUltimateParentOfNode(ASDisplayNode *node) {
 
 #pragma mark - Placeholders
 
-UIColor *ASDisplayNodeDefaultPlaceholderColor() {
+UIColor *ASDisplayNodeDefaultPlaceholderColor()
+{
   static UIColor *defaultPlaceholderColor;
 
   static dispatch_once_t onceToken;
@@ -302,7 +334,8 @@ UIColor *ASDisplayNodeDefaultPlaceholderColor() {
   return defaultPlaceholderColor;
 }
 
-UIColor *ASDisplayNodeDefaultTintColor() {
+UIColor *ASDisplayNodeDefaultTintColor()
+{
   static UIColor *defaultTintColor;
 
   static dispatch_once_t onceToken;
@@ -314,10 +347,12 @@ UIColor *ASDisplayNodeDefaultTintColor() {
 
 #pragma mark - Hierarchy Notifications
 
-void ASDisplayNodeDisableHierarchyNotifications(ASDisplayNode *node) {
+void ASDisplayNodeDisableHierarchyNotifications(ASDisplayNode *node)
+{
   [node __incrementVisibilityNotificationsDisabled];
 }
 
-void ASDisplayNodeEnableHierarchyNotifications(ASDisplayNode *node) {
+void ASDisplayNodeEnableHierarchyNotifications(ASDisplayNode *node)
+{
   [node __decrementVisibilityNotificationsDisabled];
 }

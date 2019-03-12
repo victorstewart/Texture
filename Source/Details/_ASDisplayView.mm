@@ -39,7 +39,8 @@ typedef NS_OPTIONS(NSUInteger, _ASDisplayViewMethodOverrides) {
  *
  *  @return _ASDisplayViewMethodOverrides.
  */
-static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
+static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c)
+{
   ASDisplayNodeCAssertNotNil(c, @"class is required");
 
   _ASDisplayViewMethodOverrides overrides = _ASDisplayViewMethodOverrideNone;
@@ -82,44 +83,52 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
 
 #pragma mark - Class
 
-+ (void)initialize {
++ (void)initialize
+{
   __unused Class initializeSelf = self;
   IMP staticInitialize = imp_implementationWithBlock(^(_ASDisplayView *view) {
     ASDisplayNodeAssert(view.class == initializeSelf,
                         @"View class %@ does not have a matching _staticInitialize method; check to ensure [super "
                         @"initialize] is called within any custom +initialize implementations!  Overridden methods "
                         @"will not be called unless they are also implemented by superclass %@",
-                        view.class, initializeSelf);
+                        view.class,
+                        initializeSelf);
     view->_methodOverrides = GetASDisplayViewMethodOverrides(view.class);
   });
 
   class_replaceMethod(self, @selector(_staticInitialize), staticInitialize, "v:@");
 }
 
-+ (Class)layerClass {
++ (Class)layerClass
+{
   return [_ASDisplayLayer class];
 }
 
 #pragma mark - NSObject Overrides
 
-- (instancetype)init {
-  if (!(self = [super init])) return nil;
+- (instancetype)init
+{
+  if (!(self = [super init]))
+    return nil;
 
   [self _initializeInstance];
 
   return self;
 }
 
-- (void)_initializeInstance {
+- (void)_initializeInstance
+{
   [self _staticInitialize];
 }
 
-- (void)_staticInitialize {
+- (void)_staticInitialize
+{
   ASDisplayNodeAssert(NO, @"_staticInitialize must be overridden");
 }
 
 // e.g. <MYPhotoNodeView: 0xFFFFFF; node = <MYPhotoNode: 0xFFFFFE>; frame = ...>
-- (NSString *)description {
+- (NSString *)description
+{
   NSMutableString *description = [[super description] mutableCopy];
 
   ASDisplayNode *node = _asyncdisplaykit_node;
@@ -151,7 +160,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
 
 #pragma mark - UIView Overrides
 
-- (void)willMoveToWindow:(UIWindow *)newWindow {
+- (void)willMoveToWindow:(UIWindow *)newWindow
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   BOOL visible = (newWindow != nil);
   if (visible && !node.inHierarchy) {
@@ -159,7 +169,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
   }
 }
 
-- (void)didMoveToWindow {
+- (void)didMoveToWindow
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   BOOL visible = (self.window != nil);
   if (!visible && node.inHierarchy) {
@@ -167,7 +178,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
   }
 }
 
-- (void)willMoveToSuperview:(UIView *)newSuperview {
+- (void)willMoveToSuperview:(UIView *)newSuperview
+{
   // Keep the node alive while the view is in a view hierarchy.  This helps ensure that async-drawing views can always
   // display their contents as long as they are visible somewhere, and aids in lifecycle management because the
   // lifecycle of the node can be treated as the same as the lifecycle of the view (let the view hierarchy own the
@@ -213,7 +225,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
   }
 }
 
-- (void)didMoveToSuperview {
+- (void)didMoveToSuperview
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   UIView *superview = self.superview;
   if (superview == nil) {
@@ -278,7 +291,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
   }
 }
 
-- (void)insertSubview:(UIView *)view atIndex:(NSInteger)index {
+- (void)insertSubview:(UIView *)view atIndex:(NSInteger)index
+{
   [super insertSubview:view atIndex:index];
 
 #ifndef ASDK_ACCESSIBILITY_DISABLE
@@ -286,7 +300,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
 #endif
 }
 
-- (void)addSubview:(UIView *)view {
+- (void)addSubview:(UIView *)view
+{
   [super addSubview:view];
 
 #ifndef ASDK_ACCESSIBILITY_DISABLE
@@ -294,7 +309,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
 #endif
 }
 
-- (void)willRemoveSubview:(UIView *)subview {
+- (void)willRemoveSubview:(UIView *)subview
+{
   [super willRemoveSubview:subview];
 
 #ifndef ASDK_ACCESSIBILITY_DISABLE
@@ -302,22 +318,26 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
 #endif
 }
 
-- (CGSize)sizeThatFits:(CGSize)size {
+- (CGSize)sizeThatFits:(CGSize)size
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   return node ? [node layoutThatFits:ASSizeRangeMake(size)].size : [super sizeThatFits:size];
 }
 
-- (void)setNeedsDisplay {
+- (void)setNeedsDisplay
+{
   ASDisplayNodeAssertMainThread();
   // Standard implementation does not actually get to the layer, at least for views that don't implement drawRect:.
   [self.layer setNeedsDisplay];
 }
 
-- (UIViewContentMode)contentMode {
+- (UIViewContentMode)contentMode
+{
   return ASDisplayNodeUIContentModeFromCAContentsGravity(self.layer.contentsGravity);
 }
 
-- (void)setContentMode:(UIViewContentMode)contentMode {
+- (void)setContentMode:(UIViewContentMode)contentMode
+{
   ASDisplayNodeAssert(contentMode != UIViewContentModeRedraw,
                       @"Don't do this. Use needsDisplayOnBoundsChange instead.");
 
@@ -328,19 +348,22 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
                                    : kCAGravityResize;
 }
 
-- (void)setBounds:(CGRect)bounds {
+- (void)setBounds:(CGRect)bounds
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   [super setBounds:bounds];
   node.threadSafeBounds = bounds;
 }
 
-- (void)addGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer {
+- (void)addGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+{
   [super addGestureRecognizer:gestureRecognizer];
   [_asyncdisplaykit_node nodeViewDidAddGestureRecognizer];
 }
 
 #pragma mark - Event Handling + UIResponder Overrides
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   if (node.methodOverrides & ASDisplayNodeMethodOverrideTouchesBegan) {
     [node touchesBegan:touches withEvent:event];
@@ -349,7 +372,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
   }
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   if (node.methodOverrides & ASDisplayNodeMethodOverrideTouchesMoved) {
     [node touchesMoved:touches withEvent:event];
@@ -358,7 +382,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
   }
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   if (node.methodOverrides & ASDisplayNodeMethodOverrideTouchesEnded) {
     [node touchesEnded:touches withEvent:event];
@@ -367,7 +392,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
   }
 }
 
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   if (node.methodOverrides & ASDisplayNodeMethodOverrideTouchesCancelled) {
     [node touchesCancelled:touches withEvent:event];
@@ -376,23 +402,28 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
   }
 }
 
-- (void)__forwardTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)__forwardTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
   [super touchesBegan:touches withEvent:event];
 }
 
-- (void)__forwardTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)__forwardTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
   [super touchesMoved:touches withEvent:event];
 }
 
-- (void)__forwardTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)__forwardTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
   [super touchesEnded:touches withEvent:event];
 }
 
-- (void)__forwardTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)__forwardTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
   [super touchesCancelled:touches withEvent:event];
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
   // REVIEW: We should optimize these types of messages by setting a boolean in the associated ASDisplayNode subclass if
   // they actually override the method.  Same goes for -pointInside:withEvent: below.  Many UIKit classes use that
   // pattern for meaningful reductions of message send overhead in hot code (especially event handling).
@@ -411,7 +442,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
   }
 }
 
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
+{
   // See comments in -hitTest:withEvent: for the strategy here.
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   if (!_inPointInside) {
@@ -424,12 +456,14 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
   }
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   return [node gestureRecognizerShouldBegin:gestureRecognizer];
 }
 
-- (void)tintColorDidChange {
+- (void)tintColorDidChange
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   [super tintColorDidChange];
 
@@ -439,7 +473,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
 #pragma mark UIResponder Handling
 
 #define IMPLEMENT_RESPONDER_METHOD(__sel, __nodeMethodOverride, __viewMethodOverride)                            \
-  -(BOOL)__sel {                                                                                                 \
+  -(BOOL)__sel                                                                                                   \
+  {                                                                                                              \
     ASDisplayNode *node = _asyncdisplaykit_node; /* Create strong reference to weak ivar. */                     \
     /* Check if we can call through to ASDisplayNode subclass directly */                                        \
     if (node.methodOverrides & __nodeMethodOverride) {                                                           \
@@ -459,7 +494,8 @@ static _ASDisplayViewMethodOverrides GetASDisplayViewMethodOverrides(Class c) {
   }                                                                                                              \
   /* All __ prefixed methods are called from ASDisplayNode to let the view decide in what UIResponder state they \
   are not overridden by a ASDisplayNode subclass */                                                              \
-  -(BOOL)__##__sel {                                                                                             \
+  -(BOOL)__##__sel                                                                                               \
+  {                                                                                                              \
     return [super __sel];                                                                                        \
   }
 
@@ -479,27 +515,31 @@ IMPLEMENT_RESPONDER_METHOD(isFirstResponder,
                            ASDisplayNodeMethodOverrideIsFirstResponder,
                            _ASDisplayViewMethodOverrideIsFirstResponder);
 
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
   // We forward responder-chain actions to our node if we can't handle them ourselves. See -targetForAction:withSender:.
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   return ([super canPerformAction:action withSender:sender] || [node respondsToSelector:action]);
 }
 
-- (void)layoutMarginsDidChange {
+- (void)layoutMarginsDidChange
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   [super layoutMarginsDidChange];
 
   [node layoutMarginsDidChange];
 }
 
-- (void)safeAreaInsetsDidChange {
+- (void)safeAreaInsetsDidChange
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   [super safeAreaInsetsDidChange];
 
   [node safeAreaInsetsDidChange];
 }
 
-- (id)forwardingTargetForSelector:(SEL)aSelector {
+- (id)forwardingTargetForSelector:(SEL)aSelector
+{
   // Ideally, we would implement -targetForAction:withSender: and simply return the node where we don't respond
   // personally. Unfortunately UIResponder's default implementation of -targetForAction:withSender: doesn't follow its
   // own documentation. It doesn't call -targetForAction:withSender: up the responder chain when
@@ -513,33 +553,39 @@ IMPLEMENT_RESPONDER_METHOD(isFirstResponder,
 
 #if TARGET_OS_TV
 #pragma mark - tvOS
-- (BOOL)canBecomeFocused {
+- (BOOL)canBecomeFocused
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   return [node canBecomeFocused];
 }
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context
-       withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+       withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   return [node didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
 }
 
-- (void)setNeedsFocusUpdate {
+- (void)setNeedsFocusUpdate
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   return [node setNeedsFocusUpdate];
 }
 
-- (void)updateFocusIfNeeded {
+- (void)updateFocusIfNeeded
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   return [node updateFocusIfNeeded];
 }
 
-- (BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context {
+- (BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   return [node shouldUpdateFocusInContext:context];
 }
 
-- (UIView *)preferredFocusedView {
+- (UIView *)preferredFocusedView
+{
   ASDisplayNode *node = _asyncdisplaykit_node;  // Create strong reference to weak ivar.
   return [node preferredFocusedView];
 }

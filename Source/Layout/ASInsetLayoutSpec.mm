@@ -20,13 +20,22 @@
 @end
 
 /* Returns f if f is finite, substitute otherwise */
-static CGFloat finite(CGFloat f, CGFloat substitute) { return isinf(f) ? substitute : f; }
+static CGFloat finite(CGFloat f, CGFloat substitute)
+{
+  return isinf(f) ? substitute : f;
+}
 
 /* Returns f if f is finite, 0 otherwise */
-static CGFloat finiteOrZero(CGFloat f) { return finite(f, 0); }
+static CGFloat finiteOrZero(CGFloat f)
+{
+  return finite(f, 0);
+}
 
 /* Returns the inset required to center 'inner' in 'outer' */
-static CGFloat centerInset(CGFloat outer, CGFloat inner) { return ASRoundPixelValue((outer - inner) / 2); }
+static CGFloat centerInset(CGFloat outer, CGFloat inner)
+{
+  return ASRoundPixelValue((outer - inner) / 2);
+}
 
 @implementation ASInsetLayoutSpec
 
@@ -41,11 +50,13 @@ static CGFloat centerInset(CGFloat outer, CGFloat inner) { return ASRoundPixelVa
   return self;
 }
 
-+ (instancetype)insetLayoutSpecWithInsets:(UIEdgeInsets)insets child:(id<ASLayoutElement>)child NS_RETURNS_RETAINED {
++ (instancetype)insetLayoutSpecWithInsets:(UIEdgeInsets)insets child:(id<ASLayoutElement>)child NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithInsets:insets child:child];
 }
 
-- (void)setInsets:(UIEdgeInsets)insets {
+- (void)setInsets:(UIEdgeInsets)insets
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
   _insets = insets;
 }
@@ -56,7 +67,8 @@ static CGFloat centerInset(CGFloat outer, CGFloat inner) { return ASRoundPixelVa
  */
 - (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize
                      restrictedToSize:(ASLayoutElementSize)size
-                 relativeToParentSize:(CGSize)parentSize {
+                 relativeToParentSize:(CGSize)parentSize
+{
   if (self.child == nil) {
     ASDisplayNodeAssert(NO, @"Inset spec measured without a child. The spec will do nothing.");
     return [ASLayout layoutWithLayoutElement:self size:CGSizeZero];
@@ -83,8 +95,9 @@ static CGFloat centerInset(CGFloat outer, CGFloat inner) { return ASRoundPixelVa
 
   ASLayout *sublayout = [self.child layoutThatFits:insetConstrainedSize parentSize:insetParentSize];
 
-  const CGSize computedSize = ASSizeRangeClamp(
-      constrainedSize, {
+  const CGSize computedSize =
+      ASSizeRangeClamp(constrainedSize,
+                       {
                            finite(sublayout.size.width + _insets.left + _insets.right, constrainedSize.max.width),
                            finite(sublayout.size.height + _insets.top + _insets.bottom, constrainedSize.max.height),
                        });
@@ -94,10 +107,10 @@ static CGFloat centerInset(CGFloat outer, CGFloat inner) { return ASRoundPixelVa
       constrainedSize.max.width -
           (finite(_insets.right, centerInset(constrainedSize.max.width, sublayout.size.width)) + sublayout.size.width));
 
-  const CGFloat y =
-      finite(_insets.top, constrainedSize.max.height -
-                              (finite(_insets.bottom, centerInset(constrainedSize.max.height, sublayout.size.height)) +
-                               sublayout.size.height));
+  const CGFloat y = finite(_insets.top,
+                           constrainedSize.max.height -
+                               (finite(_insets.bottom, centerInset(constrainedSize.max.height, sublayout.size.height)) +
+                                sublayout.size.height));
 
   sublayout.position = CGPointMake(x, y);
 

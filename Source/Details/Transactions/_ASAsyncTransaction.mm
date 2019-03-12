@@ -34,14 +34,16 @@ NSInteger const ASDefaultTransactionPriority = 0;
 @implementation ASAsyncTransactionOperation
 
 - (instancetype)initWithOperationCompletionBlock:
-    (asyncdisplaykit_async_transaction_operation_completion_block_t)operationCompletionBlock {
+    (asyncdisplaykit_async_transaction_operation_completion_block_t)operationCompletionBlock
+{
   if ((self = [super init])) {
     _operationCompletionBlock = operationCompletionBlock;
   }
   return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
   NSAssert(_operationCompletionBlock == nil, @"Should have been called and released before -dealloc");
 }
 
@@ -55,17 +57,20 @@ NSInteger const ASDefaultTransactionPriority = 0;
   }
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
   return [NSString stringWithFormat:@"<ASAsyncTransactionOperation: %p - value = %@>", self, self.value];
 }
 
 @end
 
 // Lightweight operation queue for _ASAsyncTransaction that limits number of spawned threads
-class ASAsyncTransactionQueue {
+class ASAsyncTransactionQueue
+{
  public:
   // Similar to dispatch_group_t
-  class Group {
+  class Group
+  {
    public:
     // call when group is no longer needed; after last scheduled operation the group will delete itself
     virtual void release() = 0;
@@ -98,7 +103,8 @@ class ASAsyncTransactionQueue {
     dispatch_queue_t _queue;
   };
 
-  class GroupImpl : public Group {
+  class GroupImpl : public Group
+  {
    public:
     GroupImpl(ASAsyncTransactionQueue &queue) : _pendingOperations(0), _releaseCalled(false), _queue(queue) {}
 
@@ -140,12 +146,14 @@ class ASAsyncTransactionQueue {
   std::mutex _mutex;
 };
 
-ASAsyncTransactionQueue::Group *ASAsyncTransactionQueue::createGroup() {
+ASAsyncTransactionQueue::Group *ASAsyncTransactionQueue::createGroup()
+{
   Group *res = new GroupImpl(*this);
   return res;
 }
 
-void ASAsyncTransactionQueue::GroupImpl::release() {
+void ASAsyncTransactionQueue::GroupImpl::release()
+{
   std::lock_guard<std::mutex> l(_queue._mutex);
 
   if (_pendingOperations == 0) {
@@ -155,7 +163,8 @@ void ASAsyncTransactionQueue::GroupImpl::release() {
   }
 }
 
-ASAsyncTransactionQueue::Operation ASAsyncTransactionQueue::DispatchEntry::popNextOperation(bool respectPriority) {
+ASAsyncTransactionQueue::Operation ASAsyncTransactionQueue::DispatchEntry::popNextOperation(bool respectPriority)
+{
   NSCAssert(!_operationQueue.empty() && !_operationPriorityMap.empty(), @"No scheduled operations available");
 
   OperationQueue::iterator queueIterator;
@@ -183,14 +192,16 @@ ASAsyncTransactionQueue::Operation ASAsyncTransactionQueue::DispatchEntry::popNe
   return res;
 }
 
-void ASAsyncTransactionQueue::DispatchEntry::pushOperation(ASAsyncTransactionQueue::Operation operation) {
+void ASAsyncTransactionQueue::DispatchEntry::pushOperation(ASAsyncTransactionQueue::Operation operation)
+{
   _operationQueue.push_back(operation);
 
   OperationIteratorList &list = _operationPriorityMap[operation._priority];
   list.push_back(--_operationQueue.end());
 }
 
-void ASAsyncTransactionQueue::GroupImpl::schedule(NSInteger priority, dispatch_queue_t queue, dispatch_block_t block) {
+void ASAsyncTransactionQueue::GroupImpl::schedule(NSInteger priority, dispatch_queue_t queue, dispatch_block_t block)
+{
   ASAsyncTransactionQueue &q = _queue;
   std::lock_guard<std::mutex> l(q._mutex);
 
@@ -210,7 +221,8 @@ void ASAsyncTransactionQueue::GroupImpl::schedule(NSInteger priority, dispatch_q
   NSUInteger maxThreads = [NSProcessInfo processInfo].activeProcessorCount * 2;
 
   // Bit questionable maybe - we can give main thread more CPU time during tracking.
-  if ([[NSRunLoop mainRunLoop].currentMode isEqualToString:UITrackingRunLoopMode]) --maxThreads;
+  if ([[NSRunLoop mainRunLoop].currentMode isEqualToString:UITrackingRunLoopMode])
+    --maxThreads;
 #endif
 
   if (entry._threadCount < maxThreads) {  // we need to spawn another thread
@@ -244,7 +256,8 @@ void ASAsyncTransactionQueue::GroupImpl::schedule(NSInteger priority, dispatch_q
   }
 }
 
-void ASAsyncTransactionQueue::GroupImpl::notify(dispatch_queue_t queue, dispatch_block_t block) {
+void ASAsyncTransactionQueue::GroupImpl::notify(dispatch_queue_t queue, dispatch_block_t block)
+{
   std::lock_guard<std::mutex> l(_queue._mutex);
 
   if (_pendingOperations == 0) {
@@ -257,12 +270,14 @@ void ASAsyncTransactionQueue::GroupImpl::notify(dispatch_queue_t queue, dispatch
   }
 }
 
-void ASAsyncTransactionQueue::GroupImpl::enter() {
+void ASAsyncTransactionQueue::GroupImpl::enter()
+{
   std::lock_guard<std::mutex> l(_queue._mutex);
   ++_pendingOperations;
 }
 
-void ASAsyncTransactionQueue::GroupImpl::leave() {
+void ASAsyncTransactionQueue::GroupImpl::leave()
+{
   std::lock_guard<std::mutex> l(_queue._mutex);
   --_pendingOperations;
 
@@ -284,14 +299,16 @@ void ASAsyncTransactionQueue::GroupImpl::leave() {
   }
 }
 
-void ASAsyncTransactionQueue::GroupImpl::wait() {
+void ASAsyncTransactionQueue::GroupImpl::wait()
+{
   std::unique_lock<std::mutex> lock(_queue._mutex);
   while (_pendingOperations > 0) {
     _condition.wait(lock);
   }
 }
 
-ASAsyncTransactionQueue &ASAsyncTransactionQueue::instance() {
+ASAsyncTransactionQueue &ASAsyncTransactionQueue::instance()
+{
   static ASAsyncTransactionQueue *instance = new ASAsyncTransactionQueue();
   return *instance;
 }
@@ -307,7 +324,8 @@ ASAsyncTransactionQueue &ASAsyncTransactionQueue::instance() {
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithCompletionBlock:(void (^)(_ASAsyncTransaction *, BOOL))completionBlock {
+- (instancetype)initWithCompletionBlock:(void (^)(_ASAsyncTransaction *, BOOL))completionBlock
+{
   if ((self = [self init])) {
     _completionBlock = completionBlock;
     self.state = ASAsyncTransactionStateOpen;
@@ -315,7 +333,8 @@ ASAsyncTransactionQueue &ASAsyncTransactionQueue::instance() {
   return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
   // Uncommitted transactions break our guarantees about releasing completion blocks on callbackQueue.
   NSAssert(self.state != ASAsyncTransactionStateOpen, @"Uncommitted ASAsyncTransactions are not allowed");
   if (_group) {
@@ -328,7 +347,8 @@ ASAsyncTransactionQueue &ASAsyncTransactionQueue::instance() {
 - (void)addOperationWithBlock:(asyncdisplaykit_async_transaction_operation_block_t)block
                      priority:(NSInteger)priority
                         queue:(dispatch_queue_t)queue
-                   completion:(asyncdisplaykit_async_transaction_operation_completion_block_t)completion {
+                   completion:(asyncdisplaykit_async_transaction_operation_completion_block_t)completion
+{
   ASDisplayNodeAssertMainThread();
   NSAssert(self.state == ASAsyncTransactionStateOpen, @"You can only add operations to open transactions");
 
@@ -346,14 +366,16 @@ ASAsyncTransactionQueue &ASAsyncTransactionQueue::instance() {
   });
 }
 
-- (void)cancel {
+- (void)cancel
+{
   ASDisplayNodeAssertMainThread();
   NSAssert(self.state != ASAsyncTransactionStateOpen,
            @"You can only cancel a committed or already-canceled transaction");
   self.state = ASAsyncTransactionStateCanceled;
 }
 
-- (void)commit {
+- (void)commit
+{
   ASDisplayNodeAssertMainThread();
   NSAssert(self.state == ASAsyncTransactionStateOpen, @"You cannot double-commit a transaction");
   self.state = ASAsyncTransactionStateCommitted;
@@ -372,7 +394,8 @@ ASAsyncTransactionQueue &ASAsyncTransactionQueue::instance() {
   }
 }
 
-- (void)completeTransaction {
+- (void)completeTransaction
+{
   ASDisplayNodeAssertMainThread();
   ASAsyncTransactionState state = self.state;
   if (state != ASAsyncTransactionStateComplete) {
@@ -392,7 +415,8 @@ ASAsyncTransactionQueue &ASAsyncTransactionQueue::instance() {
   }
 }
 
-- (void)waitUntilComplete {
+- (void)waitUntilComplete
+{
   ASDisplayNodeAssertMainThread();
   if (self.state != ASAsyncTransactionStateComplete) {
     if (_group) {
@@ -416,7 +440,8 @@ ASAsyncTransactionQueue &ASAsyncTransactionQueue::instance() {
 
 #pragma mark - Helper Methods
 
-- (void)_ensureTransactionData {
+- (void)_ensureTransactionData
+{
   // Lazily initialize _group and _operations to avoid overhead in the case where no operations are added to the
   // transaction
   if (_group == NULL) {
@@ -427,9 +452,13 @@ ASAsyncTransactionQueue &ASAsyncTransactionQueue::instance() {
   }
 }
 
-- (NSString *)description {
-  return [NSString stringWithFormat:@"<_ASAsyncTransaction: %p - _state = %lu, _group = %p, _operations = %@>", self,
-                                    (unsigned long)self.state, _group, _operations];
+- (NSString *)description
+{
+  return [NSString stringWithFormat:@"<_ASAsyncTransaction: %p - _state = %lu, _group = %p, _operations = %@>",
+                                    self,
+                                    (unsigned long)self.state,
+                                    _group,
+                                    _operations];
 }
 
 @end

@@ -21,7 +21,8 @@
 static NSNumber *allowsGroupOpacityFromUIKitOrNil;
 static NSNumber *allowsEdgeAntialiasingFromUIKitOrNil;
 
-BOOL ASDefaultAllowsGroupOpacity() {
+BOOL ASDefaultAllowsGroupOpacity()
+{
   static BOOL groupOpacity;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -32,7 +33,8 @@ BOOL ASDefaultAllowsGroupOpacity() {
   return groupOpacity;
 }
 
-BOOL ASDefaultAllowsEdgeAntialiasing() {
+BOOL ASDefaultAllowsEdgeAntialiasing()
+{
   static BOOL edgeAntialiasing;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -43,7 +45,8 @@ BOOL ASDefaultAllowsEdgeAntialiasing() {
   return edgeAntialiasing;
 }
 
-void ASInitializeFrameworkMainThread(void) {
+void ASInitializeFrameworkMainThread(void)
+{
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     ASDisplayNodeCAssertMainThread();
@@ -59,21 +62,26 @@ void ASInitializeFrameworkMainThread(void) {
   });
 }
 
-BOOL ASSubclassOverridesSelector(Class superclass, Class subclass, SEL selector) {
-  if (superclass == subclass) return NO;  // Even if the class implements the selector, it doesn't override itself.
+BOOL ASSubclassOverridesSelector(Class superclass, Class subclass, SEL selector)
+{
+  if (superclass == subclass)
+    return NO;  // Even if the class implements the selector, it doesn't override itself.
   Method superclassMethod = class_getInstanceMethod(superclass, selector);
   Method subclassMethod = class_getInstanceMethod(subclass, selector);
   return (superclassMethod != subclassMethod);
 }
 
-BOOL ASSubclassOverridesClassSelector(Class superclass, Class subclass, SEL selector) {
-  if (superclass == subclass) return NO;  // Even if the class implements the selector, it doesn't override itself.
+BOOL ASSubclassOverridesClassSelector(Class superclass, Class subclass, SEL selector)
+{
+  if (superclass == subclass)
+    return NO;  // Even if the class implements the selector, it doesn't override itself.
   Method superclassMethod = class_getClassMethod(superclass, selector);
   Method subclassMethod = class_getClassMethod(subclass, selector);
   return (superclassMethod != subclassMethod);
 }
 
-IMP ASReplaceMethodWithBlock(Class c, SEL origSEL, id block) {
+IMP ASReplaceMethodWithBlock(Class c, SEL origSEL, id block)
+{
   NSCParameterAssert(block);
 
   // Get original method
@@ -91,7 +99,8 @@ IMP ASReplaceMethodWithBlock(Class c, SEL origSEL, id block) {
   }
 }
 
-void ASPerformBlockOnMainThread(void (^block)(void)) {
+void ASPerformBlockOnMainThread(void (^block)(void))
+{
   if (block == nil) {
     return;
   }
@@ -102,7 +111,8 @@ void ASPerformBlockOnMainThread(void (^block)(void)) {
   }
 }
 
-void ASPerformBlockOnBackgroundThread(void (^block)(void)) {
+void ASPerformBlockOnBackgroundThread(void (^block)(void))
+{
   if (block == nil) {
     return;
   }
@@ -113,11 +123,13 @@ void ASPerformBlockOnBackgroundThread(void (^block)(void)) {
   }
 }
 
-void ASPerformBackgroundDeallocation(id __strong _Nullable *_Nonnull object) {
+void ASPerformBackgroundDeallocation(id __strong _Nullable *_Nonnull object)
+{
   [[ASDeallocQueue sharedDeallocationQueue] releaseObjectInBackground:object];
 }
 
-Class _Nullable ASGetClassFromType(const char *_Nullable type) {
+Class _Nullable ASGetClassFromType(const char *_Nullable type)
+{
   // Class types all start with @"
   if (type == NULL || strncmp(type, "@\"", 2) != 0) {
     return Nil;
@@ -138,7 +150,8 @@ Class _Nullable ASGetClassFromType(const char *_Nullable type) {
   return objc_getClass(className);
 }
 
-CGFloat ASScreenScale() {
+CGFloat ASScreenScale()
+{
   static CGFloat __scale = 0.0;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -149,7 +162,10 @@ CGFloat ASScreenScale() {
   return __scale;
 }
 
-CGSize ASFloorSizeValues(CGSize s) { return CGSizeMake(ASFloorPixelValue(s.width), ASFloorPixelValue(s.height)); }
+CGSize ASFloorSizeValues(CGSize s)
+{
+  return CGSizeMake(ASFloorPixelValue(s.width), ASFloorPixelValue(s.height));
+}
 
 // See ASCeilPixelValue for a more thoroguh explanation of (f + FLT_EPSILON),
 // but here is some quick math:
@@ -164,14 +180,21 @@ CGSize ASFloorSizeValues(CGSize s) { return CGSizeMake(ASFloorPixelValue(s.width
 // po (100.66666666663 + FLT_EPSILON) * 3 = 302.00000035751782
 // floor(302.00000035751782) = 302
 // 302/3 = 100.66666666
-CGFloat ASFloorPixelValue(CGFloat f) {
+CGFloat ASFloorPixelValue(CGFloat f)
+{
   CGFloat scale = ASScreenScale();
   return floor((f + FLT_EPSILON) * scale) / scale;
 }
 
-CGPoint ASCeilPointValues(CGPoint p) { return CGPointMake(ASCeilPixelValue(p.x), ASCeilPixelValue(p.y)); }
+CGPoint ASCeilPointValues(CGPoint p)
+{
+  return CGPointMake(ASCeilPixelValue(p.x), ASCeilPixelValue(p.y));
+}
 
-CGSize ASCeilSizeValues(CGSize s) { return CGSizeMake(ASCeilPixelValue(s.width), ASCeilPixelValue(s.height)); }
+CGSize ASCeilSizeValues(CGSize s)
+{
+  return CGSizeMake(ASCeilPixelValue(s.width), ASCeilPixelValue(s.height));
+}
 
 // With 3x devices layouts will often to compute to pixel bounds but
 // include garbage values beyond the precision of a float/double.
@@ -192,19 +215,22 @@ CGSize ASCeilSizeValues(CGSize s) { return CGSizeMake(ASCeilPixelValue(s.width),
 //
 // For even more conversation around this, see:
 // https://github.com/TextureGroup/Texture/issues/838
-CGFloat ASCeilPixelValue(CGFloat f) {
+CGFloat ASCeilPixelValue(CGFloat f)
+{
   CGFloat scale = ASScreenScale();
   return ceil((f - FLT_EPSILON) * scale) / scale;
 }
 
-CGFloat ASRoundPixelValue(CGFloat f) {
+CGFloat ASRoundPixelValue(CGFloat f)
+{
   CGFloat scale = ASScreenScale();
   return round(f * scale) / scale;
 }
 
 @implementation NSIndexPath (ASInverseComparison)
 
-- (NSComparisonResult)asdk_inverseCompare:(NSIndexPath *)otherIndexPath {
+- (NSComparisonResult)asdk_inverseCompare:(NSIndexPath *)otherIndexPath
+{
   return [otherIndexPath compare:self];
 }
 

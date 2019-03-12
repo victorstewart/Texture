@@ -58,7 +58,8 @@
 
 #pragma mark Lifecycle
 
-- (instancetype)init {
+- (instancetype)init
+{
   self = [super init];
   if (self) {
     _rangeMode = ASLayoutRangeModeUnspecified;
@@ -77,16 +78,19 @@
 
 #pragma mark Tuning Parameters
 
-- (ASRangeTuningParameters)tuningParametersForRangeType:(ASLayoutRangeType)rangeType {
+- (ASRangeTuningParameters)tuningParametersForRangeType:(ASLayoutRangeType)rangeType
+{
   return [self tuningParametersForRangeMode:ASLayoutRangeModeFull rangeType:rangeType];
 }
 
-- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeType:(ASLayoutRangeType)rangeType {
+- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeType:(ASLayoutRangeType)rangeType
+{
   return [self setTuningParameters:tuningParameters forRangeMode:ASLayoutRangeModeFull rangeType:rangeType];
 }
 
 - (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode
-                                              rangeType:(ASLayoutRangeType)rangeType {
+                                              rangeType:(ASLayoutRangeType)rangeType
+{
   ASDisplayNodeAssert(rangeMode < _tuningParameters.size() && rangeType < _tuningParameters[rangeMode].size(),
                       @"Requesting a range that is OOB for the configured tuning parameters");
   return _tuningParameters[rangeMode][rangeType];
@@ -94,7 +98,8 @@
 
 - (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters
                forRangeMode:(ASLayoutRangeMode)rangeMode
-                  rangeType:(ASLayoutRangeType)rangeType {
+                  rangeType:(ASLayoutRangeType)rangeType
+{
   ASDisplayNodeAssert(rangeMode < _tuningParameters.size() && rangeType < _tuningParameters[rangeMode].size(),
                       @"Setting a range that is OOB for the configured tuning parameters");
   _tuningParameters[rangeMode][rangeType] = tuningParameters;
@@ -117,11 +122,13 @@
 
 #pragma mark Lifecycle
 
-- (Class)collectionViewClass {
+- (Class)collectionViewClass
+{
   return _collectionViewClass ?: [ASCollectionView class];
 }
 
-- (void)setCollectionViewClass:(Class)collectionViewClass {
+- (void)setCollectionViewClass:(Class)collectionViewClass
+{
   if (_collectionViewClass != collectionViewClass) {
     ASDisplayNodeAssert([collectionViewClass isSubclassOfClass:[ASCollectionView class]] || collectionViewClass == Nil,
                         @"ASCollectionNode requires that .collectionViewClass is an ASCollectionView subclass");
@@ -131,16 +138,19 @@
   }
 }
 
-- (instancetype)initWithCollectionViewLayout:(UICollectionViewLayout *)layout {
+- (instancetype)initWithCollectionViewLayout:(UICollectionViewLayout *)layout
+{
   return [self initWithFrame:CGRectZero collectionViewLayout:layout layoutFacilitator:nil];
 }
 
-- (instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout {
+- (instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout
+{
   return [self initWithFrame:frame collectionViewLayout:layout layoutFacilitator:nil];
 }
 
 - (instancetype)initWithLayoutDelegate:(id<ASCollectionLayoutDelegate>)layoutDelegate
-                     layoutFacilitator:(id<ASCollectionViewLayoutFacilitatorProtocol>)layoutFacilitator {
+                     layoutFacilitator:(id<ASCollectionViewLayoutFacilitatorProtocol>)layoutFacilitator
+{
   return [self initWithFrame:CGRectZero
         collectionViewLayout:[[ASCollectionLayout alloc] initWithLayoutDelegate:layoutDelegate]
            layoutFacilitator:layoutFacilitator];
@@ -148,7 +158,8 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
          collectionViewLayout:(UICollectionViewLayout *)layout
-            layoutFacilitator:(id<ASCollectionViewLayoutFacilitatorProtocol>)layoutFacilitator {
+            layoutFacilitator:(id<ASCollectionViewLayoutFacilitatorProtocol>)layoutFacilitator
+{
   if (self = [super init]) {
     // Must call the setter here to make sure pendingState is created and the layout is configured.
     [self setCollectionViewLayout:layout];
@@ -167,7 +178,8 @@
 }
 
 #if ASDISPLAYNODE_ASSERTIONS_ENABLED
-- (void)dealloc {
+- (void)dealloc
+{
   if (self.nodeLoaded) {
     __weak UIView *view = self.view;
     ASPerformBlockOnMainThread(^{
@@ -179,7 +191,8 @@
 
 #pragma mark ASDisplayNode
 
-- (void)didLoad {
+- (void)didLoad
+{
   [super didLoad];
 
   ASCollectionView *view = self.view;
@@ -239,21 +252,25 @@
   }
 }
 
-- (ASCollectionView *)view {
+- (ASCollectionView *)view
+{
   return (ASCollectionView *)[super view];
 }
 
-- (void)clearContents {
+- (void)clearContents
+{
   [super clearContents];
   [self.rangeController clearContents];
 }
 
-- (void)interfaceStateDidChange:(ASInterfaceState)newState fromState:(ASInterfaceState)oldState {
+- (void)interfaceStateDidChange:(ASInterfaceState)newState fromState:(ASInterfaceState)oldState
+{
   [super interfaceStateDidChange:newState fromState:oldState];
   [ASRangeController layoutDebugOverlayIfNeeded];
 }
 
-- (void)didEnterPreloadState {
+- (void)didEnterPreloadState
+{
   [super didEnterPreloadState];
   // ASCollectionNode is often nested inside of other collections. In this case, ASHierarchyState's RangeManaged bit
   // will be set. Intentionally allocate the view here and trigger a layout pass on it, which in turn will trigger the
@@ -266,18 +283,21 @@
 }
 
 #if ASRangeControllerLoggingEnabled
-- (void)didEnterVisibleState {
+- (void)didEnterVisibleState
+{
   [super didEnterVisibleState];
   NSLog(@"%@ - visible: YES", self);
 }
 
-- (void)didExitVisibleState {
+- (void)didExitVisibleState
+{
   [super didExitVisibleState];
   NSLog(@"%@ - visible: NO", self);
 }
 #endif
 
-- (void)didExitPreloadState {
+- (void)didExitPreloadState
+{
   [super didExitPreloadState];
   [self.rangeController clearPreloadedData];
 }
@@ -285,11 +305,13 @@
 #pragma mark Setter / Getter
 
 // TODO: Implement this without the view. Then revisit ASLayoutElementCollectionTableSetTraitCollection
-- (ASDataController *)dataController {
+- (ASDataController *)dataController
+{
   return self.view.dataController;
 }
 
-- (_ASCollectionPendingState *)pendingState {
+- (_ASCollectionPendingState *)pendingState
+{
   if (!_pendingState && ![self isNodeLoaded]) {
     self.pendingState = [[_ASCollectionPendingState alloc] init];
   }
@@ -298,7 +320,8 @@
   return _pendingState;
 }
 
-- (void)setInverted:(BOOL)inverted {
+- (void)setInverted:(BOOL)inverted
+{
   self.transform = inverted ? CATransform3DMakeScale(1, -1, 1) : CATransform3DIdentity;
   if ([self pendingState]) {
     _pendingState.inverted = inverted;
@@ -308,7 +331,8 @@
   }
 }
 
-- (BOOL)inverted {
+- (BOOL)inverted
+{
   if ([self pendingState]) {
     return _pendingState.inverted;
   } else {
@@ -316,7 +340,8 @@
   }
 }
 
-- (void)setLayoutInspector:(id<ASCollectionViewLayoutInspecting>)layoutInspector {
+- (void)setLayoutInspector:(id<ASCollectionViewLayoutInspecting>)layoutInspector
+{
   if ([self pendingState]) {
     _pendingState.layoutInspector = layoutInspector;
   } else {
@@ -325,7 +350,8 @@
   }
 }
 
-- (id<ASCollectionViewLayoutInspecting>)layoutInspector {
+- (id<ASCollectionViewLayoutInspecting>)layoutInspector
+{
   if ([self pendingState]) {
     return _pendingState.layoutInspector;
   } else {
@@ -333,7 +359,8 @@
   }
 }
 
-- (void)setLeadingScreensForBatching:(CGFloat)leadingScreensForBatching {
+- (void)setLeadingScreensForBatching:(CGFloat)leadingScreensForBatching
+{
   if ([self pendingState]) {
     _pendingState.leadingScreensForBatching = leadingScreensForBatching;
   } else {
@@ -342,7 +369,8 @@
   }
 }
 
-- (CGFloat)leadingScreensForBatching {
+- (CGFloat)leadingScreensForBatching
+{
   if ([self pendingState]) {
     return _pendingState.leadingScreensForBatching;
   } else {
@@ -350,7 +378,8 @@
   }
 }
 
-- (void)setDelegate:(id<ASCollectionDelegate>)delegate {
+- (void)setDelegate:(id<ASCollectionDelegate>)delegate
+{
   if ([self pendingState]) {
     _pendingState.delegate = delegate;
   } else {
@@ -367,7 +396,8 @@
   }
 }
 
-- (id<ASCollectionDelegate>)delegate {
+- (id<ASCollectionDelegate>)delegate
+{
   if ([self pendingState]) {
     return _pendingState.delegate;
   } else {
@@ -375,7 +405,8 @@
   }
 }
 
-- (void)setDataSource:(id<ASCollectionDataSource>)dataSource {
+- (void)setDataSource:(id<ASCollectionDataSource>)dataSource
+{
   if ([self pendingState]) {
     _pendingState.dataSource = dataSource;
   } else {
@@ -391,7 +422,8 @@
   }
 }
 
-- (id<ASCollectionDataSource>)dataSource {
+- (id<ASCollectionDataSource>)dataSource
+{
   if ([self pendingState]) {
     return _pendingState.dataSource;
   } else {
@@ -399,7 +431,8 @@
   }
 }
 
-- (void)setAllowsSelection:(BOOL)allowsSelection {
+- (void)setAllowsSelection:(BOOL)allowsSelection
+{
   if ([self pendingState]) {
     _pendingState.allowsSelection = allowsSelection;
   } else {
@@ -408,7 +441,8 @@
   }
 }
 
-- (BOOL)allowsSelection {
+- (BOOL)allowsSelection
+{
   if ([self pendingState]) {
     return _pendingState.allowsSelection;
   } else {
@@ -416,7 +450,8 @@
   }
 }
 
-- (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection {
+- (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection
+{
   if ([self pendingState]) {
     _pendingState.allowsMultipleSelection = allowsMultipleSelection;
   } else {
@@ -425,7 +460,8 @@
   }
 }
 
-- (BOOL)allowsMultipleSelection {
+- (BOOL)allowsMultipleSelection
+{
   if ([self pendingState]) {
     return _pendingState.allowsMultipleSelection;
   } else {
@@ -433,7 +469,8 @@
   }
 }
 
-- (void)setAlwaysBounceVertical:(BOOL)alwaysBounceVertical {
+- (void)setAlwaysBounceVertical:(BOOL)alwaysBounceVertical
+{
   if ([self pendingState]) {
     _pendingState.alwaysBounceVertical = alwaysBounceVertical;
   } else {
@@ -442,7 +479,8 @@
   }
 }
 
-- (BOOL)alwaysBounceVertical {
+- (BOOL)alwaysBounceVertical
+{
   if ([self pendingState]) {
     return _pendingState.alwaysBounceVertical;
   } else {
@@ -450,7 +488,8 @@
   }
 }
 
-- (void)setAlwaysBounceHorizontal:(BOOL)alwaysBounceHorizontal {
+- (void)setAlwaysBounceHorizontal:(BOOL)alwaysBounceHorizontal
+{
   if ([self pendingState]) {
     _pendingState.alwaysBounceHorizontal = alwaysBounceHorizontal;
   } else {
@@ -459,7 +498,8 @@
   }
 }
 
-- (BOOL)alwaysBounceHorizontal {
+- (BOOL)alwaysBounceHorizontal
+{
   if ([self pendingState]) {
     return _pendingState.alwaysBounceHorizontal;
   } else {
@@ -467,7 +507,8 @@
   }
 }
 
-- (void)setShowsVerticalScrollIndicator:(BOOL)showsVerticalScrollIndicator {
+- (void)setShowsVerticalScrollIndicator:(BOOL)showsVerticalScrollIndicator
+{
   if ([self pendingState]) {
     _pendingState.showsVerticalScrollIndicator = showsVerticalScrollIndicator;
   } else {
@@ -476,7 +517,8 @@
   }
 }
 
-- (BOOL)showsVerticalScrollIndicator {
+- (BOOL)showsVerticalScrollIndicator
+{
   if ([self pendingState]) {
     return _pendingState.showsVerticalScrollIndicator;
   } else {
@@ -484,7 +526,8 @@
   }
 }
 
-- (void)setShowsHorizontalScrollIndicator:(BOOL)showsHorizontalScrollIndicator {
+- (void)setShowsHorizontalScrollIndicator:(BOOL)showsHorizontalScrollIndicator
+{
   if ([self pendingState]) {
     _pendingState.showsHorizontalScrollIndicator = showsHorizontalScrollIndicator;
   } else {
@@ -493,7 +536,8 @@
   }
 }
 
-- (BOOL)showsHorizontalScrollIndicator {
+- (BOOL)showsHorizontalScrollIndicator
+{
   if ([self pendingState]) {
     return _pendingState.showsHorizontalScrollIndicator;
   } else {
@@ -501,7 +545,8 @@
   }
 }
 
-- (void)setCollectionViewLayout:(UICollectionViewLayout *)layout {
+- (void)setCollectionViewLayout:(UICollectionViewLayout *)layout
+{
   if ([self pendingState]) {
     [self _configureCollectionViewLayout:layout];
     _pendingState.collectionViewLayout = layout;
@@ -511,7 +556,8 @@
   }
 }
 
-- (UICollectionViewLayout *)collectionViewLayout {
+- (UICollectionViewLayout *)collectionViewLayout
+{
   if ([self pendingState]) {
     return _pendingState.collectionViewLayout;
   } else {
@@ -519,7 +565,8 @@
   }
 }
 
-- (void)setContentInset:(UIEdgeInsets)contentInset {
+- (void)setContentInset:(UIEdgeInsets)contentInset
+{
   if ([self pendingState]) {
     _pendingState.contentInset = contentInset;
   } else {
@@ -528,7 +575,8 @@
   }
 }
 
-- (UIEdgeInsets)contentInset {
+- (UIEdgeInsets)contentInset
+{
   if ([self pendingState]) {
     return _pendingState.contentInset;
   } else {
@@ -536,11 +584,13 @@
   }
 }
 
-- (void)setContentOffset:(CGPoint)contentOffset {
+- (void)setContentOffset:(CGPoint)contentOffset
+{
   [self setContentOffset:contentOffset animated:NO];
 }
 
-- (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated {
+- (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated
+{
   if ([self pendingState]) {
     _pendingState.contentOffset = contentOffset;
     _pendingState.animatesContentOffset = animated;
@@ -550,7 +600,8 @@
   }
 }
 
-- (CGPoint)contentOffset {
+- (CGPoint)contentOffset
+{
   if ([self pendingState]) {
     return _pendingState.contentOffset;
   } else {
@@ -558,21 +609,25 @@
   }
 }
 
-- (ASScrollDirection)scrollDirection {
+- (ASScrollDirection)scrollDirection
+{
   return [self isNodeLoaded] ? self.view.scrollDirection : ASScrollDirectionNone;
 }
 
-- (ASScrollDirection)scrollableDirections {
+- (ASScrollDirection)scrollableDirections
+{
   return [self isNodeLoaded] ? self.view.scrollableDirections : ASScrollDirectionNone;
 }
 
-- (ASElementMap *)visibleElements {
+- (ASElementMap *)visibleElements
+{
   ASDisplayNodeAssertMainThread();
   // TODO Own the data controller when view is not yet loaded
   return self.dataController.visibleMap;
 }
 
-- (id<ASCollectionLayoutDelegate>)layoutDelegate {
+- (id<ASCollectionLayoutDelegate>)layoutDelegate
+{
   UICollectionViewLayout *layout = self.collectionViewLayout;
   if ([layout isKindOfClass:[ASCollectionLayout class]]) {
     return ((ASCollectionLayout *)layout).layoutDelegate;
@@ -580,15 +635,18 @@
   return nil;
 }
 
-- (void)setBatchFetchingDelegate:(id<ASBatchFetchingDelegate>)batchFetchingDelegate {
+- (void)setBatchFetchingDelegate:(id<ASBatchFetchingDelegate>)batchFetchingDelegate
+{
   _batchFetchingDelegate = batchFetchingDelegate;
 }
 
-- (id<ASBatchFetchingDelegate>)batchFetchingDelegate {
+- (id<ASBatchFetchingDelegate>)batchFetchingDelegate
+{
   return _batchFetchingDelegate;
 }
 
-- (ASCellLayoutMode)cellLayoutMode {
+- (ASCellLayoutMode)cellLayoutMode
+{
   if ([self pendingState]) {
     return _pendingState.cellLayoutMode;
   } else {
@@ -596,7 +654,8 @@
   }
 }
 
-- (void)setCellLayoutMode:(ASCellLayoutMode)cellLayoutMode {
+- (void)setCellLayoutMode:(ASCellLayoutMode)cellLayoutMode
+{
   if ([self pendingState]) {
     _pendingState.cellLayoutMode = cellLayoutMode;
   } else {
@@ -606,16 +665,19 @@
 
 #pragma mark - Range Tuning
 
-- (ASRangeTuningParameters)tuningParametersForRangeType:(ASLayoutRangeType)rangeType {
+- (ASRangeTuningParameters)tuningParametersForRangeType:(ASLayoutRangeType)rangeType
+{
   return [self tuningParametersForRangeMode:ASLayoutRangeModeFull rangeType:rangeType];
 }
 
-- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeType:(ASLayoutRangeType)rangeType {
+- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeType:(ASLayoutRangeType)rangeType
+{
   [self setTuningParameters:tuningParameters forRangeMode:ASLayoutRangeModeFull rangeType:rangeType];
 }
 
 - (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode
-                                              rangeType:(ASLayoutRangeType)rangeType {
+                                              rangeType:(ASLayoutRangeType)rangeType
+{
   if ([self pendingState]) {
     return [_pendingState tuningParametersForRangeMode:rangeMode rangeType:rangeType];
   } else {
@@ -625,7 +687,8 @@
 
 - (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters
                forRangeMode:(ASLayoutRangeMode)rangeMode
-                  rangeType:(ASLayoutRangeType)rangeType {
+                  rangeType:(ASLayoutRangeType)rangeType
+{
   if ([self pendingState]) {
     [_pendingState setTuningParameters:tuningParameters forRangeMode:rangeMode rangeType:rangeType];
   } else {
@@ -635,7 +698,8 @@
 
 #pragma mark - Selection
 
-- (NSArray<NSIndexPath *> *)indexPathsForSelectedItems {
+- (NSArray<NSIndexPath *> *)indexPathsForSelectedItems
+{
   ASDisplayNodeAssertMainThread();
   ASCollectionView *view = self.view;
   return [view convertIndexPathsToCollectionNode:view.indexPathsForSelectedItems];
@@ -643,7 +707,8 @@
 
 - (void)selectItemAtIndexPath:(nullable NSIndexPath *)indexPath
                      animated:(BOOL)animated
-               scrollPosition:(UICollectionViewScrollPosition)scrollPosition {
+               scrollPosition:(UICollectionViewScrollPosition)scrollPosition
+{
   ASDisplayNodeAssertMainThread();
   ASCollectionView *collectionView = self.view;
 
@@ -656,7 +721,8 @@
   }
 }
 
-- (void)deselectItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated {
+- (void)deselectItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated
+{
   ASDisplayNodeAssertMainThread();
   ASCollectionView *collectionView = self.view;
 
@@ -671,7 +737,8 @@
 
 - (void)scrollToItemAtIndexPath:(NSIndexPath *)indexPath
                atScrollPosition:(UICollectionViewScrollPosition)scrollPosition
-                       animated:(BOOL)animated {
+                       animated:(BOOL)animated
+{
   ASDisplayNodeAssertMainThread();
   ASCollectionView *collectionView = self.view;
 
@@ -686,42 +753,50 @@
 
 #pragma mark - Querying Data
 
-- (void)reloadDataInitiallyIfNeeded {
+- (void)reloadDataInitiallyIfNeeded
+{
   if (!self.dataController.initialReloadDataHasBeenCalled) {
     [self reloadData];
   }
 }
 
-- (NSInteger)numberOfItemsInSection:(NSInteger)section {
+- (NSInteger)numberOfItemsInSection:(NSInteger)section
+{
   [self reloadDataInitiallyIfNeeded];
   return [self.dataController.pendingMap numberOfItemsInSection:section];
 }
 
-- (NSInteger)numberOfSections {
+- (NSInteger)numberOfSections
+{
   [self reloadDataInitiallyIfNeeded];
   return self.dataController.pendingMap.numberOfSections;
 }
 
-- (NSArray<__kindof ASCellNode *> *)visibleNodes {
+- (NSArray<__kindof ASCellNode *> *)visibleNodes
+{
   ASDisplayNodeAssertMainThread();
   return self.isNodeLoaded ? [self.view visibleNodes] : @[];
 }
 
-- (ASCellNode *)nodeForItemAtIndexPath:(NSIndexPath *)indexPath {
+- (ASCellNode *)nodeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
   [self reloadDataInitiallyIfNeeded];
   return [self.dataController.pendingMap elementForItemAtIndexPath:indexPath].node;
 }
 
-- (id)nodeModelForItemAtIndexPath:(NSIndexPath *)indexPath {
+- (id)nodeModelForItemAtIndexPath:(NSIndexPath *)indexPath
+{
   [self reloadDataInitiallyIfNeeded];
   return [self.dataController.pendingMap elementForItemAtIndexPath:indexPath].nodeModel;
 }
 
-- (NSIndexPath *)indexPathForNode:(ASCellNode *)cellNode {
+- (NSIndexPath *)indexPathForNode:(ASCellNode *)cellNode
+{
   return [self.dataController.pendingMap indexPathForElement:cellNode.collectionElement];
 }
 
-- (NSArray<NSIndexPath *> *)indexPathsForVisibleItems {
+- (NSArray<NSIndexPath *> *)indexPathsForVisibleItems
+{
   ASDisplayNodeAssertMainThread();
   NSMutableArray *indexPathsArray = [NSMutableArray new];
   for (ASCellNode *cell in [self visibleNodes]) {
@@ -733,7 +808,8 @@
   return indexPathsArray;
 }
 
-- (nullable NSIndexPath *)indexPathForItemAtPoint:(CGPoint)point {
+- (nullable NSIndexPath *)indexPathForItemAtPoint:(CGPoint)point
+{
   ASDisplayNodeAssertMainThread();
   ASCollectionView *collectionView = self.view;
 
@@ -744,7 +820,8 @@
   return indexPath;
 }
 
-- (nullable UICollectionViewCell *)cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+- (nullable UICollectionViewCell *)cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
   ASDisplayNodeAssertMainThread();
   ASCollectionView *collectionView = self.view;
 
@@ -755,20 +832,23 @@
   return [collectionView cellForItemAtIndexPath:indexPath];
 }
 
-- (id<ASSectionContext>)contextForSection:(NSInteger)section {
+- (id<ASSectionContext>)contextForSection:(NSInteger)section
+{
   ASDisplayNodeAssertMainThread();
   return [self.dataController.pendingMap contextForSection:section];
 }
 
 #pragma mark - Editing
 
-- (void)registerSupplementaryNodeOfKind:(NSString *)elementKind {
+- (void)registerSupplementaryNodeOfKind:(NSString *)elementKind
+{
   [self.view registerSupplementaryNodeOfKind:elementKind];
 }
 
 - (void)performBatchAnimated:(BOOL)animated
                      updates:(NS_NOESCAPE void (^)())updates
-                  completion:(void (^)(BOOL))completion {
+                  completion:(void (^)(BOOL))completion
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view performBatchAnimated:animated updates:updates completion:completion];
@@ -782,15 +862,18 @@
   }
 }
 
-- (void)performBatchUpdates:(NS_NOESCAPE void (^)())updates completion:(void (^)(BOOL))completion {
+- (void)performBatchUpdates:(NS_NOESCAPE void (^)())updates completion:(void (^)(BOOL))completion
+{
   [self performBatchAnimated:UIView.areAnimationsEnabled updates:updates completion:completion];
 }
 
-- (BOOL)isProcessingUpdates {
+- (BOOL)isProcessingUpdates
+{
   return (self.nodeLoaded ? [self.view isProcessingUpdates] : NO);
 }
 
-- (void)onDidFinishProcessingUpdates:(void (^)())completion {
+- (void)onDidFinishProcessingUpdates:(void (^)())completion
+{
   if (!completion) {
     return;
   }
@@ -801,11 +884,13 @@
   }
 }
 
-- (BOOL)isSynchronized {
+- (BOOL)isSynchronized
+{
   return (self.nodeLoaded ? [self.view isSynchronized] : YES);
 }
 
-- (void)onDidFinishSynchronizing:(void (^)())completion {
+- (void)onDidFinishSynchronizing:(void (^)())completion
+{
   if (!completion) {
     return;
   }
@@ -816,7 +901,8 @@
   }
 }
 
-- (void)waitUntilAllUpdatesAreProcessed {
+- (void)waitUntilAllUpdatesAreProcessed
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view waitUntilAllUpdatesAreCommitted];
@@ -825,12 +911,14 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
-- (void)waitUntilAllUpdatesAreCommitted {
+- (void)waitUntilAllUpdatesAreCommitted
+{
   [self waitUntilAllUpdatesAreProcessed];
 }
 #pragma clang diagnostic pop
 
-- (void)reloadDataWithCompletion:(void (^)())completion {
+- (void)reloadDataWithCompletion:(void (^)())completion
+{
   ASDisplayNodeAssertMainThread();
   if (!self.nodeLoaded) {
     return;
@@ -847,11 +935,13 @@
       }];
 }
 
-- (void)reloadData {
+- (void)reloadData
+{
   [self reloadDataWithCompletion:nil];
 }
 
-- (void)relayoutItems {
+- (void)relayoutItems
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view relayoutItems];
@@ -860,18 +950,21 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
-- (void)beginUpdates {
+- (void)beginUpdates
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view beginUpdates];
   }
 }
 
-- (void)endUpdatesAnimated:(BOOL)animated {
+- (void)endUpdatesAnimated:(BOOL)animated
+{
   [self endUpdatesAnimated:animated completion:nil];
 }
 
-- (void)endUpdatesAnimated:(BOOL)animated completion:(void (^)(BOOL))completion {
+- (void)endUpdatesAnimated:(BOOL)animated completion:(void (^)(BOOL))completion
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view endUpdatesAnimated:animated completion:completion];
@@ -879,63 +972,72 @@
 }
 #pragma clang diagnostic pop
 
-- (void)invalidateFlowLayoutDelegateMetrics {
+- (void)invalidateFlowLayoutDelegateMetrics
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view invalidateFlowLayoutDelegateMetrics];
   }
 }
 
-- (void)insertSections:(NSIndexSet *)sections {
+- (void)insertSections:(NSIndexSet *)sections
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view insertSections:sections];
   }
 }
 
-- (void)deleteSections:(NSIndexSet *)sections {
+- (void)deleteSections:(NSIndexSet *)sections
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view deleteSections:sections];
   }
 }
 
-- (void)reloadSections:(NSIndexSet *)sections {
+- (void)reloadSections:(NSIndexSet *)sections
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view reloadSections:sections];
   }
 }
 
-- (void)moveSection:(NSInteger)section toSection:(NSInteger)newSection {
+- (void)moveSection:(NSInteger)section toSection:(NSInteger)newSection
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view moveSection:section toSection:newSection];
   }
 }
 
-- (void)insertItemsAtIndexPaths:(NSArray *)indexPaths {
+- (void)insertItemsAtIndexPaths:(NSArray *)indexPaths
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view insertItemsAtIndexPaths:indexPaths];
   }
 }
 
-- (void)deleteItemsAtIndexPaths:(NSArray *)indexPaths {
+- (void)deleteItemsAtIndexPaths:(NSArray *)indexPaths
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view deleteItemsAtIndexPaths:indexPaths];
   }
 }
 
-- (void)reloadItemsAtIndexPaths:(NSArray *)indexPaths {
+- (void)reloadItemsAtIndexPaths:(NSArray *)indexPaths
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view reloadItemsAtIndexPaths:indexPaths];
   }
 }
 
-- (void)moveItemAtIndexPath:(NSIndexPath *)indexPath toIndexPath:(NSIndexPath *)newIndexPath {
+- (void)moveItemAtIndexPath:(NSIndexPath *)indexPath toIndexPath:(NSIndexPath *)newIndexPath
+{
   ASDisplayNodeAssertMainThread();
   if (self.nodeLoaded) {
     [self.view moveItemAtIndexPath:indexPath toIndexPath:newIndexPath];
@@ -958,7 +1060,8 @@
 ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
 #pragma mark - Debugging (Private)
 
-    - (NSMutableArray<NSDictionary *> *)propertiesForDebugDescription {
+    - (NSMutableArray<NSDictionary *> *)propertiesForDebugDescription
+{
   NSMutableArray<NSDictionary *> *result = [super propertiesForDebugDescription];
   [result addObject:@{@"dataSource" : ASObjectDescriptionMakeTiny(self.dataSource)}];
   [result addObject:@{@"delegate" : ASObjectDescriptionMakeTiny(self.delegate)}];
@@ -967,7 +1070,8 @@ ASLayoutElementCollectionTableSetTraitCollection(_environmentStateLock)
 
 #pragma mark - Private methods
 
-- (void)_configureCollectionViewLayout:(UICollectionViewLayout *)layout {
+- (void)_configureCollectionViewLayout:(UICollectionViewLayout *)layout
+{
   if ([layout isKindOfClass:[ASCollectionLayout class]]) {
     ASCollectionLayout *collectionLayout = (ASCollectionLayout *)layout;
     collectionLayout.collectionNode = self;

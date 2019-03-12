@@ -77,8 +77,10 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
 
 #pragma mark - Lifecycle
 
-- (instancetype)init {
-  if (!(self = [super init])) return nil;
+- (instancetype)init
+{
+  if (!(self = [super init]))
+    return nil;
 
   _enabled = YES;
 
@@ -90,7 +92,8 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
 }
 
 #if TARGET_OS_TV
-- (void)didLoad {
+- (void)didLoad
+{
   [super didLoad];
 
   // On tvOS all controls, such as buttons, interact with the focus system even if they don't have a target set on them.
@@ -103,12 +106,14 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
 }
 #endif
 
-- (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled {
+- (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled
+{
   [super setUserInteractionEnabled:userInteractionEnabled];
   self.isAccessibilityElement = userInteractionEnabled;
 }
 
-- (void)__exitHierarchy {
+- (void)__exitHierarchy
+{
   [super __exitHierarchy];
 
   // If a control node is exit the hierarchy and is tracking we have to cancel it
@@ -122,7 +127,8 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
 
 #pragma mark - ASDisplayNode Overrides
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
   // If we're not interested in touches, we have nothing to do.
   if (!self.enabled) {
     return;
@@ -153,7 +159,8 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
   }
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
   // If we're not interested in touches, we have nothing to do.
   if (!self.enabled) {
     return;
@@ -184,7 +191,8 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
                           withEvent:event];
 }
 
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
   // If we're not interested in touches, we have nothing to do.
   if (!self.enabled) {
     return;
@@ -194,7 +202,8 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
   [self _cancelTrackingWithEvent:event];
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
   // If we're not interested in touches, we have nothing to do.
   if (!self.enabled) {
     return;
@@ -230,7 +239,8 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
                           withEvent:event];
 }
 
-- (void)_cancelTrackingWithEvent:(UIEvent *)event {
+- (void)_cancelTrackingWithEvent:(UIEvent *)event
+{
   // We're no longer tracking and there is no touch to be inside.
   self.tracking = NO;
   self.touchInside = NO;
@@ -242,7 +252,8 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
 
 #pragma clang diagnostic pop
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
   ASDisplayNodeAssertMainThread();
 
   // If not enabled we should not care about receving touches
@@ -253,7 +264,8 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
   return [super hitTest:point withEvent:event];
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
   // If we're interested in touches, this is a tap (the only gesture we care about) and passed -hitTest for us, then no,
   // you may not begin. Sir.
   if (self.enabled && [gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] &&
@@ -267,13 +279,15 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
   return YES;
 }
 
-- (BOOL)supportsLayerBacking {
+- (BOOL)supportsLayerBacking
+{
   return super.supportsLayerBacking && !self.userInteractionEnabled;
 }
 
 #pragma mark - Action Messages
 
-- (void)addTarget:(id)target action:(SEL)action forControlEvents:(ASControlNodeEvent)controlEventMask {
+- (void)addTarget:(id)target action:(SEL)action forControlEvents:(ASControlNodeEvent)controlEventMask
+{
   NSParameterAssert(action);
   NSParameterAssert(controlEventMask != 0);
 
@@ -333,7 +347,8 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
   self.userInteractionEnabled = YES;
 }
 
-- (NSArray *)actionsForTarget:(id)target forControlEvent:(ASControlNodeEvent)controlEvent {
+- (NSArray *)actionsForTarget:(id)target forControlEvent:(ASControlNodeEvent)controlEvent
+{
   NSParameterAssert(target);
   NSParameterAssert(controlEvent != 0 && controlEvent != ASControlNodeEventAllEvents);
 
@@ -358,7 +373,8 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
   return actions;
 }
 
-- (NSSet *)allTargets {
+- (NSSet *)allTargets
+{
   ASLockScopeSelf();
 
   NSMutableSet *targets = [[NSMutableSet alloc] init];
@@ -374,7 +390,8 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
   return targets;
 }
 
-- (void)removeTarget:(id)target action:(SEL)action forControlEvents:(ASControlNodeEvent)controlEventMask {
+- (void)removeTarget:(id)target action:(SEL)action forControlEvents:(ASControlNodeEvent)controlEventMask
+{
   NSParameterAssert(controlEventMask != 0);
 
   ASLockScopeSelf();
@@ -413,7 +430,8 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
 
 #pragma mark -
 
-- (void)sendActionsForControlEvents:(ASControlNodeEvent)controlEvents withEvent:(UIEvent *)event {
+- (void)sendActionsForControlEvents:(ASControlNodeEvent)controlEvents withEvent:(UIEvent *)event
+{
   ASDisplayNodeAssertMainThread();  // We access self.view below, it's not safe to call this off of main.
   NSParameterAssert(controlEvents != 0);
 
@@ -456,46 +474,59 @@ CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode);
 
 #pragma mark - Convenience
 
-id<NSCopying> _ASControlNodeEventKeyForControlEvent(ASControlNodeEvent controlEvent) { return @(controlEvent); }
+id<NSCopying> _ASControlNodeEventKeyForControlEvent(ASControlNodeEvent controlEvent)
+{
+  return @(controlEvent);
+}
 
 void _ASEnumerateControlEventsIncludedInMaskWithBlock(ASControlNodeEvent mask,
-                                                      void (^block)(ASControlNodeEvent anEvent)) {
+                                                      void (^block)(ASControlNodeEvent anEvent))
+{
   if (block == nil) {
     return;
   }
   // Start with our first event (touch down) and work our way up to the last event (PrimaryActionTriggered)
   for (ASControlNodeEvent thisEvent = ASControlNodeEventTouchDown;
-       thisEvent <= ASControlNodeEventPrimaryActionTriggered; thisEvent <<= 1) {
+       thisEvent <= ASControlNodeEventPrimaryActionTriggered;
+       thisEvent <<= 1) {
     // If it's included in the mask, invoke the block.
-    if ((mask & thisEvent) == thisEvent) block(thisEvent);
+    if ((mask & thisEvent) == thisEvent)
+      block(thisEvent);
   }
 }
 
-CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode) {
+CGRect _ASControlNodeGetExpandedBounds(ASControlNode *controlNode)
+{
   return CGRectInset(UIEdgeInsetsInsetRect(controlNode.view.bounds, controlNode.hitTestSlop),
-                     kASControlNodeExpandedInset, kASControlNodeExpandedInset);
+                     kASControlNodeExpandedInset,
+                     kASControlNodeExpandedInset);
 }
 
 #pragma mark - For Subclasses
 
-- (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)touchEvent {
+- (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)touchEvent
+{
   return YES;
 }
 
-- (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)touchEvent {
+- (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)touchEvent
+{
   return YES;
 }
 
-- (void)cancelTrackingWithEvent:(UIEvent *)touchEvent {
+- (void)cancelTrackingWithEvent:(UIEvent *)touchEvent
+{
   // Subclass hook
 }
 
-- (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)touchEvent {
+- (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)touchEvent
+{
   // Subclass hook
 }
 
 #pragma mark - Debug
-- (ASImageNode *)debugHighlightOverlay {
+- (ASImageNode *)debugHighlightOverlay
+{
   return _debugHighlightOverlay;
 }
 @end

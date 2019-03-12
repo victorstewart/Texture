@@ -19,7 +19,8 @@
 
 @implementation ASLayerBackingTipProvider
 
-- (ASTip *)tipForNode:(ASDisplayNode *)node {
+- (ASTip *)tipForNode:(ASDisplayNode *)node
+{
   // Already layer-backed.
   if (node.layerBacked) {
     return nil;

@@ -14,7 +14,8 @@
 
 @implementation NSIndexSet (ASHelpers)
 
-- (NSIndexSet *)as_indexesByMapping:(NSUInteger (^)(NSUInteger))block {
+- (NSIndexSet *)as_indexesByMapping:(NSUInteger (^)(NSUInteger))block
+{
   NSMutableIndexSet *result = [[NSMutableIndexSet alloc] init];
   [self enumerateRangesUsingBlock:^(NSRange range, BOOL *_Nonnull stop) {
     for (NSUInteger i = range.location; i < NSMaxRange(range); i++) {
@@ -27,7 +28,8 @@
   return result;
 }
 
-- (NSIndexSet *)as_intersectionWithIndexes:(NSIndexSet *)indexes {
+- (NSIndexSet *)as_intersectionWithIndexes:(NSIndexSet *)indexes
+{
   NSMutableIndexSet *result = [[NSMutableIndexSet alloc] init];
   [self enumerateRangesUsingBlock:^(NSRange range, BOOL *_Nonnull stop) {
     [indexes enumerateRangesInRange:range
@@ -39,7 +41,8 @@
   return result;
 }
 
-+ (NSIndexSet *)as_indexSetFromIndexPaths:(NSArray<NSIndexPath *> *)indexPaths inSection:(NSUInteger)section {
++ (NSIndexSet *)as_indexSetFromIndexPaths:(NSArray<NSIndexPath *> *)indexPaths inSection:(NSUInteger)section
+{
   NSMutableIndexSet *result = [[NSMutableIndexSet alloc] init];
   for (NSIndexPath *indexPath in indexPaths) {
     if (indexPath.section == section) {
@@ -49,7 +52,8 @@
   return result;
 }
 
-- (NSUInteger)as_indexChangeByInsertingItemsBelowIndex:(NSUInteger)index {
+- (NSUInteger)as_indexChangeByInsertingItemsBelowIndex:(NSUInteger)index
+{
   __block NSUInteger newIndex = index;
   [self enumerateRangesUsingBlock:^(NSRange range, BOOL *_Nonnull stop) {
     for (NSUInteger i = range.location; i < NSMaxRange(range); i++) {
@@ -63,7 +67,8 @@
   return newIndex - index;
 }
 
-- (NSString *)as_smallDescription {
+- (NSString *)as_smallDescription
+{
   NSMutableString *result = [NSMutableString stringWithString:@"{ "];
   [self enumerateRangesUsingBlock:^(NSRange range, BOOL *_Nonnull stop) {
     if (range.length == 1) {
@@ -76,7 +81,8 @@
   return result;
 }
 
-+ (NSIndexSet *)as_sectionsFromIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
++ (NSIndexSet *)as_sectionsFromIndexPaths:(NSArray<NSIndexPath *> *)indexPaths
+{
   NSMutableIndexSet *result = [[NSMutableIndexSet alloc] init];
   for (NSIndexPath *indexPath in indexPaths) {
     [result addIndex:indexPath.section];

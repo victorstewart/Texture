@@ -29,7 +29,8 @@
 
 @implementation ASTableViewProxy
 
-- (BOOL)interceptsSelector:(SEL)selector {
+- (BOOL)interceptsSelector:(SEL)selector
+{
   return (
       // handled by ASTableView node<->cell machinery
       selector == @selector(tableView:cellForRowAtIndexPath:) ||
@@ -74,11 +75,13 @@
       selector == @selector(indexPathForElementWithModelIdentifier:inView:));
 }
 
-- (nullable NSString *)modelIdentifierForElementAtIndexPath:(NSIndexPath *)indexPath inView:(UIView *)view {
+- (nullable NSString *)modelIdentifierForElementAtIndexPath:(NSIndexPath *)indexPath inView:(UIView *)view
+{
   return [self _modelIdentifierForElementAtIndexPath:indexPath inView:view];
 }
 
-- (nullable NSIndexPath *)indexPathForElementWithModelIdentifier:(NSString *)identifier inView:(UIView *)view {
+- (nullable NSIndexPath *)indexPathForElementWithModelIdentifier:(NSString *)identifier inView:(UIView *)view
+{
   return [self _indexPathForElementWithModelIdentifier:identifier inView:view];
 }
 
@@ -86,7 +89,8 @@
 
 @implementation ASCollectionViewProxy
 
-- (BOOL)interceptsSelector:(SEL)selector {
+- (BOOL)interceptsSelector:(SEL)selector
+{
   return (
       // handled by ASCollectionView node<->cell machinery
       selector == @selector(collectionView:cellForItemAtIndexPath:) ||
@@ -140,11 +144,13 @@
       selector == @selector(indexPathForElementWithModelIdentifier:inView:));
 }
 
-- (nullable NSString *)modelIdentifierForElementAtIndexPath:(NSIndexPath *)indexPath inView:(UIView *)view {
+- (nullable NSString *)modelIdentifierForElementAtIndexPath:(NSIndexPath *)indexPath inView:(UIView *)view
+{
   return [self _modelIdentifierForElementAtIndexPath:indexPath inView:view];
 }
 
-- (nullable NSIndexPath *)indexPathForElementWithModelIdentifier:(NSString *)identifier inView:(UIView *)view {
+- (nullable NSIndexPath *)indexPathForElementWithModelIdentifier:(NSString *)identifier inView:(UIView *)view
+{
   return [self _indexPathForElementWithModelIdentifier:identifier inView:view];
 }
 
@@ -152,7 +158,8 @@
 
 @implementation ASPagerNodeProxy
 
-- (BOOL)interceptsSelector:(SEL)selector {
+- (BOOL)interceptsSelector:(SEL)selector
+{
   return (
       // handled by ASPagerDataSource node<->cell machinery
       selector == @selector(collectionNode:nodeForItemAtIndexPath:) ||
@@ -168,7 +175,8 @@
   id __weak _target;
 }
 
-- (instancetype)initWithTarget:(id)target interceptor:(id<ASDelegateProxyInterceptor>)interceptor {
+- (instancetype)initWithTarget:(id)target interceptor:(id<ASDelegateProxyInterceptor>)interceptor
+{
   ASDisplayNodeAssert(interceptor, @"interceptor must not be nil");
 
   _target = target ?: [NSNull null];
@@ -177,7 +185,8 @@
   return self;
 }
 
-- (BOOL)conformsToProtocol:(Protocol *)aProtocol {
+- (BOOL)conformsToProtocol:(Protocol *)aProtocol
+{
   id target = _target;
   if (target) {
     return [target conformsToProtocol:aProtocol];
@@ -186,7 +195,8 @@
   }
 }
 
-- (BOOL)respondsToSelector:(SEL)aSelector {
+- (BOOL)respondsToSelector:(SEL)aSelector
+{
   if ([self interceptsSelector:aSelector]) {
     return [_interceptor respondsToSelector:aSelector];
   } else {
@@ -195,7 +205,8 @@
   }
 }
 
-- (id)forwardingTargetForSelector:(SEL)aSelector {
+- (id)forwardingTargetForSelector:(SEL)aSelector
+{
   if ([self interceptsSelector:aSelector]) {
     return _interceptor;
   } else {
@@ -218,7 +229,8 @@
   }
 }
 
-- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector
+{
   // Check for a compiled definition for the selector
   NSMethodSignature *methodSignature = nil;
   if ([self interceptsSelector:aSelector]) {
@@ -237,20 +249,24 @@
   return methodSignature ?: [NSMethodSignature signatureWithObjCTypes:"@^v^c"];
 }
 
-- (void)forwardInvocation:(NSInvocation *)invocation {
+- (void)forwardInvocation:(NSInvocation *)invocation
+{
   // If we are down here this means _interceptor and _target where nil. Just don't do anything to prevent a crash
 }
 
-- (BOOL)interceptsSelector:(SEL)selector {
+- (BOOL)interceptsSelector:(SEL)selector
+{
   ASDisplayNodeAssert(NO, @"This method must be overridden by subclasses.");
   return NO;
 }
 
-- (nullable NSString *)_modelIdentifierForElementAtIndexPath:(NSIndexPath *)indexPath inView:(UIView *)view {
+- (nullable NSString *)_modelIdentifierForElementAtIndexPath:(NSIndexPath *)indexPath inView:(UIView *)view
+{
   return [(id)_interceptor modelIdentifierForElementAtIndexPath:indexPath inView:view];
 }
 
-- (nullable NSIndexPath *)_indexPathForElementWithModelIdentifier:(NSString *)identifier inView:(UIView *)view {
+- (nullable NSIndexPath *)_indexPathForElementWithModelIdentifier:(NSString *)identifier inView:(UIView *)view
+{
   return [(id)_interceptor indexPathForElementWithModelIdentifier:identifier inView:view];
 }
 

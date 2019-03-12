@@ -19,7 +19,8 @@
 
 @implementation NSObject (ASMainThreadIvarTeardown)
 
-- (void)scheduleIvarsForMainThreadDeallocation {
+- (void)scheduleIvarsForMainThreadDeallocation
+{
   if (ASDisplayNodeThreadIsMain()) {
     return;
   }
@@ -41,8 +42,11 @@
     }
 
     if ([object_getClass(value) needsMainThreadDeallocation]) {
-      as_log_debug(ASMainThreadDeallocationLog(), "%@: Trampolining ivar '%s' value %@ for main deallocation.", self,
-                   ivar_getName(ivar), value);
+      as_log_debug(ASMainThreadDeallocationLog(),
+                   "%@: Trampolining ivar '%s' value %@ for main deallocation.",
+                   self,
+                   ivar_getName(ivar),
+                   value);
 
       // Release the ivar's reference before handing the object to the queue so we
       // don't risk holding onto it longer than the queue does.
@@ -50,8 +54,8 @@
 
       ASPerformMainThreadDeallocation(&value);
     } else {
-      as_log_debug(ASMainThreadDeallocationLog(), "%@: Not trampolining ivar '%s' value %@.", self, ivar_getName(ivar),
-                   value);
+      as_log_debug(
+          ASMainThreadDeallocationLog(), "%@: Not trampolining ivar '%s' value %@.", self, ivar_getName(ivar), value);
     }
   }
 }
@@ -64,7 +68,8 @@
  *
  * Result is of type NSValue<[Ivar]>
  */
-+ (NSValue *_Nonnull)_ivarsThatMayNeedMainDeallocation NS_RETURNS_RETAINED {
++ (NSValue *_Nonnull)_ivarsThatMayNeedMainDeallocation NS_RETURNS_RETAINED
+{
   static NSCache<Class, NSValue *> *ivarsCache;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -92,7 +97,8 @@
     ASDisplayNodeAssert(scanResult == 1, @"Unexpected type in NSValue: %s", ivarsObj.objCType);
     ASDisplayNodeCAssert(resultCount + count < kMaxDealloc2MainIvarsPerClassTree,
                          @"More than %d dealloc2main ivars are not supported. Count: %d",
-                         kMaxDealloc2MainIvarsPerClassTree, resultCount + count);
+                         kMaxDealloc2MainIvarsPerClassTree,
+                         resultCount + count);
     [ivarsObj getValue:resultIvars + resultCount];
     resultCount += count;
   }
@@ -115,18 +121,23 @@
       resultIvars[resultCount] = ivar;
       resultCount += 1;
       as_log_verbose(ASMainThreadDeallocationLog(),
-                     "%@: Marking ivar '%s' for possible main deallocation due to type id", self, ivar_getName(ivar));
+                     "%@: Marking ivar '%s' for possible main deallocation due to type id",
+                     self,
+                     ivar_getName(ivar));
     } else {
       // If it's an ivar with a static type, check the type.
       Class c = ASGetClassFromType(type);
       if ([c needsMainThreadDeallocation]) {
         resultIvars[resultCount] = ivar;
         resultCount += 1;
-        as_log_verbose(ASMainThreadDeallocationLog(), "%@: Marking ivar '%s' for main deallocation due to class %@",
-                       self, ivar_getName(ivar), c);
+        as_log_verbose(ASMainThreadDeallocationLog(),
+                       "%@: Marking ivar '%s' for main deallocation due to class %@",
+                       self,
+                       ivar_getName(ivar),
+                       c);
       } else {
-        as_log_verbose(ASMainThreadDeallocationLog(), "%@: Skipping ivar '%s' for main deallocation.", self,
-                       ivar_getName(ivar));
+        as_log_verbose(
+            ASMainThreadDeallocationLog(), "%@: Skipping ivar '%s' for main deallocation.", self, ivar_getName(ivar));
       }
     }
   }
@@ -145,7 +156,8 @@
 
 @implementation NSObject (ASNeedsMainThreadDeallocation)
 
-+ (BOOL)needsMainThreadDeallocation {
++ (BOOL)needsMainThreadDeallocation
+{
   const auto name = class_getName(self);
   if (0 == strncmp(name, "AV", 2) || 0 == strncmp(name, "UI", 2) || 0 == strncmp(name, "CA", 2)) {
     return YES;
@@ -157,7 +169,8 @@
 
 @implementation CALayer (ASNeedsMainThreadDeallocation)
 
-+ (BOOL)needsMainThreadDeallocation {
++ (BOOL)needsMainThreadDeallocation
+{
   return YES;
 }
 
@@ -165,7 +178,8 @@
 
 @implementation UIColor (ASNeedsMainThreadDeallocation)
 
-+ (BOOL)needsMainThreadDeallocation {
++ (BOOL)needsMainThreadDeallocation
+{
   return NO;
 }
 
@@ -173,7 +187,8 @@
 
 @implementation UIGestureRecognizer (ASNeedsMainThreadDeallocation)
 
-+ (BOOL)needsMainThreadDeallocation {
++ (BOOL)needsMainThreadDeallocation
+{
   return YES;
 }
 
@@ -181,7 +196,8 @@
 
 @implementation UIImage (ASNeedsMainThreadDeallocation)
 
-+ (BOOL)needsMainThreadDeallocation {
++ (BOOL)needsMainThreadDeallocation
+{
   return NO;
 }
 
@@ -189,7 +205,8 @@
 
 @implementation UIResponder (ASNeedsMainThreadDeallocation)
 
-+ (BOOL)needsMainThreadDeallocation {
++ (BOOL)needsMainThreadDeallocation
+{
   return YES;
 }
 
@@ -197,7 +214,8 @@
 
 @implementation NSProxy (ASNeedsMainThreadDeallocation)
 
-+ (BOOL)needsMainThreadDeallocation {
++ (BOOL)needsMainThreadDeallocation
+{
   return NO;
 }
 

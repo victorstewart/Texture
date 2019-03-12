@@ -19,7 +19,8 @@
 
 @implementation ASTableLayoutController
 
-- (instancetype)initWithTableView:(UITableView *)tableView {
+- (instancetype)initWithTableView:(UITableView *)tableView
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -32,7 +33,8 @@
 - (NSHashTable<ASCollectionElement *> *)elementsForScrolling:(ASScrollDirection)scrollDirection
                                                    rangeMode:(ASLayoutRangeMode)rangeMode
                                                    rangeType:(ASLayoutRangeType)rangeType
-                                                         map:(ASElementMap *)map {
+                                                         map:(ASElementMap *)map
+{
   CGRect bounds = _tableView.bounds;
 
   ASRangeTuningParameters tuningParameters = [self tuningParametersForRangeMode:rangeMode rangeType:rangeType];
@@ -46,7 +48,8 @@
                       rangeMode:(ASLayoutRangeMode)rangeMode
                      displaySet:(NSHashTable<ASCollectionElement *> *__autoreleasing _Nullable *)displaySet
                      preloadSet:(NSHashTable<ASCollectionElement *> *__autoreleasing _Nullable *)preloadSet
-                            map:(ASElementMap *)map {
+                            map:(ASElementMap *)map
+{
   if (displaySet == NULL || preloadSet == NULL) {
     return;
   }

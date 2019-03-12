@@ -28,7 +28,8 @@ typedef NSMutableDictionary<NSString *, NSMutableDictionary<NSIndexPath *, ASCol
 
 - (instancetype)initWithSections:(NSArray<ASSection *> *)sections
                            items:(ASCollectionElementTwoDimensionalArray *)items
-           supplementaryElements:(ASSupplementaryElementDictionary *)supplementaryElements {
+           supplementaryElements:(ASSupplementaryElementDictionary *)supplementaryElements
+{
   if (self = [super init]) {
     _sections = [sections mutableCopy];
     _sectionsOfItems = (ASMutableCollectionElementTwoDimensionalArray *)ASTwoDimensionalArrayDeepMutableCopy(items);
@@ -37,48 +38,58 @@ typedef NSMutableDictionary<NSString *, NSMutableDictionary<NSIndexPath *, ASCol
   return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   return [[ASElementMap alloc] initWithSections:_sections
                                           items:_sectionsOfItems
                           supplementaryElements:_supplementaryElements];
 }
 
-- (void)removeAllSections {
+- (void)removeAllSections
+{
   [_sections removeAllObjects];
 }
 
-- (void)insertSection:(ASSection *)section atIndex:(NSInteger)index {
+- (void)insertSection:(ASSection *)section atIndex:(NSInteger)index
+{
   [_sections insertObject:section atIndex:index];
 }
 
-- (void)removeItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
+- (void)removeItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths
+{
   ASDeleteElementsInTwoDimensionalArrayAtIndexPaths(_sectionsOfItems, indexPaths);
 }
 
-- (void)removeSectionsAtIndexes:(NSIndexSet *)indexes {
+- (void)removeSectionsAtIndexes:(NSIndexSet *)indexes
+{
   [_sections removeObjectsAtIndexes:indexes];
 }
 
-- (void)removeSupplementaryElementsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths kind:(NSString *)kind {
+- (void)removeSupplementaryElementsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths kind:(NSString *)kind
+{
   [_supplementaryElements[kind] removeObjectsForKeys:indexPaths];
 }
 
-- (void)removeAllElements {
+- (void)removeAllElements
+{
   [_sectionsOfItems removeAllObjects];
   [_supplementaryElements removeAllObjects];
 }
 
-- (void)removeSectionsOfItems:(NSIndexSet *)itemSections {
+- (void)removeSectionsOfItems:(NSIndexSet *)itemSections
+{
   [_sectionsOfItems removeObjectsAtIndexes:itemSections];
 }
 
-- (void)insertEmptySectionsOfItemsAtIndexes:(NSIndexSet *)sections {
+- (void)insertEmptySectionsOfItemsAtIndexes:(NSIndexSet *)sections
+{
   [sections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *_Nonnull stop) {
     [_sectionsOfItems insertObject:[[NSMutableArray alloc] init] atIndex:idx];
   }];
 }
 
-- (void)insertElement:(ASCollectionElement *)element atIndexPath:(NSIndexPath *)indexPath {
+- (void)insertElement:(ASCollectionElement *)element atIndexPath:(NSIndexPath *)indexPath
+{
   NSString *kind = element.supplementaryElementKind;
   if (kind == nil) {
     [_sectionsOfItems[indexPath.section] insertObject:element atIndex:indexPath.item];
@@ -92,7 +103,8 @@ typedef NSMutableDictionary<NSString *, NSMutableDictionary<NSIndexPath *, ASCol
   }
 }
 
-- (void)migrateSupplementaryElementsWithSectionMapping:(ASIntegerMap *)mapping {
+- (void)migrateSupplementaryElementsWithSectionMapping:(ASIntegerMap *)mapping
+{
   // Fast-path, no section changes.
   if (mapping == ASIntegerMap.identityMap) {
     return;
@@ -109,8 +121,8 @@ typedef NSMutableDictionary<NSString *, NSMutableDictionary<NSIndexPath *, ASCol
         // this work is done off-main, and that the typical supplementary element use case is just 1-per-section
         // (header).
         NSMutableDictionary *newSupps = [[NSMutableDictionary alloc] init];
-        [supps enumerateKeysAndObjectsUsingBlock:^(NSIndexPath *_Nonnull oldIndexPath,
-                                                   ASCollectionElement *_Nonnull obj, BOOL *_Nonnull stop) {
+        [supps enumerateKeysAndObjectsUsingBlock:^(
+                   NSIndexPath *_Nonnull oldIndexPath, ASCollectionElement *_Nonnull obj, BOOL *_Nonnull stop) {
           NSInteger oldSection = oldIndexPath.section;
           NSInteger newSection = [mapping integerForKey:oldSection];
 
@@ -130,7 +142,8 @@ typedef NSMutableDictionary<NSString *, NSMutableDictionary<NSIndexPath *, ASCol
 #pragma mark - Helpers
 
 + (ASMutableSupplementaryElementDictionary *)deepMutableCopyOfElementsDictionary:
-    (ASSupplementaryElementDictionary *)originalDict {
+    (ASSupplementaryElementDictionary *)originalDict
+{
   NSMutableDictionary *deepCopy = [[NSMutableDictionary alloc] initWithCapacity:originalDict.count];
   [originalDict enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key,
                                                     NSDictionary<NSIndexPath *, ASCollectionElement *> *_Nonnull obj,

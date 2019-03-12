@@ -14,13 +14,15 @@
 #import <type_traits>
 #import <vector>
 
-namespace AS {
+namespace AS
+{
 // adopted from http://stackoverflow.com/questions/14945223/map-function-with-c11-constructs
 // Takes an iterable, applies a function to every element,
 // and returns a vector of the results
 //
 template <typename T, typename Func>
-auto map(const T &iterable, Func &&func) -> std::vector<decltype(func(std::declval<typename T::value_type>()))> {
+auto map(const T &iterable, Func &&func) -> std::vector<decltype(func(std::declval<typename T::value_type>()))>
+{
   // Some convenience type definitions
   typedef decltype(func(std::declval<typename T::value_type>())) value_type;
   typedef std::vector<value_type> result_type;
@@ -36,7 +38,8 @@ auto map(const T &iterable, Func &&func) -> std::vector<decltype(func(std::declv
 }
 
 template <typename Func>
-auto map(id<NSFastEnumeration> collection, Func &&func) -> std::vector<decltype(func(std::declval<id>()))> {
+auto map(id<NSFastEnumeration> collection, Func &&func) -> std::vector<decltype(func(std::declval<id>()))>
+{
   std::vector<decltype(func(std::declval<id>()))> to;
   for (id obj in collection) {
     to.push_back(func(obj));
@@ -45,7 +48,8 @@ auto map(id<NSFastEnumeration> collection, Func &&func) -> std::vector<decltype(
 }
 
 template <typename T, typename Func>
-auto filter(const T &iterable, Func &&func) -> std::vector<typename T::value_type> {
+auto filter(const T &iterable, Func &&func) -> std::vector<typename T::value_type>
+{
   std::vector<typename T::value_type> to;
   for (auto obj : iterable) {
     if (func(obj)) {
@@ -56,24 +60,42 @@ auto filter(const T &iterable, Func &&func) -> std::vector<typename T::value_typ
 }
 };
 
-inline CGPoint operator+(const CGPoint &p1, const CGPoint &p2) { return {p1.x + p2.x, p1.y + p2.y}; }
+inline CGPoint operator+(const CGPoint &p1, const CGPoint &p2)
+{
+  return {p1.x + p2.x, p1.y + p2.y};
+}
 
-inline CGPoint operator-(const CGPoint &p1, const CGPoint &p2) { return {p1.x - p2.x, p1.y - p2.y}; }
+inline CGPoint operator-(const CGPoint &p1, const CGPoint &p2)
+{
+  return {p1.x - p2.x, p1.y - p2.y};
+}
 
-inline CGSize operator+(const CGSize &s1, const CGSize &s2) { return {s1.width + s2.width, s1.height + s2.height}; }
+inline CGSize operator+(const CGSize &s1, const CGSize &s2)
+{
+  return {s1.width + s2.width, s1.height + s2.height};
+}
 
-inline CGSize operator-(const CGSize &s1, const CGSize &s2) { return {s1.width - s2.width, s1.height - s2.height}; }
+inline CGSize operator-(const CGSize &s1, const CGSize &s2)
+{
+  return {s1.width - s2.width, s1.height - s2.height};
+}
 
-inline UIEdgeInsets operator+(const UIEdgeInsets &e1, const UIEdgeInsets &e2) {
+inline UIEdgeInsets operator+(const UIEdgeInsets &e1, const UIEdgeInsets &e2)
+{
   return {e1.top + e2.top, e1.left + e2.left, e1.bottom + e2.bottom, e1.right + e2.right};
 }
 
-inline UIEdgeInsets operator-(const UIEdgeInsets &e1, const UIEdgeInsets &e2) {
+inline UIEdgeInsets operator-(const UIEdgeInsets &e1, const UIEdgeInsets &e2)
+{
   return {e1.top - e2.top, e1.left - e2.left, e1.bottom - e2.bottom, e1.right - e2.right};
 }
 
-inline UIEdgeInsets operator*(const UIEdgeInsets &e1, const UIEdgeInsets &e2) {
+inline UIEdgeInsets operator*(const UIEdgeInsets &e1, const UIEdgeInsets &e2)
+{
   return {e1.top * e2.top, e1.left * e2.left, e1.bottom * e2.bottom, e1.right * e2.right};
 }
 
-inline UIEdgeInsets operator-(const UIEdgeInsets &e) { return {-e.top, -e.left, -e.bottom, -e.right}; }
+inline UIEdgeInsets operator-(const UIEdgeInsets &e)
+{
+  return {-e.top, -e.left, -e.bottom, -e.right};
+}

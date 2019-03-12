@@ -23,7 +23,8 @@
 
 @implementation ASTextKitComponentsTextView
 
-- (instancetype)initWithFrame:(CGRect)frame textContainer:(NSTextContainer *)textContainer {
+- (instancetype)initWithFrame:(CGRect)frame textContainer:(NSTextContainer *)textContainer
+{
   self = [super initWithFrame:frame textContainer:textContainer];
   if (self) {
     _threadSafeBounds = self.bounds;
@@ -32,23 +33,27 @@
   return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
   _deallocating = YES;
 }
 
-- (void)setFrame:(CGRect)frame {
+- (void)setFrame:(CGRect)frame
+{
   ASDisplayNodeAssertMainThread();
   [super setFrame:frame];
   self.threadSafeBounds = self.bounds;
 }
 
-- (void)setBounds:(CGRect)bounds {
+- (void)setBounds:(CGRect)bounds
+{
   ASDisplayNodeAssertMainThread();
   [super setBounds:bounds];
   self.threadSafeBounds = bounds;
 }
 
-- (void)setContentOffset:(CGPoint)contentOffset {
+- (void)setContentOffset:(CGPoint)contentOffset
+{
   if (_deallocating) {
     return;
   }
@@ -72,7 +77,8 @@
 #pragma mark - Class
 
 + (instancetype)componentsWithAttributedSeedString:(NSAttributedString *)attributedSeedString
-                                 textContainerSize:(CGSize)textContainerSize NS_RETURNS_RETAINED {
+                                 textContainerSize:(CGSize)textContainerSize NS_RETURNS_RETAINED
+{
   NSTextStorage *textStorage = attributedSeedString
                                    ? [[NSTextStorage alloc] initWithAttributedString:attributedSeedString]
                                    : [[NSTextStorage alloc] init];
@@ -84,7 +90,8 @@
 
 + (instancetype)componentsWithTextStorage:(NSTextStorage *)textStorage
                         textContainerSize:(CGSize)textContainerSize
-                            layoutManager:(NSLayoutManager *)layoutManager NS_RETURNS_RETAINED {
+                            layoutManager:(NSLayoutManager *)layoutManager NS_RETURNS_RETAINED
+{
   ASTextKitComponents *components = [[self alloc] init];
 
   components.textStorage = textStorage;
@@ -100,13 +107,15 @@
   return components;
 }
 
-+ (BOOL)needsMainThreadDeallocation {
++ (BOOL)needsMainThreadDeallocation
+{
   return YES;
 }
 
 #pragma mark - Lifecycle
 
-- (void)dealloc {
+- (void)dealloc
+{
   // Nil out all delegates to prevent crash
   if (_textView) {
     ASDisplayNodeAssertMainThread();
@@ -117,7 +126,8 @@
 
 #pragma mark - Sizing
 
-- (CGSize)sizeForConstrainedWidth:(CGFloat)constrainedWidth {
+- (CGSize)sizeForConstrainedWidth:(CGFloat)constrainedWidth
+{
   ASTextKitComponents *components = self;
 
   // If our text-view's width is already the constrained width, we can use our existing TextKit stack for this sizing
@@ -135,7 +145,8 @@
   return textSize;
 }
 
-- (CGSize)sizeForConstrainedWidth:(CGFloat)constrainedWidth forMaxNumberOfLines:(NSInteger)maxNumberOfLines {
+- (CGSize)sizeForConstrainedWidth:(CGFloat)constrainedWidth forMaxNumberOfLines:(NSInteger)maxNumberOfLines
+{
   if (maxNumberOfLines == 0) {
     return [self sizeForConstrainedWidth:constrainedWidth];
   }

@@ -16,7 +16,8 @@
 @end
 
 @implementation ASDefaultPlaybackButton
-- (instancetype)init {
+- (instancetype)init
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -26,7 +27,8 @@
   return self;
 }
 
-- (void)setButtonType:(ASDefaultPlaybackButtonType)buttonType {
+- (void)setButtonType:(ASDefaultPlaybackButtonType)buttonType
+{
   ASDefaultPlaybackButtonType oldType = _buttonType;
   _buttonType = buttonType;
 
@@ -35,14 +37,16 @@
   }
 }
 
-- (nullable NSDictionary *)drawParametersForAsyncLayer:(_ASDisplayLayer *)layer {
+- (nullable NSDictionary *)drawParametersForAsyncLayer:(_ASDisplayLayer *)layer
+{
   return @{@"buttonType" : @(self.buttonType), @"color" : self.tintColor};
 }
 
 + (void)drawRect:(CGRect)bounds
     withParameters:(NSDictionary *)parameters
        isCancelled:(asdisplaynode_iscancelled_block_t)isCancelledBlock
-     isRasterizing:(BOOL)isRasterizing {
+     isRasterizing:(BOOL)isRasterizing
+{
   ASDefaultPlaybackButtonType buttonType = (ASDefaultPlaybackButtonType)[parameters[@"buttonType"] intValue];
   UIColor *color = parameters[@"color"];
 

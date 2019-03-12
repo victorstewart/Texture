@@ -23,18 +23,21 @@
 @implementation ASScrollView
 
 // This special +layerClass allows ASScrollNode to get -layout calls from -layoutSublayers.
-+ (Class)layerClass {
++ (Class)layerClass
+{
   return [_ASDisplayLayer class];
 }
 
-- (ASScrollNode *)scrollNode {
+- (ASScrollNode *)scrollNode
+{
   return (ASScrollNode *)ASViewToDisplayNode(self);
 }
 
 #pragma mark - _ASDisplayView behavior substitutions
 // Need these to drive interfaceState so we know when we are visible, if not nested in another range-managing element.
 // Because our superclass is a true UIKit class, we cannot also subclass _ASDisplayView.
-- (void)willMoveToWindow:(UIWindow *)newWindow {
+- (void)willMoveToWindow:(UIWindow *)newWindow
+{
   ASDisplayNode *node = self.scrollNode;  // Create strong reference to weak ivar.
   BOOL visible = (newWindow != nil);
   if (visible && !node.inHierarchy) {
@@ -42,7 +45,8 @@
   }
 }
 
-- (void)didMoveToWindow {
+- (void)didMoveToWindow
+{
   ASDisplayNode *node = self.scrollNode;  // Create strong reference to weak ivar.
   BOOL visible = (self.window != nil);
   if (!visible && node.inHierarchy) {
@@ -50,7 +54,8 @@
   }
 }
 
-- (NSArray *)accessibilityElements {
+- (NSArray *)accessibilityElements
+{
   return [self.asyncdisplaykit_node accessibilityElements];
 }
 
@@ -63,7 +68,8 @@
 }
 @dynamic view;
 
-- (instancetype)init {
+- (instancetype)init
+{
   if (self = [super init]) {
     [self setViewBlock:^UIView * {
       return [[ASScrollView alloc] init];
@@ -74,7 +80,8 @@
 
 - (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize
                      restrictedToSize:(ASLayoutElementSize)size
-                 relativeToParentSize:(CGSize)parentSize {
+                 relativeToParentSize:(CGSize)parentSize
+{
   ASScopedLockSelfOrToRoot();
 
   ASSizeRange contentConstrainedSize = constrainedSize;
@@ -111,7 +118,8 @@
   return layout;
 }
 
-- (void)layout {
+- (void)layout
+{
   [super layout];
 
   ASLockScopeSelf();  // Lock for using our two instance variables.
@@ -121,19 +129,23 @@
     if (ASIsCGSizeValidForLayout(contentSize) == NO) {
       NSLog(@"%@ calculated a size in its layout spec that can't be applied to .contentSize: %@. Applying parentSize "
             @"(scrollNode's bounds) instead: %@.",
-            self, NSStringFromCGSize(contentSize), NSStringFromCGSize(self.calculatedSize));
+            self,
+            NSStringFromCGSize(contentSize),
+            NSStringFromCGSize(self.calculatedSize));
       contentSize = self.calculatedSize;
     }
     self.view.contentSize = contentSize;
   }
 }
 
-- (BOOL)automaticallyManagesContentSize {
+- (BOOL)automaticallyManagesContentSize
+{
   ASLockScopeSelf();
   return _automaticallyManagesContentSize;
 }
 
-- (void)setAutomaticallyManagesContentSize:(BOOL)automaticallyManagesContentSize {
+- (void)setAutomaticallyManagesContentSize:(BOOL)automaticallyManagesContentSize
+{
   ASLockScopeSelf();
   _automaticallyManagesContentSize = automaticallyManagesContentSize;
   if (_automaticallyManagesContentSize == YES &&
@@ -145,12 +157,14 @@
   }
 }
 
-- (ASScrollDirection)scrollableDirections {
+- (ASScrollDirection)scrollableDirections
+{
   ASLockScopeSelf();
   return _scrollableDirections;
 }
 
-- (void)setScrollableDirections:(ASScrollDirection)scrollableDirections {
+- (void)setScrollableDirections:(ASScrollDirection)scrollableDirections
+{
   ASLockScopeSelf();
   if (_scrollableDirections != scrollableDirections) {
     _scrollableDirections = scrollableDirections;

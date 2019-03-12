@@ -37,7 +37,8 @@ using AS::MutexLocker;
     return nil;                              \
   }
 
-- (NSObject *)drawParameters {
+- (NSObject *)drawParameters
+{
   __instanceLock__.lock();
   BOOL implementsDrawParameters = _flags.implementsDrawParameters;
   __instanceLock__.unlock();
@@ -50,7 +51,8 @@ using AS::MutexLocker;
 }
 
 - (void)_recursivelyRasterizeSelfAndSublayersWithIsCancelledBlock:(asdisplaynode_iscancelled_block_t)isCancelledBlock
-                                                    displayBlocks:(NSMutableArray *)displayBlocks {
+                                                    displayBlocks:(NSMutableArray *)displayBlocks
+{
   // Skip subtrees that are hidden or zero alpha.
   if (self.isHidden || self.alpha <= 0.0) {
     return;
@@ -161,7 +163,8 @@ using AS::MutexLocker;
 - (asyncdisplaykit_async_transaction_operation_block_t)
     _displayBlockWithAsynchronous:(BOOL)asynchronous
                  isCancelledBlock:(asdisplaynode_iscancelled_block_t)isCancelledBlock
-                      rasterizing:(BOOL)rasterizing {
+                      rasterizing:(BOOL)rasterizing
+{
   ASDisplayNodeAssertMainThread();
 
   asyncdisplaykit_async_transaction_operation_block_t displayBlock = nil;
@@ -288,8 +291,8 @@ using AS::MutexLocker;
   displayBlock = ^{
     ASSignpostStartCustom(ASSignpostLayerDisplay, ptrSelf, 0);
     id result = displayBlock();
-    ASSignpostEndCustom(ASSignpostLayerDisplay, ptrSelf, 0,
-                        isCancelledBlock() ? ASSignpostColorRed : ASSignpostColorGreen);
+    ASSignpostEndCustom(
+        ASSignpostLayerDisplay, ptrSelf, 0, isCancelledBlock() ? ASSignpostColorRed : ASSignpostColorGreen);
     return result;
   };
 #endif
@@ -297,7 +300,8 @@ using AS::MutexLocker;
   return displayBlock;
 }
 
-- (void)__willDisplayNodeContentWithRenderingContext:(CGContextRef)context drawParameters:(id _Nullable)drawParameters {
+- (void)__willDisplayNodeContentWithRenderingContext:(CGContextRef)context drawParameters:(id _Nullable)drawParameters
+{
   if (context) {
     __instanceLock__.lock();
     ASCornerRoundingType cornerRoundingType = _cornerRoundingType;
@@ -307,8 +311,8 @@ using AS::MutexLocker;
     __instanceLock__.unlock();
 
     if (cornerRoundingType == ASCornerRoundingTypePrecomposited && cornerRadius > 0.0) {
-      ASDisplayNodeAssert(context == UIGraphicsGetCurrentContext(),
-                          @"context is expected to be pushed on UIGraphics stack %@", self);
+      ASDisplayNodeAssert(
+          context == UIGraphicsGetCurrentContext(), @"context is expected to be pushed on UIGraphics stack %@", self);
       // TODO: This clip path should be removed if we are rasterizing.
       CGRect boundingBox = CGContextGetClipBoundingBox(context);
       [[UIBezierPath bezierPathWithRoundedRect:boundingBox cornerRadius:cornerRadius] addClip];
@@ -324,7 +328,8 @@ using AS::MutexLocker;
                                      drawParameters:(id _Nullable)drawParameters
                                     backgroundColor:(UIColor *)backgroundColor
                                         borderWidth:(CGFloat)borderWidth
-                                        borderColor:(CGColorRef)borderColor {
+                                        borderColor:(CGColorRef)borderColor
+{
   if (context == NULL && *image == NULL) {
     return;
   }
@@ -356,8 +361,8 @@ using AS::MutexLocker;
       bounds = CGContextGetClipBoundingBox(context);
     }
 
-    ASDisplayNodeAssert(UIGraphicsGetCurrentContext(), @"context is expected to be pushed on UIGraphics stack %@",
-                        self);
+    ASDisplayNodeAssert(
+        UIGraphicsGetCurrentContext(), @"context is expected to be pushed on UIGraphics stack %@", self);
 
     UIBezierPath *roundedHole = [UIBezierPath bezierPathWithRect:bounds];
     [roundedHole appendPath:[UIBezierPath bezierPathWithRoundedRect:bounds cornerRadius:cornerRadius * contentsScale]];
@@ -386,7 +391,8 @@ using AS::MutexLocker;
   }
 }
 
-- (void)displayAsyncLayer:(_ASDisplayLayer *)asyncLayer asynchronously:(BOOL)asynchronously {
+- (void)displayAsyncLayer:(_ASDisplayLayer *)asyncLayer asynchronously:(BOOL)asynchronously
+{
   ASDisplayNodeAssertMainThread();
 
   __instanceLock__.lock();
@@ -488,21 +494,25 @@ using AS::MutexLocker;
   }
 }
 
-- (void)cancelDisplayAsyncLayer:(_ASDisplayLayer *)asyncLayer {
+- (void)cancelDisplayAsyncLayer:(_ASDisplayLayer *)asyncLayer
+{
   _displaySentinel.fetch_add(1);
 }
 
-- (ASDisplayNodeContextModifier)willDisplayNodeContentWithRenderingContext {
+- (ASDisplayNodeContextModifier)willDisplayNodeContentWithRenderingContext
+{
   MutexLocker l(__instanceLock__);
   return _willDisplayNodeContentWithRenderingContext;
 }
 
-- (ASDisplayNodeContextModifier)didDisplayNodeContentWithRenderingContext {
+- (ASDisplayNodeContextModifier)didDisplayNodeContentWithRenderingContext
+{
   MutexLocker l(__instanceLock__);
   return _didDisplayNodeContentWithRenderingContext;
 }
 
-- (void)setWillDisplayNodeContentWithRenderingContext:(ASDisplayNodeContextModifier)contextModifier {
+- (void)setWillDisplayNodeContentWithRenderingContext:(ASDisplayNodeContextModifier)contextModifier
+{
   MutexLocker l(__instanceLock__);
   _willDisplayNodeContentWithRenderingContext = contextModifier;
 }

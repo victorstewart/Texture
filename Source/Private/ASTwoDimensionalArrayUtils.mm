@@ -20,7 +20,8 @@
 
 #pragma mark - Public Methods
 
-NSMutableArray<NSMutableArray *> *ASTwoDimensionalArrayDeepMutableCopy(NSArray<NSArray *> *array) {
+NSMutableArray<NSMutableArray *> *ASTwoDimensionalArrayDeepMutableCopy(NSArray<NSArray *> *array)
+{
   NSMutableArray *newArray = [NSMutableArray arrayWithCapacity:array.count];
   NSInteger i = 0;
   for (NSArray *subarray in array) {
@@ -30,8 +31,8 @@ NSMutableArray<NSMutableArray *> *ASTwoDimensionalArrayDeepMutableCopy(NSArray<N
   return newArray;
 }
 
-void ASDeleteElementsInTwoDimensionalArrayAtIndexPaths(NSMutableArray *mutableArray,
-                                                       NSArray<NSIndexPath *> *indexPaths) {
+void ASDeleteElementsInTwoDimensionalArrayAtIndexPaths(NSMutableArray *mutableArray, NSArray<NSIndexPath *> *indexPaths)
+{
   if (indexPaths.count == 0) {
     return;
   }
@@ -50,23 +51,24 @@ void ASDeleteElementsInTwoDimensionalArrayAtIndexPaths(NSMutableArray *mutableAr
   for (NSIndexPath *indexPath in indexPaths) {
     NSInteger section = indexPath.section;
     if (section >= mutableArray.count) {
-      ASDisplayNodeCFailAssert(@"Invalid section index %ld – only %ld sections", (long)section,
-                               (long)mutableArray.count);
+      ASDisplayNodeCFailAssert(
+          @"Invalid section index %ld – only %ld sections", (long)section, (long)mutableArray.count);
       continue;
     }
 
     NSMutableArray *subarray = mutableArray[section];
     NSInteger item = indexPath.item;
     if (item >= subarray.count) {
-      ASDisplayNodeCFailAssert(@"Invalid item index %ld – only %ld items in section %ld", (long)item,
-                               (long)subarray.count, (long)section);
+      ASDisplayNodeCFailAssert(
+          @"Invalid item index %ld – only %ld items in section %ld", (long)item, (long)subarray.count, (long)section);
       continue;
     }
     [subarray removeObjectAtIndex:item];
   }
 }
 
-NSArray<NSIndexPath *> *ASIndexPathsForTwoDimensionalArray(NSArray<NSArray *> *twoDimensionalArray) {
+NSArray<NSIndexPath *> *ASIndexPathsForTwoDimensionalArray(NSArray<NSArray *> *twoDimensionalArray)
+{
   NSInteger sectionCount = twoDimensionalArray.count;
   NSInteger counts[sectionCount];
   NSInteger totalCount = 0;
@@ -88,7 +90,8 @@ NSArray<NSIndexPath *> *ASIndexPathsForTwoDimensionalArray(NSArray<NSArray *> *t
   return [NSArray arrayByTransferring:indexPaths.data() count:totalCount];
 }
 
-NSArray *ASElementsInTwoDimensionalArray(NSArray<NSArray *> *twoDimensionalArray) {
+NSArray *ASElementsInTwoDimensionalArray(NSArray<NSArray *> *twoDimensionalArray)
+{
   NSInteger totalCount = 0;
   for (NSArray *subarray in twoDimensionalArray) {
     totalCount += subarray.count;
@@ -104,7 +107,8 @@ NSArray *ASElementsInTwoDimensionalArray(NSArray<NSArray *> *twoDimensionalArray
   return [NSArray arrayByTransferring:elements.data() count:totalCount];
 }
 
-id ASGetElementInTwoDimensionalArray(NSArray *array, NSIndexPath *indexPath) {
+id ASGetElementInTwoDimensionalArray(NSArray *array, NSIndexPath *indexPath)
+{
   ASDisplayNodeCAssertNotNil(indexPath, @"Expected non-nil index path");
   ASDisplayNodeCAssert(indexPath.length == 2, @"Expected index path of length 2. Index path: %@", indexPath);
   NSInteger section = indexPath.section;

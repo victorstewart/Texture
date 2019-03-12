@@ -17,7 +17,8 @@
 
 // Returns a constrained size to let the cells layout itself as far as possible based on the scrollable direction
 // of the collection view
-ASSizeRange NodeConstrainedSizeForScrollDirection(ASCollectionView *collectionView) {
+ASSizeRange NodeConstrainedSizeForScrollDirection(ASCollectionView *collectionView)
+{
   CGSize maxSize = collectionView.bounds.size;
   UIEdgeInsets contentInset = collectionView.contentInset;
   if (ASScrollDirectionContainsHorizontalDirection(collectionView.scrollableDirections)) {
@@ -41,7 +42,8 @@ ASSizeRange NodeConstrainedSizeForScrollDirection(ASCollectionView *collectionVi
 
 #pragma mark ASCollectionViewLayoutInspecting
 
-- (void)didChangeCollectionViewDelegate:(id<ASCollectionDelegate>)delegate {
+- (void)didChangeCollectionViewDelegate:(id<ASCollectionDelegate>)delegate
+{
   if (delegate == nil) {
     memset(&_delegateFlags, 0, sizeof(_delegateFlags));
   } else {
@@ -53,7 +55,8 @@ ASSizeRange NodeConstrainedSizeForScrollDirection(ASCollectionView *collectionVi
 }
 
 - (ASSizeRange)collectionView:(ASCollectionView *)collectionView
-    constrainedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath {
+    constrainedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath
+{
   if (_delegateFlags.implementsConstrainedSizeForNodeAtIndexPath) {
     return [collectionView.asyncDelegate collectionNode:collectionView.collectionNode
                       constrainedSizeForItemAtIndexPath:indexPath];
@@ -74,7 +77,8 @@ ASSizeRange NodeConstrainedSizeForScrollDirection(ASCollectionView *collectionVi
   return NodeConstrainedSizeForScrollDirection(collectionView);
 }
 
-- (ASScrollDirection)scrollableDirections {
+- (ASScrollDirection)scrollableDirections
+{
   return ASScrollDirectionNone;
 }
 

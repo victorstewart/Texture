@@ -33,23 +33,28 @@ AS_EXTERN void ASPerformMainThreadDeallocation(id _Nullable __strong *_Nonnull o
 
 // Because inline methods can't be extern'd and need to be part of the translation unit of code
 // that compiles with them to actually inline, we both declare and define these in the header.
-ASDISPLAYNODE_INLINE BOOL ASInterfaceStateIncludesVisible(ASInterfaceState interfaceState) {
+ASDISPLAYNODE_INLINE BOOL ASInterfaceStateIncludesVisible(ASInterfaceState interfaceState)
+{
   return ((interfaceState & ASInterfaceStateVisible) == ASInterfaceStateVisible);
 }
 
-ASDISPLAYNODE_INLINE BOOL ASInterfaceStateIncludesDisplay(ASInterfaceState interfaceState) {
+ASDISPLAYNODE_INLINE BOOL ASInterfaceStateIncludesDisplay(ASInterfaceState interfaceState)
+{
   return ((interfaceState & ASInterfaceStateDisplay) == ASInterfaceStateDisplay);
 }
 
-ASDISPLAYNODE_INLINE BOOL ASInterfaceStateIncludesPreload(ASInterfaceState interfaceState) {
+ASDISPLAYNODE_INLINE BOOL ASInterfaceStateIncludesPreload(ASInterfaceState interfaceState)
+{
   return ((interfaceState & ASInterfaceStatePreload) == ASInterfaceStatePreload);
 }
 
-ASDISPLAYNODE_INLINE BOOL ASInterfaceStateIncludesMeasureLayout(ASInterfaceState interfaceState) {
+ASDISPLAYNODE_INLINE BOOL ASInterfaceStateIncludesMeasureLayout(ASInterfaceState interfaceState)
+{
   return ((interfaceState & ASInterfaceStateMeasureLayout) == ASInterfaceStateMeasureLayout);
 }
 
-__unused static NSString *NSStringFromASInterfaceState(ASInterfaceState interfaceState) {
+__unused static NSString *NSStringFromASInterfaceState(ASInterfaceState interfaceState)
+{
   NSMutableArray *states = [NSMutableArray array];
   if (interfaceState == ASInterfaceStateNone) {
     [states addObject:@"No state"];
@@ -78,7 +83,8 @@ __unused static NSString *NSStringFromASInterfaceState(ASInterfaceState interfac
 
 /// e.g. { +Visible, -Preload } (although that should never actually happen.)
 /// NOTE: Changes to MeasureLayout state don't really mean anything so we omit them for now.
-__unused static NSString *NSStringFromASInterfaceStateChange(ASInterfaceState oldState, ASInterfaceState newState) {
+__unused static NSString *NSStringFromASInterfaceStateChange(ASInterfaceState oldState, ASInterfaceState newState)
+{
   if (oldState == newState) {
     return @"{ }";
   }

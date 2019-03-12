@@ -47,12 +47,16 @@ struct ASDisplayNodeLayout {
   /**
    * Returns whether this is valid for a given version
    */
-  BOOL isValid(NSUInteger versionArg) { return layout != nil && version >= versionArg; }
+  BOOL isValid(NSUInteger versionArg)
+  {
+    return layout != nil && version >= versionArg;
+  }
 
   /**
    * Returns whether this is valid for a given constrained size, parent size, and version
    */
-  BOOL isValid(ASSizeRange theConstrainedSize, CGSize theParentSize, NSUInteger versionArg) {
+  BOOL isValid(ASSizeRange theConstrainedSize, CGSize theParentSize, NSUInteger versionArg)
+  {
     return isValid(versionArg) && CGSizeEqualToSize(parentSize, theParentSize) &&
            ASSizeRangeEqualToSizeRange(constrainedSize, theConstrainedSize);
   }

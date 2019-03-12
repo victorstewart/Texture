@@ -21,11 +21,8 @@
 #import <AsyncDisplayKit/ASPagerFlowLayout.h>
 #import <AsyncDisplayKit/UIResponder+AsyncDisplayKit.h>
 
-@interface ASPagerNode () <ASCollectionDataSource,
-                           ASCollectionDelegate,
-                           ASCollectionDelegateFlowLayout,
-                           ASDelegateProxyInterceptor,
-                           ASCollectionGalleryLayoutPropertiesProviding> {
+@interface ASPagerNode () <ASCollectionDataSource, ASCollectionDelegate, ASCollectionDelegateFlowLayout,
+                           ASDelegateProxyInterceptor, ASCollectionGalleryLayoutPropertiesProviding> {
   __weak id<ASPagerDataSource> _pagerDataSource;
   ASPagerNodeProxy *_proxyDataSource;
   struct {
@@ -45,7 +42,8 @@
 
 #pragma mark - Lifecycle
 
-- (instancetype)init {
+- (instancetype)init
+{
   ASPagerFlowLayout *flowLayout = [[ASPagerFlowLayout alloc] init];
   flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
   flowLayout.minimumInteritemSpacing = 0;
@@ -62,7 +60,8 @@
   return self;
 }
 
-- (instancetype)initUsingAsyncCollectionLayout {
+- (instancetype)initUsingAsyncCollectionLayout
+{
   ASCollectionGalleryLayoutDelegate *layoutDelegate =
       [[ASCollectionGalleryLayoutDelegate alloc] initWithScrollableDirections:ASScrollDirectionHorizontalDirections];
   self = [super initWithLayoutDelegate:layoutDelegate layoutFacilitator:nil];
@@ -74,7 +73,8 @@
 
 #pragma mark - ASDisplayNode
 
-- (void)didLoad {
+- (void)didLoad
+{
   [super didLoad];
 
   ASCollectionView *cv = self.view;
@@ -105,11 +105,13 @@
 
 #pragma mark - Getters / Setters
 
-- (NSInteger)currentPageIndex {
+- (NSInteger)currentPageIndex
+{
   return (self.view.contentOffset.x / [self pageSize].width);
 }
 
-- (CGSize)pageSize {
+- (CGSize)pageSize
+{
   UIEdgeInsets contentInset = self.contentInset;
   CGSize pageSize = self.bounds.size;
   pageSize.height -= (contentInset.top + contentInset.bottom);
@@ -118,16 +120,19 @@
 
 #pragma mark - Helpers
 
-- (void)scrollToPageAtIndex:(NSInteger)index animated:(BOOL)animated {
+- (void)scrollToPageAtIndex:(NSInteger)index animated:(BOOL)animated
+{
   NSIndexPath *indexPath = [NSIndexPath indexPathForItem:index inSection:0];
   [self scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionLeft animated:animated];
 }
 
-- (ASCellNode *)nodeForPageAtIndex:(NSInteger)index {
+- (ASCellNode *)nodeForPageAtIndex:(NSInteger)index
+{
   return [self nodeForItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
 }
 
-- (NSInteger)indexOfPageWithNode:(ASCellNode *)node {
+- (NSInteger)indexOfPageWithNode:(ASCellNode *)node
+{
   NSIndexPath *indexPath = [self indexPathForNode:node];
   if (!indexPath) {
     return NSNotFound;
@@ -138,7 +143,8 @@
 #pragma mark - ASCollectionGalleryLayoutPropertiesProviding
 
 - (CGSize)galleryLayoutDelegate:(nonnull ASCollectionGalleryLayoutDelegate *)delegate
-                sizeForElements:(nonnull ASElementMap *)elements {
+                sizeForElements:(nonnull ASElementMap *)elements
+{
   ASDisplayNodeAssertMainThread();
   return [self pageSize];
 }
@@ -146,7 +152,8 @@
 #pragma mark - ASCollectionDataSource
 
 - (ASCellNodeBlock)collectionNode:(ASCollectionNode *)collectionNode
-      nodeBlockForItemAtIndexPath:(NSIndexPath *)indexPath {
+      nodeBlockForItemAtIndexPath:(NSIndexPath *)indexPath
+{
   if (_pagerDataSourceFlags.nodeBlockAtIndex) {
     return [_pagerDataSource pagerNode:self nodeBlockAtIndex:indexPath.item];
   } else if (_pagerDataSourceFlags.nodeAtIndex) {
@@ -157,14 +164,16 @@
   } else {
     ASDisplayNodeFailAssert(@"Pager data source must implement either %@ or %@. Data source: %@",
                             NSStringFromSelector(@selector(pagerNode:nodeBlockAtIndex:)),
-                            NSStringFromSelector(@selector(pagerNode:nodeAtIndex:)), _pagerDataSource);
+                            NSStringFromSelector(@selector(pagerNode:nodeAtIndex:)),
+                            _pagerDataSource);
     return ^{
       return [[ASCellNode alloc] init];
     };
   }
 }
 
-- (NSInteger)collectionNode:(ASCollectionNode *)collectionNode numberOfItemsInSection:(NSInteger)section {
+- (NSInteger)collectionNode:(ASCollectionNode *)collectionNode numberOfItemsInSection:(NSInteger)section
+{
   ASDisplayNodeAssert(_pagerDataSource != nil, @"ASPagerNode must have a data source to load nodes to display");
   return [_pagerDataSource numberOfPagesInPagerNode:self];
 }
@@ -172,17 +181,20 @@
 #pragma mark - ASCollectionDelegate
 
 - (ASSizeRange)collectionNode:(ASCollectionNode *)collectionNode
-    constrainedSizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    constrainedSizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
   return ASSizeRangeMake([self pageSize]);
 }
 
 #pragma mark - Data Source Proxy
 
-- (id<ASPagerDataSource>)dataSource {
+- (id<ASPagerDataSource>)dataSource
+{
   return _pagerDataSource;
 }
 
-- (void)setDataSource:(id<ASPagerDataSource>)dataSource {
+- (void)setDataSource:(id<ASPagerDataSource>)dataSource
+{
   if (dataSource != _pagerDataSource) {
     _pagerDataSource = dataSource;
 
@@ -200,7 +212,8 @@
   }
 }
 
-- (void)setDelegate:(id<ASPagerDelegate>)delegate {
+- (void)setDelegate:(id<ASPagerDelegate>)delegate
+{
   if (delegate != _pagerDelegate) {
     _pagerDelegate = delegate;
     _proxyDelegate = delegate ? [[ASPagerNodeProxy alloc] initWithTarget:delegate interceptor:self] : nil;
@@ -208,12 +221,14 @@
   }
 }
 
-- (void)proxyTargetHasDeallocated:(ASDelegateProxy *)proxy {
+- (void)proxyTargetHasDeallocated:(ASDelegateProxy *)proxy
+{
   [self setDataSource:nil];
   [self setDelegate:nil];
 }
 
-- (void)didEnterHierarchy {
+- (void)didEnterHierarchy
+{
   [super didEnterHierarchy];
 
   // Check that our view controller does not automatically set our content insets

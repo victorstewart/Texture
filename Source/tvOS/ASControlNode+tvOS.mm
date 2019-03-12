@@ -15,7 +15,8 @@
 @implementation ASControlNode (tvOS)
 
 #pragma mark - tvOS
-- (void)_pressDown {
+- (void)_pressDown
+{
   [UIView animateWithDuration:0.1
       delay:0
       options:UIViewAnimationOptionCurveLinear
@@ -35,16 +36,19 @@
       }];
 }
 
-- (BOOL)canBecomeFocused {
+- (BOOL)canBecomeFocused
+{
   return YES;
 }
 
-- (BOOL)shouldUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context {
+- (BOOL)shouldUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context
+{
   return YES;
 }
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context
-       withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+       withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
   // FIXME: This is never valid inside an ASCellNode
   if (context.nextFocusedView && context.nextFocusedView == self.view) {
     // Focused
@@ -63,28 +67,32 @@
   }
 }
 
-- (void)setFocusedState {
+- (void)setFocusedState
+{
   CALayer *layer = self.layer;
   layer.shadowOffset = CGSizeMake(2, 10);
   [self applyDefaultShadowProperties:layer];
   self.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.1, 1.1);
 }
 
-- (void)setPressedState {
+- (void)setPressedState
+{
   CALayer *layer = self.layer;
   layer.shadowOffset = CGSizeMake(2, 2);
   [self applyDefaultShadowProperties:layer];
   self.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
 }
 
-- (void)applyDefaultShadowProperties:(CALayer *)layer {
+- (void)applyDefaultShadowProperties:(CALayer *)layer
+{
   layer.shadowColor = [UIColor blackColor].CGColor;
   layer.shadowRadius = 12.0;
   layer.shadowOpacity = 0.45;
   layer.shadowPath = [UIBezierPath bezierPathWithRect:self.layer.bounds].CGPath;
 }
 
-- (void)setDefaultFocusAppearance {
+- (void)setDefaultFocusAppearance
+{
   CALayer *layer = self.layer;
   layer.shadowOffset = CGSizeZero;
   layer.shadowColor = [UIColor blackColor].CGColor;

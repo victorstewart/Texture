@@ -8,18 +8,20 @@
 
 #import <AsyncDisplayKit/ASHashing.h>
 
-#define ELF_STEP(B)         \
-  T1 = (H << 4) + B;        \
-  T2 = T1 & 0xF0000000;     \
-  if (T2) T1 ^= (T2 >> 24); \
-  T1 &= (~T2);              \
+#define ELF_STEP(B)     \
+  T1 = (H << 4) + B;    \
+  T2 = T1 & 0xF0000000; \
+  if (T2)               \
+    T1 ^= (T2 >> 24);   \
+  T1 &= (~T2);          \
   H = T1;
 
 /**
  * The hashing algorithm copied from CoreFoundation CFHashBytes function.
  * https://opensource.apple.com/source/CF/CF-1153.18/CFUtilities.c.auto.html
  */
-NSUInteger ASHashBytes(void *bytesarg, size_t length) {
+NSUInteger ASHashBytes(void *bytesarg, size_t length)
+{
   /* The ELF hash algorithm, used in the ELF object file format */
   uint8_t *bytes = (uint8_t *)bytesarg;
   UInt32 H = 0, T1, T2;

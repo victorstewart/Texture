@@ -29,7 +29,8 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
   if (!(self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
     return nil;
   }
@@ -39,7 +40,8 @@
   return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
   if (!(self = [super initWithCoder:aDecoder])) {
     return nil;
   }
@@ -51,7 +53,8 @@
 
 #pragma clang diagnostic pop
 
-- (instancetype)initWithNode:(ASDisplayNode *)node {
+- (instancetype)initWithNode:(ASDisplayNode *)node
+{
   if (!(self = [super initWithNibName:nil bundle:nil])) {
     return nil;
   }
@@ -62,7 +65,8 @@
   return self;
 }
 
-- (void)_initializeInstance {
+- (void)_initializeInstance
+{
   if (_node == nil) {
     return;
   }
@@ -91,11 +95,13 @@
   }
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
   ASPerformBackgroundDeallocation(&_node);
 }
 
-- (void)loadView {
+- (void)loadView
+{
   // Apple applies a frame and autoresizing masks we need.  Allocating a view is not
   // nearly as expensive as adding and removing it from a hierarchy, and fortunately
   // we can avoid that here.  Enabling layerBacking on a single node in the hierarchy
@@ -124,7 +130,8 @@
   [self propagateNewTraitCollection:traitCollection];
 }
 
-- (void)viewWillLayoutSubviews {
+- (void)viewWillLayoutSubviews
+{
   [super viewWillLayoutSubviews];
 
   // Before layout, make sure that our trait collection containerSize actually matches the size of our bounds.
@@ -147,7 +154,8 @@
   }
 }
 
-- (void)viewDidLayoutSubviews {
+- (void)viewDidLayoutSubviews
+{
   if (_ensureDisplayed && self.neverShowPlaceholders) {
     _ensureDisplayed = NO;
     [_node recursivelyEnsureDisplaySynchronously:YES];
@@ -159,7 +167,8 @@
   }
 }
 
-- (void)_updateNodeFallbackSafeArea {
+- (void)_updateNodeFallbackSafeArea
+{
   UIEdgeInsets safeArea = UIEdgeInsetsMake(self.topLayoutGuide.length, 0, self.bottomLayoutGuide.length, 0);
   UIEdgeInsets additionalInsets = self.additionalSafeAreaInsets;
 
@@ -170,7 +179,8 @@
 
 ASVisibilityDidMoveToParentViewController;
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
   as_activity_create_for_scope("ASViewController will appear");
   as_log_debug(ASNodeLog(), "View controller %@ will appear", self);
 
@@ -194,7 +204,8 @@ ASVisibilityViewDidDisappearImplementation;
 
 ASVisibilityDepthImplementation;
 
-- (void)visibilityDepthDidChange {
+- (void)visibilityDepthDidChange
+{
   ASLayoutRangeMode rangeMode = ASLayoutRangeModeForVisibilityDepth(self.visibilityDepth);
 #if ASEnableVerboseLogging
   NSString *rangeModeString;
@@ -218,7 +229,10 @@ ASVisibilityDepthImplementation;
     default:
       break;
   }
-  as_log_verbose(ASNodeLog(), "Updating visibility of %@ to: %@ (visibility depth: %zd)", self, rangeModeString,
+  as_log_verbose(ASNodeLog(),
+                 "Updating visibility of %@ to: %@ (visibility depth: %zd)",
+                 self,
+                 rangeModeString,
                  self.visibilityDepth);
 #endif
   [self updateCurrentRangeModeWithModeIfPossible:rangeMode];
@@ -226,23 +240,27 @@ ASVisibilityDepthImplementation;
 
 #pragma mark - Automatic range mode
 
-- (BOOL)automaticallyAdjustRangeModeBasedOnViewEvents {
+- (BOOL)automaticallyAdjustRangeModeBasedOnViewEvents
+{
   return _automaticallyAdjustRangeModeBasedOnViewEvents;
 }
 
-- (void)setAutomaticallyAdjustRangeModeBasedOnViewEvents:(BOOL)automaticallyAdjustRangeModeBasedOnViewEvents {
+- (void)setAutomaticallyAdjustRangeModeBasedOnViewEvents:(BOOL)automaticallyAdjustRangeModeBasedOnViewEvents
+{
   if (automaticallyAdjustRangeModeBasedOnViewEvents != _automaticallyAdjustRangeModeBasedOnViewEvents) {
     if (automaticallyAdjustRangeModeBasedOnViewEvents && _selfConformsToRangeModeProtocol == NO &&
         _nodeConformsToRangeModeProtocol == NO) {
       NSLog(@"Warning: automaticallyAdjustRangeModeBasedOnViewEvents set to YES in %@, but range mode updating is not "
             @"possible because neither view controller nor node %@ conform to ASRangeControllerUpdateRangeProtocol.",
-            self, _node);
+            self,
+            _node);
     }
     _automaticallyAdjustRangeModeBasedOnViewEvents = automaticallyAdjustRangeModeBasedOnViewEvents;
   }
 }
 
-- (void)updateCurrentRangeModeWithModeIfPossible:(ASLayoutRangeMode)rangeMode {
+- (void)updateCurrentRangeModeWithModeIfPossible:(ASLayoutRangeMode)rangeMode
+{
   if (!_automaticallyAdjustRangeModeBasedOnViewEvents) {
     return;
   }
@@ -260,15 +278,18 @@ ASVisibilityDepthImplementation;
 
 #pragma mark - Layout Helpers
 
-- (ASSizeRange)nodeConstrainedSize {
+- (ASSizeRange)nodeConstrainedSize
+{
   return ASSizeRangeMake(self.view.bounds.size);
 }
 
-- (ASInterfaceState)interfaceState {
+- (ASInterfaceState)interfaceState
+{
   return _node.interfaceState;
 }
 
-- (UIEdgeInsets)additionalSafeAreaInsets {
+- (UIEdgeInsets)additionalSafeAreaInsets
+{
   if (AS_AVAILABLE_IOS(11.0)) {
     return super.additionalSafeAreaInsets;
   }
@@ -276,7 +297,8 @@ ASVisibilityDepthImplementation;
   return _fallbackAdditionalSafeAreaInsets;
 }
 
-- (void)setAdditionalSafeAreaInsets:(UIEdgeInsets)additionalSafeAreaInsets {
+- (void)setAdditionalSafeAreaInsets:(UIEdgeInsets)additionalSafeAreaInsets
+{
   if (AS_AVAILABLE_IOS(11.0)) {
     [super setAdditionalSafeAreaInsets:additionalSafeAreaInsets];
   } else {
@@ -287,7 +309,8 @@ ASVisibilityDepthImplementation;
 
 #pragma mark - ASTraitEnvironment
 
-- (ASPrimitiveTraitCollection)primitiveTraitCollectionForUITraitCollection:(UITraitCollection *)traitCollection {
+- (ASPrimitiveTraitCollection)primitiveTraitCollectionForUITraitCollection:(UITraitCollection *)traitCollection
+{
   if (self.overrideDisplayTraitsWithTraitCollection) {
     ASTraitCollection *asyncTraitCollection = self.overrideDisplayTraitsWithTraitCollection(traitCollection);
     return [asyncTraitCollection primitiveTraitCollection];
@@ -299,13 +322,16 @@ ASVisibilityDepthImplementation;
   return asyncTraitCollection;
 }
 
-- (void)propagateNewTraitCollection:(ASPrimitiveTraitCollection)traitCollection {
+- (void)propagateNewTraitCollection:(ASPrimitiveTraitCollection)traitCollection
+{
   ASPrimitiveTraitCollection oldTraitCollection = self.node.primitiveTraitCollection;
 
   if (ASPrimitiveTraitCollectionIsEqualToASPrimitiveTraitCollection(traitCollection, oldTraitCollection) == NO) {
-    as_activity_scope_verbose(as_activity_create("Propagate ASViewController trait collection", AS_ACTIVITY_CURRENT,
-                                                 OS_ACTIVITY_FLAG_DEFAULT));
-    as_log_debug(ASNodeLog(), "Propagating new traits for %@: %@", self,
+    as_activity_scope_verbose(as_activity_create(
+        "Propagate ASViewController trait collection", AS_ACTIVITY_CURRENT, OS_ACTIVITY_FLAG_DEFAULT));
+    as_log_debug(ASNodeLog(),
+                 "Propagating new traits for %@: %@",
+                 self,
                  NSStringFromASPrimitiveTraitCollection(traitCollection));
     self.node.primitiveTraitCollection = traitCollection;
 
@@ -316,13 +342,14 @@ ASVisibilityDepthImplementation;
 
     // Once we've propagated all the traits, layout this node.
     // Remeasure the node with the latest constrained size – old constrained size may be incorrect.
-    as_activity_scope_verbose(as_activity_create("Layout ASViewController node with new traits", AS_ACTIVITY_CURRENT,
-                                                 OS_ACTIVITY_FLAG_DEFAULT));
+    as_activity_scope_verbose(as_activity_create(
+        "Layout ASViewController node with new traits", AS_ACTIVITY_CURRENT, OS_ACTIVITY_FLAG_DEFAULT));
     [_node layoutThatFits:[self nodeConstrainedSize]];
   }
 }
 
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
   [super traitCollectionDidChange:previousTraitCollection];
 
   ASPrimitiveTraitCollection traitCollection = [self primitiveTraitCollectionForUITraitCollection:self.traitCollection];
@@ -332,7 +359,8 @@ ASVisibilityDepthImplementation;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
   [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 
   ASPrimitiveTraitCollection traitCollection = _node.primitiveTraitCollection;

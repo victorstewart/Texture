@@ -21,7 +21,8 @@
                  properties:(const NSGlyphProperty *)properties
            characterIndexes:(const NSUInteger *)characterIndexes
                        font:(UIFont *)aFont
-              forGlyphRange:(NSRange)glyphRange {
+              forGlyphRange:(NSRange)glyphRange
+{
   NSUInteger glyphCount = glyphRange.length;
   NSGlyphProperty *newGlyphProperties = NULL;
 
@@ -32,7 +33,8 @@
   NSString *textStorageString = layoutManager.textStorage.string;
   for (NSUInteger arrayIndex = 0; arrayIndex < glyphCount; arrayIndex++) {
     NSUInteger characterIndex = characterIndexes[arrayIndex];
-    if ([textStorageString characterAtIndex:characterIndex] != ' ') continue;
+    if ([textStorageString characterAtIndex:characterIndex] != ' ')
+      continue;
 
     // If we've set the whitespace control character for this space already, we have nothing to do.
     if (properties[arrayIndex] == NSGlyphPropertyControlCharacter) {
@@ -80,7 +82,8 @@
 
 - (NSControlCharacterAction)layoutManager:(NSLayoutManager *)layoutManager
                           shouldUseAction:(NSControlCharacterAction)defaultAction
-               forControlCharacterAtIndex:(NSUInteger)characterIndex {
+               forControlCharacterAtIndex:(NSUInteger)characterIndex
+{
   // If it's a space character and we have custom word kerning, use the whitespace action control character.
   if ([layoutManager.textStorage.string characterAtIndex:characterIndex] == ' ')
     return NSControlCharacterActionWhitespace;
@@ -93,7 +96,8 @@
                      forTextContainer:(NSTextContainer *)textContainer
                  proposedLineFragment:(CGRect)proposedRect
                         glyphPosition:(CGPoint)glyphPosition
-                       characterIndex:(NSUInteger)characterIndex {
+                       characterIndex:(NSUInteger)characterIndex
+{
   CGFloat wordKernedSpaceWidth = [self _wordKernedSpaceWidthForCharacterAtIndex:characterIndex
                                                                 atGlyphPosition:glyphPosition
                                                                forTextContainer:textContainer
@@ -104,7 +108,8 @@
 - (CGFloat)_wordKernedSpaceWidthForCharacterAtIndex:(NSUInteger)characterIndex
                                     atGlyphPosition:(CGPoint)glyphPosition
                                    forTextContainer:(NSTextContainer *)textContainer
-                                      layoutManager:(NSLayoutManager *)layoutManager {
+                                      layoutManager:(NSLayoutManager *)layoutManager
+{
   // We use a map table for pointer equality and non-copying keys.
   static NSMapTable *spaceSizes;
   // NSMapTable is a defined thread unsafe class, so we need to synchronize

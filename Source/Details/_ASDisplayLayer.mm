@@ -31,13 +31,15 @@
 
 #pragma mark - Properties
 
-- (void)setDelegate:(id)delegate {
+- (void)setDelegate:(id)delegate
+{
   [super setDelegate:delegate];
   _delegateFlags.delegateDidChangeBounds = [delegate respondsToSelector:@selector(layer:
                                                                             didChangeBoundsWithOldValue:newValue:)];
 }
 
-- (void)setDisplaySuspended:(BOOL)displaySuspended {
+- (void)setDisplaySuspended:(BOOL)displaySuspended
+{
   ASDisplayNodeAssertMainThread();
   if (_displaySuspended != displaySuspended) {
     _displaySuspended = displaySuspended;
@@ -52,10 +54,12 @@
   }
 }
 
-- (void)setBounds:(CGRect)bounds {
-  BOOL valid =
-      ASDisplayNodeAssertNonFatal(ASIsCGRectValidForLayout(bounds), @"Caught attempt to set invalid bounds %@ on %@.",
-                                  NSStringFromCGRect(bounds), self);
+- (void)setBounds:(CGRect)bounds
+{
+  BOOL valid = ASDisplayNodeAssertNonFatal(ASIsCGRectValidForLayout(bounds),
+                                           @"Caught attempt to set invalid bounds %@ on %@.",
+                                           NSStringFromCGRect(bounds),
+                                           self);
   if (!valid) {
     return;
   }
@@ -78,26 +82,30 @@
 
 #if DEBUG  // These override is strictly to help detect application-level threading errors.  Avoid method overhead in
            // release.
-- (void)setContents:(id)contents {
+- (void)setContents:(id)contents
+{
   ASDisplayNodeAssertMainThread();
   [super setContents:contents];
 }
 
-- (void)setNeedsLayout {
+- (void)setNeedsLayout
+{
   ASDisplayNodeAssertMainThread();
   as_log_verbose(ASNodeLog(), "%s on %@", sel_getName(_cmd), self);
   [super setNeedsLayout];
 }
 #endif
 
-- (void)layoutSublayers {
+- (void)layoutSublayers
+{
   ASDisplayNodeAssertMainThread();
   [super layoutSublayers];
 
   [self.asyncdisplaykit_node __layout];
 }
 
-- (void)setNeedsDisplay {
+- (void)setNeedsDisplay
+{
   ASDisplayNodeAssertMainThread();
 
   // FIXME: Reconsider whether we should cancel a display in progress.
@@ -112,7 +120,8 @@
 
 #pragma mark -
 
-+ (dispatch_queue_t)displayQueue {
++ (dispatch_queue_t)displayQueue
+{
   static dispatch_queue_t displayQueue = NULL;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -124,7 +133,8 @@
   return displayQueue;
 }
 
-+ (id)defaultValueForKey:(NSString *)key {
++ (id)defaultValueForKey:(NSString *)key
+{
   if ([key isEqualToString:@"displaysAsynchronously"]) {
     return @YES;
   } else if ([key isEqualToString:@"opaque"]) {
@@ -136,7 +146,8 @@
 
 #pragma mark - Display
 
-- (void)displayImmediately {
+- (void)displayImmediately
+{
   // This method is a low-level bypass that avoids touching CA, including any reset of the
   // needsDisplay flag, until the .contents property is set with the result.
   // It is designed to be able to block the thread of any caller and fully execute the display.
@@ -145,13 +156,15 @@
   [self display:NO];
 }
 
-- (void)_hackResetNeedsDisplay {
+- (void)_hackResetNeedsDisplay
+{
   ASDisplayNodeAssertMainThread();
   // Don't listen to our subclasses crazy ideas about setContents by going through super
   super.contents = super.contents;
 }
 
-- (void)display {
+- (void)display
+{
   ASDisplayNodeAssertMainThread();
   [self _hackResetNeedsDisplay];
 
@@ -162,7 +175,8 @@
   [self display:self.displaysAsynchronously];
 }
 
-- (void)display:(BOOL)asynchronously {
+- (void)display:(BOOL)asynchronously
+{
   if (CGRectIsEmpty(self.bounds)) {
     _attemptedDisplayWhileZeroSized = YES;
   }
@@ -170,14 +184,16 @@
   [self.asyncDelegate displayAsyncLayer:self asynchronously:asynchronously];
 }
 
-- (void)cancelAsyncDisplay {
+- (void)cancelAsyncDisplay
+{
   ASDisplayNodeAssertMainThread();
 
   [self.asyncDelegate cancelDisplayAsyncLayer:self];
 }
 
 // e.g. <MYTextNodeLayer: 0xFFFFFF; node = <MYTextNode: 0xFFFFFFE; name = "Username node for user 179">>
-- (NSString *)description {
+- (NSString *)description
+{
   NSMutableString *description = [[super description] mutableCopy];
   ASDisplayNode *node = self.asyncdisplaykit_node;
   if (node != nil) {

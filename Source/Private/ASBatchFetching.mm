@@ -15,7 +15,8 @@ BOOL ASDisplayShouldFetchBatchForScrollView(UIScrollView<ASBatchFetchingScrollVi
                                             ASScrollDirection scrollDirection,
                                             ASScrollDirection scrollableDirections,
                                             CGPoint contentOffset,
-                                            CGPoint velocity) {
+                                            CGPoint velocity)
+{
   // Don't fetch if the scroll view does not allow
   if (![scrollView canBatchFetch]) {
     return NO;
@@ -28,8 +29,16 @@ BOOL ASDisplayShouldFetchBatchForScrollView(UIScrollView<ASBatchFetchingScrollVi
   CGFloat leadingScreens = scrollView.leadingScreensForBatching;
   id<ASBatchFetchingDelegate> delegate = scrollView.batchFetchingDelegate;
   BOOL visible = (scrollView.window != nil);
-  return ASDisplayShouldFetchBatchForContext(context, scrollDirection, scrollableDirections, bounds, contentSize,
-                                             contentOffset, leadingScreens, visible, velocity, delegate);
+  return ASDisplayShouldFetchBatchForContext(context,
+                                             scrollDirection,
+                                             scrollableDirections,
+                                             bounds,
+                                             contentSize,
+                                             contentOffset,
+                                             leadingScreens,
+                                             visible,
+                                             velocity,
+                                             delegate);
 }
 
 BOOL ASDisplayShouldFetchBatchForContext(ASBatchContext *context,
@@ -41,7 +50,8 @@ BOOL ASDisplayShouldFetchBatchForContext(ASBatchContext *context,
                                          CGFloat leadingScreens,
                                          BOOL visible,
                                          CGPoint velocity,
-                                         id<ASBatchFetchingDelegate> delegate) {
+                                         id<ASBatchFetchingDelegate> delegate)
+{
   // Do not allow fetching if a batch is already in-flight and hasn't been completed or cancelled
   if ([context isFetching]) {
     return NO;

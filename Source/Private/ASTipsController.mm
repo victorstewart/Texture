@@ -37,14 +37,16 @@
 
 #pragma mark - Singleton
 
-+ (void)load {
++ (void)load
+{
   [NSNotificationCenter.defaultCenter addObserver:self.shared
                                          selector:@selector(windowDidBecomeVisibleWithNotification:)
                                              name:UIWindowDidBecomeVisibleNotification
                                            object:nil];
 }
 
-+ (ASTipsController *)shared {
++ (ASTipsController *)shared
+{
   static ASTipsController *ctrl;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -55,7 +57,8 @@
 
 #pragma mark - Lifecycle
 
-- (instancetype)init {
+- (instancetype)init
+{
   ASDisplayNodeAssertMainThread();
   if (self = [super init]) {
     _nodeToTipStates =
@@ -68,7 +71,8 @@
 
 #pragma mark - Event Handling
 
-- (void)nodeDidAppear:(ASDisplayNode *)node {
+- (void)nodeDidAppear:(ASDisplayNode *)node
+{
   ASDisplayNodeAssertMainThread();
   // If they disabled tips on this class, bail.
   if (![[node class] enableTips]) {
@@ -84,7 +88,8 @@
 }
 
 // If this is a main window, start watching it and clear out our tip window.
-- (void)windowDidBecomeVisibleWithNotification:(NSNotification *)notification {
+- (void)windowDidBecomeVisibleWithNotification:(NSNotification *)notification
+{
   ASDisplayNodeAssertMainThread();
   UIWindow *window = notification.object;
 
@@ -108,7 +113,8 @@
   [_nodeToTipStates removeAllObjects];
 }
 
-- (void)runLoopDidTick {
+- (void)runLoopDidTick
+{
   NSArray *nodes = [_nodesThatAppearedDuringRunLoop copy];
   [_nodesThatAppearedDuringRunLoop removeAllObjects];
 
@@ -146,7 +152,8 @@
 
 #pragma mark - Internal
 
-- (void)createTipWindowIfNeededWithFrame:(CGRect)tipWindowFrame {
+- (void)createTipWindowIfNeededWithFrame:(CGRect)tipWindowFrame
+{
   // Lots of property accesses, but simple safe code, only run once.
   if (self.tipWindow == nil) {
     self.tipWindow = [[ASTipsWindow alloc] initWithFrame:tipWindowFrame];
@@ -161,16 +168,21 @@
  * on the view controller's view. It will then layout the main window, and then update the frames
  * for tip nodes accordingly.
  */
-- (void)setupRunLoopObserver {
+- (void)setupRunLoopObserver
+{
   CFRunLoopObserverRef o =
-      CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, kCFRunLoopBeforeWaiting, true, 0,
+      CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault,
+                                         kCFRunLoopBeforeWaiting,
+                                         true,
+                                         0,
                                          ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
                                            [self runLoopDidTick];
                                          });
   CFRunLoopAddObserver(CFRunLoopGetMain(), o, kCFRunLoopCommonModes);
 }
 
-- (ASDisplayNodeTipState *)createTipStateForNode:(ASDisplayNode *)node {
+- (ASDisplayNodeTipState *)createTipStateForNode:(ASDisplayNode *)node
+{
   ASDisplayNodeAssertMainThread();
   ASDisplayNodeTipState *tipState = [[ASDisplayNodeTipState alloc] initWithNode:node];
   [_nodeToTipStates setObject:tipState forKey:node];

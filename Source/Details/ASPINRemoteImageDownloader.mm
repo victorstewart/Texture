@@ -35,7 +35,8 @@
 #import <PINRemoteImage/PINRemoteImageManager.h>
 
 static inline PINRemoteImageManagerPriority PINRemoteImageManagerPriorityWithASImageDownloaderPriority(
-    ASImageDownloaderPriority priority) {
+    ASImageDownloaderPriority priority)
+{
   switch (priority) {
     case ASImageDownloaderPriorityPreload:
       return PINRemoteImageManagerPriorityLow;
@@ -58,7 +59,8 @@ static inline PINRemoteImageManagerPriority PINRemoteImageManagerPriorityWithASI
 
 @implementation PINCachedAnimatedImage (ASPINRemoteImageDownloader)
 
-- (BOOL)isDataSupported:(NSData *)data {
+- (BOOL)isDataSupported:(NSData *)data
+{
   if ([data pin_isGIF]) {
     return YES;
   }
@@ -88,7 +90,8 @@ static inline PINRemoteImageManagerPriority PINRemoteImageManagerPriorityWithASI
 @implementation ASPINRemoteImageManager
 
 // Share image cache with sharedImageManager image cache.
-+ (id<PINRemoteImageCaching>)defaultImageCache {
++ (id<PINRemoteImageCaching>)defaultImageCache
+{
   static dispatch_once_t onceToken;
   static id<PINRemoteImageCaching> cache = nil;
   dispatch_once(&onceToken, ^{
@@ -116,7 +119,8 @@ static PINRemoteImageManager *sharedPINRemoteImageManager = nil;
 
 @implementation ASPINRemoteImageDownloader
 
-+ (ASPINRemoteImageDownloader *)sharedDownloader NS_RETURNS_RETAINED {
++ (ASPINRemoteImageDownloader *)sharedDownloader NS_RETURNS_RETAINED
+{
   static dispatch_once_t onceToken = 0;
   dispatch_once(&onceToken, ^{
     sharedDownloader = [[ASPINRemoteImageDownloader alloc] init];
@@ -124,14 +128,16 @@ static PINRemoteImageManager *sharedPINRemoteImageManager = nil;
   return sharedDownloader;
 }
 
-+ (void)setSharedImageManagerWithConfiguration:(nullable NSURLSessionConfiguration *)configuration {
++ (void)setSharedImageManagerWithConfiguration:(nullable NSURLSessionConfiguration *)configuration
+{
   NSAssert(sharedDownloader == nil, @"Singleton has been created and session can no longer be configured.");
   PINRemoteImageManager *sharedManager = [self PINRemoteImageManagerWithConfiguration:configuration imageCache:nil];
   [self setSharedPreconfiguredRemoteImageManager:sharedManager];
 }
 
 + (void)setSharedImageManagerWithConfiguration:(nullable NSURLSessionConfiguration *)configuration
-                                    imageCache:(nullable id<PINRemoteImageCaching>)imageCache {
+                                    imageCache:(nullable id<PINRemoteImageCaching>)imageCache
+{
   NSAssert(sharedDownloader == nil, @"Singleton has been created and session can no longer be configured.");
   PINRemoteImageManager *sharedManager = [self PINRemoteImageManagerWithConfiguration:configuration
                                                                            imageCache:imageCache];
@@ -140,7 +146,8 @@ static PINRemoteImageManager *sharedPINRemoteImageManager = nil;
 
 static dispatch_once_t shared_init_predicate;
 
-+ (void)setSharedPreconfiguredRemoteImageManager:(PINRemoteImageManager *)preconfiguredPINRemoteImageManager {
++ (void)setSharedPreconfiguredRemoteImageManager:(PINRemoteImageManager *)preconfiguredPINRemoteImageManager
+{
   NSAssert(preconfiguredPINRemoteImageManager != nil,
            @"setSharedPreconfiguredRemoteImageManager requires a non-nil parameter");
   NSAssert1(sharedPINRemoteImageManager == nil,
@@ -154,7 +161,8 @@ static dispatch_once_t shared_init_predicate;
 }
 
 + (PINRemoteImageManager *)PINRemoteImageManagerWithConfiguration:(nullable NSURLSessionConfiguration *)configuration
-                                                       imageCache:(nullable id<PINRemoteImageCaching>)imageCache {
+                                                       imageCache:(nullable id<PINRemoteImageCaching>)imageCache
+{
   PINRemoteImageManager *manager = nil;
 #if DEBUG
   // Check that Carthage users have linked both PINRemoteImage & PINCache by testing for one file each
@@ -183,7 +191,8 @@ static dispatch_once_t shared_init_predicate;
   return manager;
 }
 
-- (PINRemoteImageManager *)sharedPINRemoteImageManager {
+- (PINRemoteImageManager *)sharedPINRemoteImageManager
+{
   dispatch_once(&shared_init_predicate, ^{
     sharedPINRemoteImageManager = [ASPINRemoteImageDownloader PINRemoteImageManagerWithConfiguration:nil
                                                                                           imageCache:nil];
@@ -191,7 +200,8 @@ static dispatch_once_t shared_init_predicate;
   return sharedPINRemoteImageManager;
 }
 
-- (BOOL)sharedImageManagerSupportsMemoryRemoval {
+- (BOOL)sharedImageManagerSupportsMemoryRemoval
+{
   static BOOL sharedImageManagerSupportsMemoryRemoval = NO;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -204,7 +214,8 @@ static dispatch_once_t shared_init_predicate;
 #pragma mark ASImageProtocols
 
 #if PIN_ANIMATED_AVAILABLE
-- (nullable id<ASAnimatedImageProtocol>)animatedImageWithData:(NSData *)animatedImageData {
+- (nullable id<ASAnimatedImageProtocol>)animatedImageWithData:(NSData *)animatedImageData
+{
   return [[PINCachedAnimatedImage alloc] initWithAnimatedImageData:animatedImageData];
 }
 #endif
@@ -227,7 +238,8 @@ static dispatch_once_t shared_init_predicate;
 
 - (void)cachedImageWithURL:(NSURL *)URL
              callbackQueue:(dispatch_queue_t)callbackQueue
-                completion:(ASImageCacherCompletion)completion {
+                completion:(ASImageCacherCompletion)completion
+{
   [[self sharedPINRemoteImageManager]
       imageFromCacheWithURL:URL
                processorKey:nil
@@ -248,7 +260,8 @@ static dispatch_once_t shared_init_predicate;
                  }];
 }
 
-- (void)clearFetchedImageFromCacheWithURL:(NSURL *)URL {
+- (void)clearFetchedImageFromCacheWithURL:(NSURL *)URL
+{
   if ([self sharedImageManagerSupportsMemoryRemoval]) {
     PINRemoteImageManager *manager = [self sharedPINRemoteImageManager];
     NSString *key = [manager cacheKeyForURL:URL processorKey:nil];
@@ -272,7 +285,8 @@ static dispatch_once_t shared_init_predicate;
                            priority:(ASImageDownloaderPriority)priority
                       callbackQueue:(dispatch_queue_t)callbackQueue
                    downloadProgress:(ASImageDownloaderProgress)downloadProgress
-                         completion:(ASImageDownloaderCompletion)completion {
+                         completion:(ASImageDownloaderCompletion)completion
+{
   PINRemoteImageManagerPriority pi_priority = PINRemoteImageManagerPriorityWithASImageDownloaderPriority(priority);
 
   PINRemoteImageManagerProgressDownload progressDownload = ^(int64_t completedBytes, int64_t totalBytes) {
@@ -316,19 +330,22 @@ static dispatch_once_t shared_init_predicate;
                                                        completion:imageCompletion];
 }
 
-- (void)cancelImageDownloadForIdentifier:(id)downloadIdentifier {
+- (void)cancelImageDownloadForIdentifier:(id)downloadIdentifier
+{
   ASDisplayNodeAssert([downloadIdentifier isKindOfClass:[NSUUID class]], @"downloadIdentifier must be NSUUID");
   [[self sharedPINRemoteImageManager] cancelTaskWithUUID:downloadIdentifier storeResumeData:NO];
 }
 
-- (void)cancelImageDownloadWithResumePossibilityForIdentifier:(id)downloadIdentifier {
+- (void)cancelImageDownloadWithResumePossibilityForIdentifier:(id)downloadIdentifier
+{
   ASDisplayNodeAssert([downloadIdentifier isKindOfClass:[NSUUID class]], @"downloadIdentifier must be NSUUID");
   [[self sharedPINRemoteImageManager] cancelTaskWithUUID:downloadIdentifier storeResumeData:YES];
 }
 
 - (void)setProgressImageBlock:(ASImageDownloaderProgressImage)progressBlock
                 callbackQueue:(dispatch_queue_t)callbackQueue
-       withDownloadIdentifier:(id)downloadIdentifier {
+       withDownloadIdentifier:(id)downloadIdentifier
+{
   ASDisplayNodeAssert([downloadIdentifier isKindOfClass:[NSUUID class]], @"downloadIdentifier must be NSUUID");
 
   if (progressBlock) {
@@ -344,7 +361,8 @@ static dispatch_once_t shared_init_predicate;
   }
 }
 
-- (void)setPriority:(ASImageDownloaderPriority)priority withDownloadIdentifier:(id)downloadIdentifier {
+- (void)setPriority:(ASImageDownloaderPriority)priority withDownloadIdentifier:(id)downloadIdentifier
+{
   ASDisplayNodeAssert([downloadIdentifier isKindOfClass:[NSUUID class]], @"downloadIdentifier must be NSUUID");
 
   PINRemoteImageManagerPriority pi_priority = PINRemoteImageManagerPriorityWithASImageDownloaderPriority(priority);
@@ -353,7 +371,8 @@ static dispatch_once_t shared_init_predicate;
 
 #pragma mark - PINRemoteImageManagerAlternateRepresentationProvider
 
-- (id)alternateRepresentationWithData:(NSData *)data options:(PINRemoteImageManagerDownloadOptions)options {
+- (id)alternateRepresentationWithData:(NSData *)data options:(PINRemoteImageManagerDownloadOptions)options
+{
 #if PIN_ANIMATED_AVAILABLE
   if ([data pin_isAnimatedGIF]) {
     return data;
@@ -375,7 +394,8 @@ static dispatch_once_t shared_init_predicate;
  * If queue is nil, assert and perform now.
  * Otherwise, dispatch async to queue.
  */
-+ (void)_performWithCallbackQueue:(dispatch_queue_t)queue work:(void (^)(void))work {
++ (void)_performWithCallbackQueue:(dispatch_queue_t)queue work:(void (^)(void))work
+{
   if (work == nil) {
     // No need to assert here, really. We aren't expecting any feedback from this method.
     return;

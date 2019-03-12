@@ -106,16 +106,19 @@ AS_EXTERN void ASTraitCollectionPropagateDown(id<ASLayoutElement> element, ASPri
 
 @end
 
-#define ASPrimitiveTraitCollectionDefaults                                           \
-  -(ASPrimitiveTraitCollection)primitiveTraitCollection {                            \
-    return _primitiveTraitCollection.load();                                         \
-  }                                                                                  \
-  -(void)setPrimitiveTraitCollection : (ASPrimitiveTraitCollection)traitCollection { \
-    _primitiveTraitCollection = traitCollection;                                     \
+#define ASPrimitiveTraitCollectionDefaults                                         \
+  -(ASPrimitiveTraitCollection)primitiveTraitCollection                            \
+  {                                                                                \
+    return _primitiveTraitCollection.load();                                       \
+  }                                                                                \
+  -(void)setPrimitiveTraitCollection : (ASPrimitiveTraitCollection)traitCollection \
+  {                                                                                \
+    _primitiveTraitCollection = traitCollection;                                   \
   }
 
 #define ASLayoutElementCollectionTableSetTraitCollection(lock)                                                     \
-  -(void)setPrimitiveTraitCollection : (ASPrimitiveTraitCollection)traitCollection {                               \
+  -(void)setPrimitiveTraitCollection : (ASPrimitiveTraitCollection)traitCollection                                 \
+  {                                                                                                                \
     AS::MutexLocker l(lock);                                                                                       \
                                                                                                                    \
     ASPrimitiveTraitCollection oldTraits = self.primitiveTraitCollection;                                          \

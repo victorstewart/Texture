@@ -19,7 +19,8 @@ static NSString *const ASTraceEventThreadDescriptionKey = @"ASThreadTraceEventDe
 
 @implementation ASTraceEvent
 
-- (instancetype)initWithBacktrace:(NSArray<NSString *> *)backtrace format:(NSString *)format arguments:(va_list)args {
+- (instancetype)initWithBacktrace:(NSArray<NSString *> *)backtrace format:(NSString *)format arguments:(va_list)args
+{
   self = [super init];
   if (self != nil) {
     static NSTimeInterval refTime;
@@ -58,7 +59,8 @@ static NSString *const ASTraceEventThreadDescriptionKey = @"ASThreadTraceEventDe
   return self;
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
   return [NSString stringWithFormat:@"<(%@) t=%7.3f: %@>", _threadDescription, _timestamp, _message];
 }
 

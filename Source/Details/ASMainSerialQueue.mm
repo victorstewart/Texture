@@ -21,7 +21,8 @@
 
 @implementation ASMainSerialQueue
 
-- (instancetype)init {
+- (instancetype)init
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -30,12 +31,14 @@
   return self;
 }
 
-- (NSUInteger)numberOfScheduledBlocks {
+- (NSUInteger)numberOfScheduledBlocks
+{
   AS::MutexLocker l(_serialQueueLock);
   return _blocks.count;
 }
 
-- (void)performBlockOnMainThread:(dispatch_block_t)block {
+- (void)performBlockOnMainThread:(dispatch_block_t)block
+{
   AS::UniqueLock l(_serialQueueLock);
   [_blocks addObject:block];
   {
@@ -45,7 +48,8 @@
   }
 }
 
-- (void)runBlocks {
+- (void)runBlocks
+{
   dispatch_block_t mainThread = ^{
     AS::UniqueLock l(self->_serialQueueLock);
     do {
@@ -67,7 +71,8 @@
   ASPerformBlockOnMainThread(mainThread);
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
   return [[super description] stringByAppendingFormat:@" Blocks: %@", _blocks];
 }
 

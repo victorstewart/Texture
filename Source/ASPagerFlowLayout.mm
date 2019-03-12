@@ -20,19 +20,22 @@
 // TODO make this an ASCollectionViewLayout
 @implementation ASPagerFlowLayout
 
-- (ASCollectionView *)asCollectionView {
+- (ASCollectionView *)asCollectionView
+{
   // Dynamic cast is too slow and not worth it.
   return (ASCollectionView *)self.collectionView;
 }
 
-- (void)prepareLayout {
+- (void)prepareLayout
+{
   [super prepareLayout];
   if (_currentCellNode == nil) {
     [self _updateCurrentNode];
   }
 }
 
-- (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset {
+- (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset
+{
   // Don't mess around if the user is interacting with the page node. Although if just a rotation happened we should
   // try to use the current index path to not end up setting the target content offset to something in between pages
   if (!self.collectionView.decelerating && !self.collectionView.tracking) {
@@ -46,7 +49,8 @@
 }
 
 - (CGPoint)_targetContentOffsetForItemAtIndexPath:(NSIndexPath *)indexPath
-                            proposedContentOffset:(CGPoint)proposedContentOffset {
+                            proposedContentOffset:(CGPoint)proposedContentOffset
+{
   if ([self _dataSourceIsEmpty]) {
     return proposedContentOffset;
   }
@@ -60,11 +64,13 @@
   return CGPointMake(attributes.frame.origin.x - xOffset, proposedContentOffset.y);
 }
 
-- (BOOL)_dataSourceIsEmpty {
+- (BOOL)_dataSourceIsEmpty
+{
   return ([self.collectionView numberOfSections] == 0 || [self.collectionView numberOfItemsInSection:0] == 0);
 }
 
-- (void)_updateCurrentNode {
+- (void)_updateCurrentNode
+{
   // Never change node during an animated bounds change (rotation)
   // NOTE! Listening for -prepareForAnimatedBoundsChange and -finalizeAnimatedBoundsChange
   // isn't sufficient here! It's broken!
@@ -87,12 +93,14 @@
   }
 }
 
-- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
+- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
+{
   [self _updateCurrentNode];
   return [super shouldInvalidateLayoutForBoundsChange:newBounds];
 }
 
-- (UICollectionViewLayoutInvalidationContext *)invalidationContextForBoundsChange:(CGRect)newBounds {
+- (UICollectionViewLayoutInvalidationContext *)invalidationContextForBoundsChange:(CGRect)newBounds
+{
   UICollectionViewFlowLayoutInvalidationContext *ctx =
       (UICollectionViewFlowLayoutInvalidationContext *)[super invalidationContextForBoundsChange:newBounds];
   ctx.invalidateFlowLayoutDelegateMetrics = YES;

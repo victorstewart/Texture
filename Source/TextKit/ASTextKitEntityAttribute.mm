@@ -13,18 +13,21 @@
 
 @implementation ASTextKitEntityAttribute
 
-- (instancetype)initWithEntity:(id<NSObject>)entity {
+- (instancetype)initWithEntity:(id<NSObject>)entity
+{
   if (self = [super init]) {
     _entity = entity;
   }
   return self;
 }
 
-- (NSUInteger)hash {
+- (NSUInteger)hash
+{
   return [_entity hash];
 }
 
-- (BOOL)isEqual:(id)object {
+- (BOOL)isEqual:(id)object
+{
   if (self == object) {
     return YES;
   }

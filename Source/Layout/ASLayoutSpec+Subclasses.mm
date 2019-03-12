@@ -21,7 +21,8 @@
 
 @implementation ASNullLayoutSpec : ASLayoutSpec
 
-+ (ASNullLayoutSpec *)null {
++ (ASNullLayoutSpec *)null
+{
   static ASNullLayoutSpec *sharedNullLayoutSpec = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -30,11 +31,13 @@
   return sharedNullLayoutSpec;
 }
 
-- (BOOL)isMutable {
+- (BOOL)isMutable
+{
   return NO;
 }
 
-- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize {
+- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize
+{
   return [ASLayout layoutWithLayoutElement:self size:CGSizeZero];
 }
 
@@ -46,7 +49,8 @@
 
 #pragma mark - Child with index
 
-- (void)setChild:(id<ASLayoutElement>)child atIndex:(NSUInteger)index {
+- (void)setChild:(id<ASLayoutElement>)child atIndex:(NSUInteger)index
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
 
   id<ASLayoutElement> layoutElement = child ?: [ASNullLayoutSpec null];
@@ -66,7 +70,8 @@
   _childrenArray[index] = layoutElement;
 }
 
-- (id<ASLayoutElement>)childAtIndex:(NSUInteger)index {
+- (id<ASLayoutElement>)childAtIndex:(NSUInteger)index
+{
   id<ASLayoutElement> layoutElement = nil;
   if (index < _childrenArray.count) {
     layoutElement = _childrenArray[index];

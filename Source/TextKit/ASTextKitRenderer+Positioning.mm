@@ -24,10 +24,11 @@ static const CGFloat ASTextKitRendererTextCapHeightPadding = 1.3;
 
 @implementation ASTextKitRenderer (Tracking)
 
-- (NSArray *)rectsForTextRange:(NSRange)textRange measureOption:(ASTextKitRendererMeasureOption)measureOption {
+- (NSArray *)rectsForTextRange:(NSRange)textRange measureOption:(ASTextKitRendererMeasureOption)measureOption
+{
   __block NSArray *textRects = nil;
-  [self.context performBlockWithLockedTextKitComponents:^(NSLayoutManager *layoutManager, NSTextStorage *textStorage,
-                                                          NSTextContainer *textContainer) {
+  [self.context performBlockWithLockedTextKitComponents:^(
+                    NSLayoutManager *layoutManager, NSTextStorage *textStorage, NSTextContainer *textContainer) {
     textRects = [self unlockedRectsForTextRange:textRange
                                  measureOptions:measureOption
                                   layoutManager:layoutManager
@@ -45,7 +46,8 @@ static const CGFloat ASTextKitRendererTextCapHeightPadding = 1.3;
                         measureOptions:(ASTextKitRendererMeasureOption)measureOption
                          layoutManager:(NSLayoutManager *)layoutManager
                            textStorage:(NSTextStorage *)textStorage
-                         textContainer:(NSTextContainer *)textContainer {
+                         textContainer:(NSTextContainer *)textContainer
+{
   NSRange clampedRange = NSIntersectionRange(textRange, NSMakeRange(0, [textStorage length]));
   if (clampedRange.location == NSNotFound || clampedRange.length == 0) {
     return @[];
@@ -63,8 +65,11 @@ static const CGFloat ASTextKitRendererTextCapHeightPadding = 1.3;
 
   [layoutManager
       enumerateLineFragmentsForGlyphRange:totalGlyphRange
-                               usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer *innerTextContainer,
-                                            NSRange glyphRange, BOOL *stop) {
+                               usingBlock:^(CGRect rect,
+                                            CGRect usedRect,
+                                            NSTextContainer *innerTextContainer,
+                                            NSRange glyphRange,
+                                            BOOL *stop) {
                                  CGRect lineRect = CGRectNull;
                                  // If we're empty, don't bother looping through glyphs, use the default.
                                  if (CGRectIsEmpty(usedRect)) {
@@ -75,7 +80,8 @@ static const CGFloat ASTextKitRendererTextCapHeightPadding = 1.3;
                                    // imposing the font attributes returned by the glyph's font.
                                    NSRange lineGlyphRange = NSIntersectionRange(totalGlyphRange, glyphRange);
                                    for (NSUInteger i = lineGlyphRange.location;
-                                        i < NSMaxRange(lineGlyphRange) && i < string.length; i++) {
+                                        i < NSMaxRange(lineGlyphRange) && i < string.length;
+                                        i++) {
                                      // We grab the properly sized rect for the glyph
                                      CGRect properGlyphRect = [self _internalRectForGlyphAtIndex:i
                                                                                    measureOption:measureOption
@@ -164,7 +170,8 @@ static const CGFloat ASTextKitRendererTextCapHeightPadding = 1.3;
   return [mutableTextRects copy];
 }
 
-- (NSUInteger)nearestTextIndexAtPosition:(CGPoint)position {
+- (NSUInteger)nearestTextIndexAtPosition:(CGPoint)position
+{
   // Check in a 9-point region around the actual touch point so we make sure
   // we get the best attribute for the touch.
   __block CGFloat minimumGlyphDistance = CGFLOAT_MAX;
@@ -192,7 +199,8 @@ static const CGFloat ASTextKitRendererTextCapHeightPadding = 1.3;
                          measureOption:(ASTextKitRendererMeasureOption)measureOption
                          layoutManager:(NSLayoutManager *)layoutManager
                          textContainer:(NSTextContainer *)textContainer
-                           textStorage:(NSTextStorage *)textStorage {
+                           textStorage:(NSTextStorage *)textStorage
+{
   NSUInteger charIndex = [layoutManager characterIndexForGlyphAtIndex:glyphIndex];
   CGGlyph glyph = [layoutManager glyphAtIndex:glyphIndex];
   CTFontRef font =
@@ -260,7 +268,8 @@ static const CGFloat ASTextKitRendererTextCapHeightPadding = 1.3;
 
     properGlyphRect = CGRectMake(glyphCenter.x - advance * 0.5,
                                  glyphCenter.y - glyphHeight * 0.5 + (ascent - capHeight) - topPadding + leading,
-                                 advance, capHeight + topPadding + bottomPadding);
+                                 advance,
+                                 capHeight + topPadding + bottomPadding);
   } else {
     // We are just measuring the line heights here, so we can use the
     // heights used by TextKit, which tend to be pretty good.
@@ -272,15 +281,16 @@ static const CGFloat ASTextKitRendererTextCapHeightPadding = 1.3;
   return properGlyphRect;
 }
 
-- (void)enumerateTextIndexesAtPosition:(CGPoint)externalPosition usingBlock:(as_text_component_index_block_t)block {
+- (void)enumerateTextIndexesAtPosition:(CGPoint)externalPosition usingBlock:(as_text_component_index_block_t)block
+{
   // This method is a little complex because it has to call out to client code from inside an enumeration that needs
   // to achieve a lock on the textkit components.  It cannot call out to client code from within that lock so we just
   // perform the textkit-locked ops inside the locked context.
   ASTextKitContext *lockingContext = self.context;
   CGPoint internalPosition = [self.shadower offsetPointWithExternalPoint:externalPosition];
   __block BOOL invalidPosition = NO;
-  [lockingContext performBlockWithLockedTextKitComponents:^(NSLayoutManager *layoutManager, NSTextStorage *textStorage,
-                                                            NSTextContainer *textContainer) {
+  [lockingContext performBlockWithLockedTextKitComponents:^(
+                      NSLayoutManager *layoutManager, NSTextStorage *textStorage, NSTextContainer *textContainer) {
     invalidPosition = internalPosition.x > textContainer.size.width || internalPosition.y > textContainer.size.height ||
                       block == NULL;
   }];
@@ -335,9 +345,10 @@ static const CGFloat ASTextKitRendererTextCapHeightPadding = 1.3;
 
       // Sometimes TextKit plays jokes on us and returns glyphs that really aren't close to the point in question.
       // Silly TextKit...
-      if (!isValidGlyph || !CGRectContainsPoint(CGRectInset(glyphRect, -ASTextKitRendererGlyphTouchHitSlop,
-                                                            -ASTextKitRendererGlyphTouchHitSlop),
-                                                currentPoint)) {
+      if (!isValidGlyph ||
+          !CGRectContainsPoint(
+              CGRectInset(glyphRect, -ASTextKitRendererGlyphTouchHitSlop, -ASTextKitRendererGlyphTouchHitSlop),
+              currentPoint)) {
         continue;
       }
 
@@ -346,10 +357,11 @@ static const CGFloat ASTextKitRendererTextCapHeightPadding = 1.3;
   }
 }
 
-- (CGRect)trailingRect {
+- (CGRect)trailingRect
+{
   __block CGRect trailingRect = CGRectNull;
-  [self.context performBlockWithLockedTextKitComponents:^(NSLayoutManager *layoutManager, NSTextStorage *textStorage,
-                                                          NSTextContainer *textContainer) {
+  [self.context performBlockWithLockedTextKitComponents:^(
+                    NSLayoutManager *layoutManager, NSTextStorage *textStorage, NSTextContainer *textContainer) {
     CGSize calculatedSize = textContainer.size;
     // If have an empty string, then our whole bounds constitute trailing space.
     if ([textStorage length] == 0) {
@@ -372,10 +384,11 @@ static const CGFloat ASTextKitRendererTextCapHeightPadding = 1.3;
   return trailingRect;
 }
 
-- (CGRect)frameForTextRange:(NSRange)textRange {
+- (CGRect)frameForTextRange:(NSRange)textRange
+{
   __block CGRect textRect = CGRectNull;
-  [self.context performBlockWithLockedTextKitComponents:^(NSLayoutManager *layoutManager, NSTextStorage *textStorage,
-                                                          NSTextContainer *textContainer) {
+  [self.context performBlockWithLockedTextKitComponents:^(
+                    NSLayoutManager *layoutManager, NSTextStorage *textStorage, NSTextContainer *textContainer) {
     // Bail on invalid range.
     if (NSMaxRange(textRange) > [textStorage length]) {
       ASDisplayNodeCFailAssert(@"Invalid range");

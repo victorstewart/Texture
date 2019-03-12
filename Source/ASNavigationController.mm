@@ -26,7 +26,8 @@ ASVisibilitySetVisibilityDepth;
 
 ASVisibilityDepthImplementation;
 
-- (void)visibilityDepthDidChange {
+- (void)visibilityDepthDidChange
+{
   for (UIViewController *viewController in self.viewControllers) {
     if ([viewController conformsToProtocol:@protocol(ASVisibilityDepth)]) {
       [(id<ASVisibilityDepth>)viewController visibilityDepthDidChange];
@@ -34,7 +35,8 @@ ASVisibilityDepthImplementation;
   }
 }
 
-- (NSInteger)visibilityDepthOfChildViewController:(UIViewController *)childViewController {
+- (NSInteger)visibilityDepthOfChildViewController:(UIViewController *)childViewController
+{
   NSUInteger viewControllerIndex = [self.viewControllers indexOfObjectIdenticalTo:childViewController];
   if (viewControllerIndex == NSNotFound) {
     // If childViewController is not actually a child, return NSNotFound which is also a really large number.
@@ -54,17 +56,19 @@ ASVisibilityDepthImplementation;
 
 #pragma mark - UIKit overrides
 
-- (NSArray *)popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
+- (NSArray *)popToViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
   as_activity_create_for_scope("Pop multiple from ASNavigationController");
   NSArray *viewControllers = [super popToViewController:viewController animated:animated];
-  as_log_info(ASNodeLog(), "Popped %@ to %@, removing %@", self, viewController,
-              ASGetDescriptionValueString(viewControllers));
+  as_log_info(
+      ASNodeLog(), "Popped %@ to %@, removing %@", self, viewController, ASGetDescriptionValueString(viewControllers));
 
   [self visibilityDepthDidChange];
   return viewControllers;
 }
 
-- (NSArray *)popToRootViewControllerAnimated:(BOOL)animated {
+- (NSArray *)popToRootViewControllerAnimated:(BOOL)animated
+{
   as_activity_create_for_scope("Pop to root of ASNavigationController");
   NSArray *viewControllers = [super popToRootViewControllerAnimated:animated];
   as_log_info(ASNodeLog(), "Popped view controllers %@ from %@", ASGetDescriptionValueString(viewControllers), self);
@@ -73,29 +77,36 @@ ASVisibilityDepthImplementation;
   return viewControllers;
 }
 
-- (void)setViewControllers:(NSArray *)viewControllers {
+- (void)setViewControllers:(NSArray *)viewControllers
+{
   // NOTE: As of now this method calls through to setViewControllers:animated: so no need to log/activity here.
 
   [super setViewControllers:viewControllers];
   [self visibilityDepthDidChange];
 }
 
-- (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated {
+- (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated
+{
   as_activity_create_for_scope("Set view controllers of ASNavigationController");
-  as_log_info(ASNodeLog(), "Set view controllers of %@ to %@ animated: %d", self,
-              ASGetDescriptionValueString(viewControllers), animated);
+  as_log_info(ASNodeLog(),
+              "Set view controllers of %@ to %@ animated: %d",
+              self,
+              ASGetDescriptionValueString(viewControllers),
+              animated);
   [super setViewControllers:viewControllers animated:animated];
   [self visibilityDepthDidChange];
 }
 
-- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
   as_activity_create_for_scope("Push view controller on ASNavigationController");
   as_log_info(ASNodeLog(), "Pushing %@ onto %@", viewController, self);
   [super pushViewController:viewController animated:animated];
   [self visibilityDepthDidChange];
 }
 
-- (UIViewController *)popViewControllerAnimated:(BOOL)animated {
+- (UIViewController *)popViewControllerAnimated:(BOOL)animated
+{
   as_activity_create_for_scope("Pop view controller from ASNavigationController");
   UIViewController *viewController = [super popViewControllerAnimated:animated];
   as_log_info(ASNodeLog(), "Popped %@ from %@", viewController, self);

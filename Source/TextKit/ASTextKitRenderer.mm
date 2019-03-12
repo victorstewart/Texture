@@ -23,7 +23,8 @@
 //#define LOG(...) NSLog(__VA_ARGS__)
 #define LOG(...)
 
-static NSCharacterSet *_defaultAvoidTruncationCharacterSet() {
+static NSCharacterSet *_defaultAvoidTruncationCharacterSet()
+{
   static NSCharacterSet *truncationCharacterSet;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -44,7 +45,8 @@ static NSCharacterSet *_defaultAvoidTruncationCharacterSet() {
 #pragma mark - Initialization
 
 - (instancetype)initWithTextKitAttributes:(const ASTextKitAttributes &)attributes
-                          constrainedSize:(const CGSize)constrainedSize {
+                          constrainedSize:(const CGSize)constrainedSize
+{
   if (self = [super init]) {
     _constrainedSize = constrainedSize;
     _attributes = attributes;
@@ -82,7 +84,8 @@ static NSCharacterSet *_defaultAvoidTruncationCharacterSet() {
   return self;
 }
 
-- (NSStringDrawingContext *)stringDrawingContext {
+- (NSStringDrawingContext *)stringDrawingContext
+{
   // String drawing contexts are not safe to use from more than one thread.
   // i.e. if they are created on one thread, it is unsafe to use them on another.
   // Therefore we always need to create a new one.
@@ -99,11 +102,13 @@ static NSCharacterSet *_defaultAvoidTruncationCharacterSet() {
 
 #pragma mark - Sizing
 
-- (CGSize)size {
+- (CGSize)size
+{
   return _calculatedSize;
 }
 
-- (void)_calculateSize {
+- (void)_calculateSize
+{
   // if we have no scale factors or an unconstrained width, there is no reason to try to adjust the font size
   if (isinf(_constrainedSize.width) == NO && [_attributes.pointSizeScaleFactors count] > 0) {
     _currentScaleFactor = [[self fontSizeAdjuster] scaleFactor];
@@ -148,8 +153,8 @@ static NSCharacterSet *_defaultAvoidTruncationCharacterSet() {
 
   // Force glyph generation and layout, which may not have happened yet (and isn't triggered by
   // -usedRectForTextContainer:).
-  [[self context] performBlockWithLockedTextKitComponents:^(NSLayoutManager *layoutManager, NSTextStorage *textStorage,
-                                                            NSTextContainer *textContainer) {
+  [[self context] performBlockWithLockedTextKitComponents:^(
+                      NSLayoutManager *layoutManager, NSTextStorage *textStorage, NSTextContainer *textContainer) {
     [layoutManager ensureLayoutForTextContainer:textContainer];
     boundingRect = [layoutManager usedRectForTextContainer:textContainer];
     if (isScaled) {
@@ -165,21 +170,25 @@ static NSCharacterSet *_defaultAvoidTruncationCharacterSet() {
   _calculatedSize = [_shadower outsetSizeWithInsetSize:boundingRect.size];
 }
 
-- (BOOL)isScaled {
+- (BOOL)isScaled
+{
   return (_currentScaleFactor > 0 && _currentScaleFactor < 1.0);
 }
 
-- (BOOL)usesCustomTruncation {
+- (BOOL)usesCustomTruncation
+{
   // NOTE: This code does not correctly handle if they set `…` with different attributes.
   return _attributes.avoidTailTruncationSet != nil ||
          [_attributes.truncationAttributedString.string isEqualToString:@"\u2026"] == NO;
 }
 
-- (BOOL)usesExclusionPaths {
+- (BOOL)usesExclusionPaths
+{
   return _attributes.exclusionPaths.count > 0;
 }
 
-- (BOOL)canUseFastPath {
+- (BOOL)canUseFastPath
+{
   return NO;
   //  Fast path is temporarily disabled, because it's crashing in production.
   //  NOTE: Remember to re-enable testFastPathTruncation when we re-enable this.
@@ -237,8 +246,8 @@ static NSCharacterSet *_defaultAvoidTruncationCharacterSet() {
 
       NSRange glyphRange = [layoutManager glyphRangeForBoundingRect:(CGRect){.size = textContainer.size}
                                                     inTextContainer:textContainer];
-      LOG(@"boundingRect: %@", NSStringFromCGRect([layoutManager boundingRectForGlyphRange:glyphRange
-                                                                           inTextContainer:textContainer]));
+      LOG(@"boundingRect: %@",
+          NSStringFromCGRect([layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer]));
 
       [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:shadowInsetBounds.origin];
       [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:shadowInsetBounds.origin];
@@ -257,10 +266,11 @@ static NSCharacterSet *_defaultAvoidTruncationCharacterSet() {
 
 #pragma mark - String Ranges
 
-- (NSUInteger)lineCount {
+- (NSUInteger)lineCount
+{
   __block NSUInteger lineCount = 0;
-  [[self context] performBlockWithLockedTextKitComponents:^(NSLayoutManager *layoutManager, NSTextStorage *textStorage,
-                                                            NSTextContainer *textContainer) {
+  [[self context] performBlockWithLockedTextKitComponents:^(
+                      NSLayoutManager *layoutManager, NSTextStorage *textStorage, NSTextContainer *textContainer) {
     for (NSRange lineRange = {0, 0}; NSMaxRange(lineRange) < [layoutManager numberOfGlyphs]; lineCount++) {
       [layoutManager lineFragmentRectForGlyphAtIndex:NSMaxRange(lineRange) effectiveRange:&lineRange];
     }
@@ -268,7 +278,8 @@ static NSCharacterSet *_defaultAvoidTruncationCharacterSet() {
   return lineCount;
 }
 
-- (BOOL)isTruncated {
+- (BOOL)isTruncated
+{
   if (self.canUseFastPath) {
     CGRect boundedRect = [_attributes.attributedString
         boundingRectWithSize:CGSizeMake(_constrainedSize.width, CGFLOAT_MAX)
@@ -280,7 +291,8 @@ static NSCharacterSet *_defaultAvoidTruncationCharacterSet() {
   }
 }
 
-- (std::vector<NSRange>)visibleRanges {
+- (std::vector<NSRange>)visibleRanges
+{
   return _truncater.visibleRanges;
 }
 
@@ -288,7 +300,8 @@ static NSCharacterSet *_defaultAvoidTruncationCharacterSet() {
 
 @implementation ASTextKitRenderer (ASTextKitRendererConvenience)
 
-- (NSRange)firstVisibleRange {
+- (NSRange)firstVisibleRange
+{
   std::vector<NSRange> visibleRanges = self.visibleRanges;
   if (visibleRanges.size() > 0) {
     return visibleRanges[0];

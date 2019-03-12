@@ -91,17 +91,19 @@ AS_EXTERN ASLayoutRangeMode ASLayoutRangeModeForVisibilityDepth(NSUInteger visib
 
 @end
 
-#define ASVisibilitySetVisibilityDepth                      \
-  -(void)setVisibilityDepth : (NSUInteger)visibilityDepth { \
-    if (_visibilityDepth == visibilityDepth) {              \
-      return;                                               \
-    }                                                       \
-    _visibilityDepth = visibilityDepth;                     \
-    [self visibilityDepthDidChange];                        \
+#define ASVisibilitySetVisibilityDepth                    \
+  -(void)setVisibilityDepth : (NSUInteger)visibilityDepth \
+  {                                                       \
+    if (_visibilityDepth == visibilityDepth) {            \
+      return;                                             \
+    }                                                     \
+    _visibilityDepth = visibilityDepth;                   \
+    [self visibilityDepthDidChange];                      \
   }
 
 #define ASVisibilityDepthImplementation                                                                                \
-  -(NSInteger)visibilityDepth {                                                                                        \
+  -(NSInteger)visibilityDepth                                                                                          \
+  {                                                                                                                    \
     if (self.parentViewController && _parentManagesVisibilityDepth == NO) {                                            \
       _parentManagesVisibilityDepth =                                                                                  \
           [self.parentViewController conformsToProtocol:@protocol(ASManagesChildVisibilityDepth)];                     \
@@ -114,7 +116,8 @@ AS_EXTERN ASLayoutRangeMode ASLayoutRangeModeForVisibilityDepth(NSUInteger visib
   }
 
 #define ASVisibilityViewDidDisappearImplementation \
-  -(void)viewDidDisappear : (BOOL)animated {       \
+  -(void)viewDidDisappear : (BOOL)animated         \
+  {                                                \
     [super viewDidDisappear:animated];             \
                                                    \
     if (_parentManagesVisibilityDepth == NO) {     \
@@ -123,7 +126,8 @@ AS_EXTERN ASLayoutRangeMode ASLayoutRangeModeForVisibilityDepth(NSUInteger visib
   }
 
 #define ASVisibilityViewWillAppear             \
-  -(void)viewWillAppear : (BOOL)animated {     \
+  -(void)viewWillAppear : (BOOL)animated       \
+  {                                            \
     [super viewWillAppear:animated];           \
                                                \
     if (_parentManagesVisibilityDepth == NO) { \
@@ -131,11 +135,12 @@ AS_EXTERN ASLayoutRangeMode ASLayoutRangeModeForVisibilityDepth(NSUInteger visib
     }                                          \
   }
 
-#define ASVisibilityDidMoveToParentViewController                     \
-  -(void)didMoveToParentViewController : (UIViewController *)parent { \
-    [super didMoveToParentViewController:parent];                     \
-    _parentManagesVisibilityDepth = NO;                               \
-    [self visibilityDepthDidChange];                                  \
+#define ASVisibilityDidMoveToParentViewController                   \
+  -(void)didMoveToParentViewController : (UIViewController *)parent \
+  {                                                                 \
+    [super didMoveToParentViewController:parent];                   \
+    _parentManagesVisibilityDepth = NO;                             \
+    [self visibilityDepthDidChange];                                \
   }
 
 NS_ASSUME_NONNULL_END

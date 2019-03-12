@@ -11,11 +11,13 @@
 #import <AsyncDisplayKit/ASEqualityHelpers.h>
 #import <AsyncDisplayKit/_ASCoreAnimationExtras.h>
 
-void ASDisplayNodeSetupLayerContentsWithResizableImage(CALayer *layer, UIImage *image) {
+void ASDisplayNodeSetupLayerContentsWithResizableImage(CALayer *layer, UIImage *image)
+{
   ASDisplayNodeSetResizableContents(layer, image);
 }
 
-void ASDisplayNodeSetResizableContents(id<ASResizableContents> obj, UIImage *image) {
+void ASDisplayNodeSetResizableContents(id<ASResizableContents> obj, UIImage *image)
+{
   // FIXME (https://github.com/TextureGroup/Texture/issues/1046): This method does not currently handle
   // UIImageResizingModeTile, which is the default. See also
   // https://developer.apple.com/documentation/uikit/uiimage/1624157-resizingmode?language=objc I'm not sure of a way to
@@ -66,7 +68,8 @@ struct _UIContentModeStringLUTEntry {
   NSString *const string;
 };
 
-static const _UIContentModeStringLUTEntry *UIContentModeCAGravityLUT(size_t *count) {
+static const _UIContentModeStringLUTEntry *UIContentModeCAGravityLUT(size_t *count)
+{
   // Initialize this in a function (instead of at file level) to avoid
   // startup initialization time.
   static const _UIContentModeStringLUTEntry sUIContentModeCAGravityLUT[] = {
@@ -87,7 +90,8 @@ static const _UIContentModeStringLUTEntry *UIContentModeCAGravityLUT(size_t *cou
   return sUIContentModeCAGravityLUT;
 }
 
-static const _UIContentModeStringLUTEntry *UIContentModeDescriptionLUT(size_t *count) {
+static const _UIContentModeStringLUTEntry *UIContentModeDescriptionLUT(size_t *count)
+{
   // Initialize this in a function (instead of at file level) to avoid
   // startup initialization time.
   static const _UIContentModeStringLUTEntry sUIContentModeDescriptionLUT[] = {
@@ -109,7 +113,8 @@ static const _UIContentModeStringLUTEntry *UIContentModeDescriptionLUT(size_t *c
   return sUIContentModeDescriptionLUT;
 }
 
-NSString *ASDisplayNodeNSStringFromUIContentMode(UIViewContentMode contentMode) {
+NSString *ASDisplayNodeNSStringFromUIContentMode(UIViewContentMode contentMode)
+{
   size_t lutSize;
   const _UIContentModeStringLUTEntry *lut = UIContentModeDescriptionLUT(&lutSize);
   for (size_t i = 0; i < lutSize; ++i) {
@@ -120,7 +125,8 @@ NSString *ASDisplayNodeNSStringFromUIContentMode(UIViewContentMode contentMode) 
   return [NSString stringWithFormat:@"%d", (int)contentMode];
 }
 
-UIViewContentMode ASDisplayNodeUIContentModeFromNSString(NSString *string) {
+UIViewContentMode ASDisplayNodeUIContentModeFromNSString(NSString *string)
+{
   size_t lutSize;
   const _UIContentModeStringLUTEntry *lut = UIContentModeDescriptionLUT(&lutSize);
   for (size_t i = 0; i < lutSize; ++i) {
@@ -131,7 +137,8 @@ UIViewContentMode ASDisplayNodeUIContentModeFromNSString(NSString *string) {
   return UIViewContentModeScaleToFill;
 }
 
-NSString *const ASDisplayNodeCAContentsGravityFromUIContentMode(UIViewContentMode contentMode) {
+NSString *const ASDisplayNodeCAContentsGravityFromUIContentMode(UIViewContentMode contentMode)
+{
   size_t lutSize;
   const _UIContentModeStringLUTEntry *lut = UIContentModeCAGravityLUT(&lutSize);
   for (size_t i = 0; i < lutSize; ++i) {
@@ -140,13 +147,15 @@ NSString *const ASDisplayNodeCAContentsGravityFromUIContentMode(UIViewContentMod
     }
   }
   ASDisplayNodeCAssert(contentMode == UIViewContentModeRedraw,
-                       @"Encountered an unknown contentMode %ld. Is this a new version of iOS?", (long)contentMode);
+                       @"Encountered an unknown contentMode %ld. Is this a new version of iOS?",
+                       (long)contentMode);
   // Redraw is ok to return nil.
   return nil;
 }
 
 #define ContentModeCacheSize 10
-UIViewContentMode ASDisplayNodeUIContentModeFromCAContentsGravity(NSString *const contentsGravity) {
+UIViewContentMode ASDisplayNodeUIContentModeFromCAContentsGravity(NSString *const contentsGravity)
+{
   static int currentCacheIndex = 0;
   static NSMutableArray *cachedStrings = [NSMutableArray arrayWithCapacity:ContentModeCacheSize];
   static UIViewContentMode cachedModes[ContentModeCacheSize] = {};
@@ -174,12 +183,17 @@ UIViewContentMode ASDisplayNodeUIContentModeFromCAContentsGravity(NSString *cons
     }
   }
 
-  ASDisplayNodeCAssert(contentsGravity, @"Encountered an unknown contentsGravity \"%@\". Is this a new version of iOS?",
+  ASDisplayNodeCAssert(contentsGravity,
+                       @"Encountered an unknown contentsGravity \"%@\". Is this a new version of iOS?",
                        contentsGravity);
-  ASDisplayNodeCAssert(!contentsGravity, @"You passed nil to ASDisplayNodeUIContentModeFromCAContentsGravity. We're "
-                                         @"falling back to resize, but this is probably a bug.");
+  ASDisplayNodeCAssert(!contentsGravity,
+                       @"You passed nil to ASDisplayNodeUIContentModeFromCAContentsGravity. We're "
+                       @"falling back to resize, but this is probably a bug.");
   // If asserts disabled, fall back to this
   return UIViewContentModeScaleToFill;
 }
 
-BOOL ASDisplayNodeLayerHasAnimations(CALayer *layer) { return (layer.animationKeys.count != 0); }
+BOOL ASDisplayNodeLayerHasAnimations(CALayer *layer)
+{
+  return (layer.animationKeys.count != 0);
+}

@@ -22,7 +22,8 @@
  * in iOS 9, 10, and 11. We'll try to catch if this ever changes by asserting that
  * the bytes-per-row for a 1x1 context from the system is 32.
  */
-static size_t ASGraphicsGetAlignedBytesPerRow(size_t baseValue) {
+static size_t ASGraphicsGetAlignedBytesPerRow(size_t baseValue)
+{
   // Add 31 then zero out low 5 bits.
   return (baseValue + 31) & ~0x1F;
 }
@@ -37,7 +38,8 @@ static UInt8 __contextDataAssociationKey;
 
 #pragma mark - Graphics Contexts
 
-void ASGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque, CGFloat scale) {
+void ASGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque, CGFloat scale)
+{
   if (!ASActivateExperimentalFeature(ASExperimentalGraphicsContexts)) {
     UIGraphicsBeginImageContextWithOptions(size, opaque, scale);
     return;
@@ -81,13 +83,13 @@ void ASGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque, CGFloat sc
   // the copy that usually gets made when you form a CGImage from the context.
   ASCGImageBuffer *buffer = [[ASCGImageBuffer alloc] initWithLength:bufferSize];
 
-  CGContextRef context = CGBitmapContextCreate(buffer.mutableBytes, intWidth, intHeight, bitsPerComponent, bytesPerRow,
-                                               colorspace, bitmapInfo);
+  CGContextRef context = CGBitmapContextCreate(
+      buffer.mutableBytes, intWidth, intHeight, bitsPerComponent, bytesPerRow, colorspace, bitmapInfo);
 
   // Transfer ownership of the data to the context. So that if the context
   // is destroyed before we create an image from it, the data will be released.
-  objc_setAssociatedObject((__bridge id)context, &__contextDataAssociationKey, buffer,
-                           OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  objc_setAssociatedObject(
+      (__bridge id)context, &__contextDataAssociationKey, buffer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
   // Set the CTM to account for iOS orientation & specified scale.
   // If only we could use CGContextSetBaseCTM. It doesn't
@@ -105,7 +107,8 @@ void ASGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque, CGFloat sc
   CGContextRelease(context);
 }
 
-UIImage *_Nullable ASGraphicsGetImageAndEndCurrentContext() NS_RETURNS_RETAINED {
+UIImage *_Nullable ASGraphicsGetImageAndEndCurrentContext() NS_RETURNS_RETAINED
+{
   if (!ASActivateExperimentalFeature(ASExperimentalGraphicsContexts)) {
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -141,10 +144,17 @@ UIImage *_Nullable ASGraphicsGetImageAndEndCurrentContext() NS_RETURNS_RETAINED 
   CGDataProviderRef provider = [buffer createDataProviderAndInvalidate];
 
   // Create the CGImage. Options taken from CGBitmapContextCreateImage.
-  CGImageRef cgImg = CGImageCreate(
-      CGBitmapContextGetWidth(context), CGBitmapContextGetHeight(context), CGBitmapContextGetBitsPerComponent(context),
-      CGBitmapContextGetBitsPerPixel(context), CGBitmapContextGetBytesPerRow(context), imageColorSpace,
-      CGBitmapContextGetBitmapInfo(context), provider, NULL, true, kCGRenderingIntentDefault);
+  CGImageRef cgImg = CGImageCreate(CGBitmapContextGetWidth(context),
+                                   CGBitmapContextGetHeight(context),
+                                   CGBitmapContextGetBitsPerComponent(context),
+                                   CGBitmapContextGetBitsPerPixel(context),
+                                   CGBitmapContextGetBytesPerRow(context),
+                                   imageColorSpace,
+                                   CGBitmapContextGetBitmapInfo(context),
+                                   provider,
+                                   NULL,
+                                   true,
+                                   kCGRenderingIntentDefault);
   CGDataProviderRelease(provider);
 
   // We saved our GState right after setting the CTM so that we could restore it
@@ -161,7 +171,8 @@ UIImage *_Nullable ASGraphicsGetImageAndEndCurrentContext() NS_RETURNS_RETAINED 
   return result;
 }
 
-void ASGraphicsEndImageContext() {
+void ASGraphicsEndImageContext()
+{
   if (!ASActivateExperimentalFeature(ASExperimentalGraphicsContexts)) {
     UIGraphicsEndImageContext();
     return;

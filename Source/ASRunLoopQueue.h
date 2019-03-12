@@ -66,7 +66,8 @@ AS_SUBCLASSING_RESTRICTED
 
 @end
 
-NS_INLINE ASCATransactionQueue *ASCATransactionQueueGet(void) {
+NS_INLINE ASCATransactionQueue *ASCATransactionQueueGet(void)
+{
   static ASCATransactionQueue *q;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{

@@ -85,14 +85,9 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 #pragma mark -
 #pragma mark ASCollectionView.
 
-@interface ASCollectionView () <ASRangeControllerDataSource,
-                                ASRangeControllerDelegate,
-                                ASDataControllerSource,
-                                ASCellNodeInteractionDelegate,
-                                ASDelegateProxyInterceptor,
-                                ASBatchFetchingScrollView,
-                                ASCALayerExtendedDelegate,
-                                UICollectionViewDelegateFlowLayout> {
+@interface ASCollectionView () <ASRangeControllerDataSource, ASRangeControllerDelegate, ASDataControllerSource,
+                                ASCellNodeInteractionDelegate, ASDelegateProxyInterceptor, ASBatchFetchingScrollView,
+                                ASCALayerExtendedDelegate, UICollectionViewDelegateFlowLayout> {
   ASCollectionViewProxy *_proxyDataSource;
   ASCollectionViewProxy *_proxyDelegate;
 
@@ -262,18 +257,21 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 }
 
 // Using _ASDisplayLayer ensures things like -layout are properly forwarded to ASCollectionNode.
-+ (Class)layerClass {
++ (Class)layerClass
+{
   return [_ASDisplayLayer class];
 }
 
 #pragma mark -
 #pragma mark Lifecycle.
 
-- (instancetype)initWithCollectionViewLayout:(UICollectionViewLayout *)layout {
+- (instancetype)initWithCollectionViewLayout:(UICollectionViewLayout *)layout
+{
   return [self initWithFrame:CGRectZero collectionViewLayout:layout];
 }
 
-- (instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout {
+- (instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout
+{
   return [self _initWithFrame:frame collectionViewLayout:layout layoutFacilitator:nil owningNode:nil eventLog:nil];
 }
 
@@ -281,8 +279,10 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
           collectionViewLayout:(UICollectionViewLayout *)layout
              layoutFacilitator:(id<ASCollectionViewLayoutFacilitatorProtocol>)layoutFacilitator
                     owningNode:(ASCollectionNode *)owningNode
-                      eventLog:(ASEventLog *)eventLog {
-  if (!(self = [super initWithFrame:frame collectionViewLayout:layout])) return nil;
+                      eventLog:(ASEventLog *)eventLog
+{
+  if (!(self = [super initWithFrame:frame collectionViewLayout:layout]))
+    return nil;
 
   // Disable UICollectionView prefetching. Use super, because self disables this method.
   // Experiments done by Instagram show that this option being YES (default)
@@ -336,7 +336,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
   ASDisplayNodeAssertMainThread();
   ASDisplayNodeCAssert(_batchUpdateCount == 0, @"ASCollectionView deallocated in the middle of a batch update.");
 
@@ -364,7 +365,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
  * does this e.g. during the first layout pass, or if you call -numberOfSections
  * before its content is loaded.
  */
-- (void)reloadData {
+- (void)reloadData
+{
   [self _superReloadData:nil completion:nil];
 
   // UICollectionView calls -reloadData during first layoutSubviews and when the data source changes.
@@ -381,28 +383,33 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (void)scrollToItemAtIndexPath:(NSIndexPath *)indexPath
                atScrollPosition:(UICollectionViewScrollPosition)scrollPosition
-                       animated:(BOOL)animated {
+                       animated:(BOOL)animated
+{
   if ([self validateIndexPath:indexPath]) {
     [super scrollToItemAtIndexPath:indexPath atScrollPosition:scrollPosition animated:animated];
   }
 }
 
-- (void)relayoutItems {
+- (void)relayoutItems
+{
   [_dataController relayoutAllNodesWithInvalidationBlock:^{
     [self.collectionViewLayout invalidateLayout];
     [self invalidateFlowLayoutDelegateMetrics];
   }];
 }
 
-- (BOOL)isProcessingUpdates {
+- (BOOL)isProcessingUpdates
+{
   return [_dataController isProcessingUpdates];
 }
 
-- (void)onDidFinishProcessingUpdates:(void (^)())completion {
+- (void)onDidFinishProcessingUpdates:(void (^)())completion
+{
   [_dataController onDidFinishProcessingUpdates:completion];
 }
 
-- (void)waitUntilAllUpdatesAreCommitted {
+- (void)waitUntilAllUpdatesAreCommitted
+{
   ASDisplayNodeAssertMainThread();
   if (_batchUpdateCount > 0) {
     // This assertion will be enabled soon.
@@ -413,29 +420,34 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   [_dataController waitUntilAllUpdatesAreProcessed];
 }
 
-- (BOOL)isSynchronized {
+- (BOOL)isSynchronized
+{
   return [_dataController isSynchronized];
 }
 
-- (void)onDidFinishSynchronizing:(void (^)())completion {
+- (void)onDidFinishSynchronizing:(void (^)())completion
+{
   [_dataController onDidFinishSynchronizing:completion];
 }
 
-- (void)setDataSource:(id<UICollectionViewDataSource>)dataSource {
+- (void)setDataSource:(id<UICollectionViewDataSource>)dataSource
+{
   // UIKit can internally generate a call to this method upon changing the asyncDataSource; only assert for non-nil. We
   // also allow this when we're doing interop.
   ASDisplayNodeAssert(_asyncDelegateFlags.interop || dataSource == nil,
                       @"ASCollectionView uses asyncDataSource, not UICollectionView's dataSource property.");
 }
 
-- (void)setDelegate:(id<UICollectionViewDelegate>)delegate {
+- (void)setDelegate:(id<UICollectionViewDelegate>)delegate
+{
   // Our UIScrollView superclass sets its delegate to nil on dealloc. Only assert if we get a non-nil value here. We
   // also allow this when we're doing interop.
   ASDisplayNodeAssert(_asyncDelegateFlags.interop || delegate == nil,
                       @"ASCollectionView uses asyncDelegate, not UICollectionView's delegate property.");
 }
 
-- (void)proxyTargetHasDeallocated:(ASDelegateProxy *)proxy {
+- (void)proxyTargetHasDeallocated:(ASDelegateProxy *)proxy
+{
   if (proxy == _proxyDelegate) {
     [self setAsyncDelegate:nil];
   } else if (proxy == _proxyDataSource) {
@@ -443,11 +455,13 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (id<ASCollectionDataSource>)asyncDataSource {
+- (id<ASCollectionDataSource>)asyncDataSource
+{
   return _asyncDataSource;
 }
 
-- (void)setAsyncDataSource:(id<ASCollectionDataSource>)asyncDataSource {
+- (void)setAsyncDataSource:(id<ASCollectionDataSource>)asyncDataSource
+{
   // Changing super.dataSource will trigger a setNeedsLayout, so this must happen on the main thread.
   ASDisplayNodeAssertMainThread();
 
@@ -536,11 +550,13 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   [self _asyncDelegateOrDataSourceDidChange];
 }
 
-- (id<ASCollectionDelegate>)asyncDelegate {
+- (id<ASCollectionDelegate>)asyncDelegate
+{
   return _asyncDelegate;
 }
 
-- (void)setAsyncDelegate:(id<ASCollectionDelegate>)asyncDelegate {
+- (void)setAsyncDelegate:(id<ASCollectionDelegate>)asyncDelegate
+{
   // Changing super.delegate will trigger a setNeedsLayout, so this must happen on the main thread.
   ASDisplayNodeAssertMainThread();
 
@@ -656,7 +672,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   [self _asyncDelegateOrDataSourceDidChange];
 }
 
-- (void)_asyncDelegateOrDataSourceDidChange {
+- (void)_asyncDelegateOrDataSourceDidChange
+{
   ASDisplayNodeAssertMainThread();
 
   if (_asyncDataSource == nil && _asyncDelegate == nil && !ASActivateExperimentalFeature(ASExperimentalSkipClearData)) {
@@ -664,7 +681,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (void)setCollectionViewLayout:(nonnull UICollectionViewLayout *)collectionViewLayout {
+- (void)setCollectionViewLayout:(nonnull UICollectionViewLayout *)collectionViewLayout
+{
   ASDisplayNodeAssertMainThread();
   [super setCollectionViewLayout:collectionViewLayout];
 
@@ -677,7 +695,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (id<ASCollectionViewLayoutInspecting>)layoutInspector {
+- (id<ASCollectionViewLayoutInspecting>)layoutInspector
+{
   if (_layoutInspector == nil) {
     UICollectionViewLayout *layout = self.collectionViewLayout;
     if (layout == nil) {
@@ -698,7 +717,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return _layoutInspector;
 }
 
-- (void)setLayoutInspector:(id<ASCollectionViewLayoutInspecting>)layoutInspector {
+- (void)setLayoutInspector:(id<ASCollectionViewLayoutInspecting>)layoutInspector
+{
   _layoutInspector = layoutInspector;
 
   _layoutInspectorFlags.constrainedSizeForSupplementaryNodeOfKindAtIndexPath = [_layoutInspector
@@ -718,38 +738,45 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeType:(ASLayoutRangeType)rangeType {
+- (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters forRangeType:(ASLayoutRangeType)rangeType
+{
   [_rangeController setTuningParameters:tuningParameters forRangeMode:ASLayoutRangeModeFull rangeType:rangeType];
 }
 
-- (ASRangeTuningParameters)tuningParametersForRangeType:(ASLayoutRangeType)rangeType {
+- (ASRangeTuningParameters)tuningParametersForRangeType:(ASLayoutRangeType)rangeType
+{
   return [_rangeController tuningParametersForRangeMode:ASLayoutRangeModeFull rangeType:rangeType];
 }
 
 - (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters
                forRangeMode:(ASLayoutRangeMode)rangeMode
-                  rangeType:(ASLayoutRangeType)rangeType {
+                  rangeType:(ASLayoutRangeType)rangeType
+{
   [_rangeController setTuningParameters:tuningParameters forRangeMode:rangeMode rangeType:rangeType];
 }
 
 - (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode
-                                              rangeType:(ASLayoutRangeType)rangeType {
+                                              rangeType:(ASLayoutRangeType)rangeType
+{
   return [_rangeController tuningParametersForRangeMode:rangeMode rangeType:rangeType];
 }
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
-- (void)setZeroContentInsets:(BOOL)zeroContentInsets {
+- (void)setZeroContentInsets:(BOOL)zeroContentInsets
+{
   _zeroContentInsets = zeroContentInsets;
 }
 
-- (BOOL)zeroContentInsets {
+- (BOOL)zeroContentInsets
+{
   return _zeroContentInsets;
 }
 #pragma clang diagnostic pop
 
 /// Uses latest size range from data source and -layoutThatFits:.
-- (CGSize)sizeForElement:(ASCollectionElement *)element {
+- (CGSize)sizeForElement:(ASCollectionElement *)element
+{
   ASDisplayNodeAssertMainThread();
   if (element == nil) {
     return CGSizeZero;
@@ -777,7 +804,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
-- (CGSize)calculatedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath {
+- (CGSize)calculatedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath
+{
   ASDisplayNodeAssertMainThread();
 
   ASCollectionElement *e = [_dataController.visibleMap elementForItemAtIndexPath:indexPath];
@@ -785,11 +813,13 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 }
 #pragma clang diagnostic pop
 
-- (ASCellNode *)nodeForItemAtIndexPath:(NSIndexPath *)indexPath {
+- (ASCellNode *)nodeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
   return [_dataController.visibleMap elementForItemAtIndexPath:indexPath].node;
 }
 
-- (NSIndexPath *)convertIndexPathFromCollectionNode:(NSIndexPath *)indexPath waitingIfNeeded:(BOOL)wait {
+- (NSIndexPath *)convertIndexPathFromCollectionNode:(NSIndexPath *)indexPath waitingIfNeeded:(BOOL)wait
+{
   if (indexPath == nil) {
     return nil;
   }
@@ -806,7 +836,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 /**
  * Asserts that the index path is a valid view-index-path, and returns it if so, nil otherwise.
  */
-- (nullable NSIndexPath *)validateIndexPath:(nullable NSIndexPath *)indexPath {
+- (nullable NSIndexPath *)validateIndexPath:(nullable NSIndexPath *)indexPath
+{
   if (indexPath == nil) {
     return nil;
   }
@@ -814,7 +845,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   NSInteger section = indexPath.section;
   if (section >= self.numberOfSections) {
     ASDisplayNodeFailAssert(@"Collection view index path has invalid section %lu, section count = %lu",
-                            (unsigned long)section, (unsigned long)self.numberOfSections);
+                            (unsigned long)section,
+                            (unsigned long)self.numberOfSections);
     return nil;
   }
 
@@ -822,7 +854,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   // item == NSNotFound means e.g. "scroll to this section" and is acceptable
   if (item != NSNotFound && item >= [self numberOfItemsInSection:section]) {
     ASDisplayNodeFailAssert(@"Collection view index path has invalid item %lu in section %lu, item count = %lu",
-                            (unsigned long)indexPath.item, (unsigned long)section,
+                            (unsigned long)indexPath.item,
+                            (unsigned long)section,
                             (unsigned long)[self numberOfItemsInSection:section]);
     return nil;
   }
@@ -830,7 +863,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return indexPath;
 }
 
-- (NSIndexPath *)convertIndexPathToCollectionNode:(NSIndexPath *)indexPath {
+- (NSIndexPath *)convertIndexPathToCollectionNode:(NSIndexPath *)indexPath
+{
   if ([self validateIndexPath:indexPath] == nil) {
     return nil;
   }
@@ -838,20 +872,24 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return [_dataController.pendingMap convertIndexPath:indexPath fromMap:_dataController.visibleMap];
 }
 
-- (NSArray<NSIndexPath *> *)convertIndexPathsToCollectionNode:(NSArray<NSIndexPath *> *)indexPaths {
-  return ASArrayByFlatMapping(indexPaths, NSIndexPath * viewIndexPath,
-                              [self convertIndexPathToCollectionNode:viewIndexPath]);
+- (NSArray<NSIndexPath *> *)convertIndexPathsToCollectionNode:(NSArray<NSIndexPath *> *)indexPaths
+{
+  return ASArrayByFlatMapping(
+      indexPaths, NSIndexPath * viewIndexPath, [self convertIndexPathToCollectionNode:viewIndexPath]);
 }
 
-- (ASCellNode *)supplementaryNodeForElementKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath {
+- (ASCellNode *)supplementaryNodeForElementKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath
+{
   return [_dataController.visibleMap supplementaryElementOfKind:elementKind atIndexPath:indexPath].node;
 }
 
-- (NSIndexPath *)indexPathForNode:(ASCellNode *)cellNode {
+- (NSIndexPath *)indexPathForNode:(ASCellNode *)cellNode
+{
   return [_dataController.visibleMap indexPathForElement:cellNode.collectionElement];
 }
 
-- (NSArray *)visibleNodes {
+- (NSArray *)visibleNodes
+{
   NSArray *indexPaths = [self indexPathsForVisibleItems];
   NSMutableArray *visibleNodes = [[NSMutableArray alloc] init];
 
@@ -866,11 +904,13 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return visibleNodes;
 }
 
-- (void)invalidateFlowLayoutDelegateMetrics {
+- (void)invalidateFlowLayoutDelegateMetrics
+{
   // Subclass hook
 }
 
-- (nullable NSString *)modelIdentifierForElementAtIndexPath:(NSIndexPath *)indexPath inView:(UIView *)view {
+- (nullable NSString *)modelIdentifierForElementAtIndexPath:(NSIndexPath *)indexPath inView:(UIView *)view
+{
   if (_asyncDataSourceFlags.modelIdentifierMethods) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, nil);
     NSIndexPath *convertedPath = [self convertIndexPathToCollectionNode:indexPath];
@@ -884,7 +924,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (nullable NSIndexPath *)indexPathForElementWithModelIdentifier:(NSString *)identifier inView:(UIView *)view {
+- (nullable NSIndexPath *)indexPathForElementWithModelIdentifier:(NSString *)identifier inView:(UIView *)view
+{
   if (_asyncDataSourceFlags.modelIdentifierMethods) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, nil);
     return [_asyncDataSource indexPathForElementWithModelIdentifier:identifier inNode:collectionNode];
@@ -895,7 +936,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 #pragma mark Internal
 
-- (void)_configureCollectionViewLayout:(nonnull UICollectionViewLayout *)layout {
+- (void)_configureCollectionViewLayout:(nonnull UICollectionViewLayout *)layout
+{
   _hasDataControllerLayoutDelegate = [layout conformsToProtocol:@protocol(ASDataControllerLayoutDelegate)];
   if (_hasDataControllerLayoutDelegate) {
     _dataController.layoutDelegate = (id<ASDataControllerLayoutDelegate>)layout;
@@ -908,7 +950,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
  uses the default values set on the flow layout. If a flow layout is not in use, UICollectionView Passthrough
  cells must be sized by logic in the Layout object, and Texture does not participate in these paths.
 */
-- (CGSize)_sizeForUIKitCellWithKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+- (CGSize)_sizeForUIKitCellWithKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
   CGSize size = CGSizeZero;
   UICollectionViewLayout *l = self.collectionViewLayout;
 
@@ -944,7 +987,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return size;
 }
 
-- (void)_superReloadData:(void (^)())updates completion:(void (^)(BOOL finished))completion {
+- (void)_superReloadData:(void (^)())updates completion:(void (^)(BOOL finished))completion
+{
   if (updates) {
     updates();
   }
@@ -962,7 +1006,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
  * Always call [self _superPerform:] rather than [super performBatch:] so that we can keep our
  * `superPerformingBatchUpdates` flag updated.
  */
-- (void)_superPerformBatchUpdates:(void (^)())updates completion:(void (^)(BOOL finished))completion {
+- (void)_superPerformBatchUpdates:(void (^)())updates completion:(void (^)(BOOL finished))completion
+{
   ASDisplayNodeAssertMainThread();
 
   _superBatchUpdateCount++;
@@ -972,11 +1017,13 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 #pragma mark Assertions.
 
-- (ASDataController *)dataController {
+- (ASDataController *)dataController
+{
   return _dataController;
 }
 
-- (void)beginUpdates {
+- (void)beginUpdates
+{
   ASDisplayNodeAssertMainThread();
   // _changeSet must be available during batch update
   ASDisplayNodeAssertTrue((_batchUpdateCount > 0) == (_changeSet != nil));
@@ -991,7 +1038,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   _batchUpdateCount++;
 }
 
-- (void)endUpdatesAnimated:(BOOL)animated completion:(nullable void (^)(BOOL))completion {
+- (void)endUpdatesAnimated:(BOOL)animated completion:(nullable void (^)(BOOL))completion
+{
   ASDisplayNodeAssertMainThread();
   ASDisplayNodeAssertNotNil(_changeSet, @"_changeSet must be available when batch update ends");
 
@@ -1015,7 +1063,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (void)performBatchAnimated:(BOOL)animated
                      updates:(NS_NOESCAPE void (^)())updates
-                  completion:(void (^)(BOOL))completion {
+                  completion:(void (^)(BOOL))completion
+{
   ASDisplayNodeAssertMainThread();
   [self beginUpdates];
   as_activity_scope(_changeSet.rootActivity);
@@ -1029,12 +1078,14 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   [self endUpdatesAnimated:animated completion:completion];
 }
 
-- (void)performBatchUpdates:(NS_NOESCAPE void (^)())updates completion:(void (^)(BOOL))completion {
+- (void)performBatchUpdates:(NS_NOESCAPE void (^)())updates completion:(void (^)(BOOL))completion
+{
   // We capture the current state of whether animations are enabled if they don't provide us with one.
   [self performBatchAnimated:[UIView areAnimationsEnabled] updates:updates completion:completion];
 }
 
-- (void)registerSupplementaryNodeOfKind:(NSString *)elementKind {
+- (void)registerSupplementaryNodeOfKind:(NSString *)elementKind
+{
   ASDisplayNodeAssert(elementKind != nil, @"A kind is needed for supplementary node registration");
   [_registeredSupplementaryKinds addObject:elementKind];
   [self registerClass:[_ASCollectionReusableView class]
@@ -1042,7 +1093,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
              withReuseIdentifier:kReuseIdentifier];
 }
 
-- (void)insertSections:(NSIndexSet *)sections {
+- (void)insertSections:(NSIndexSet *)sections
+{
   ASDisplayNodeAssertMainThread();
   if (sections.count == 0) {
     return;
@@ -1054,7 +1106,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
                completion:nil];
 }
 
-- (void)deleteSections:(NSIndexSet *)sections {
+- (void)deleteSections:(NSIndexSet *)sections
+{
   ASDisplayNodeAssertMainThread();
   if (sections.count == 0) {
     return;
@@ -1066,7 +1119,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
                completion:nil];
 }
 
-- (void)reloadSections:(NSIndexSet *)sections {
+- (void)reloadSections:(NSIndexSet *)sections
+{
   ASDisplayNodeAssertMainThread();
   if (sections.count == 0) {
     return;
@@ -1078,7 +1132,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
                completion:nil];
 }
 
-- (void)moveSection:(NSInteger)section toSection:(NSInteger)newSection {
+- (void)moveSection:(NSInteger)section toSection:(NSInteger)newSection
+{
   ASDisplayNodeAssertMainThread();
   [self
       performBatchUpdates:^{
@@ -1087,12 +1142,14 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
                completion:nil];
 }
 
-- (id<ASSectionContext>)contextForSection:(NSInteger)section {
+- (id<ASSectionContext>)contextForSection:(NSInteger)section
+{
   ASDisplayNodeAssertMainThread();
   return [_dataController.visibleMap contextForSection:section];
 }
 
-- (void)insertItemsAtIndexPaths:(NSArray *)indexPaths {
+- (void)insertItemsAtIndexPaths:(NSArray *)indexPaths
+{
   ASDisplayNodeAssertMainThread();
   if (indexPaths.count == 0) {
     return;
@@ -1104,7 +1161,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
                completion:nil];
 }
 
-- (void)deleteItemsAtIndexPaths:(NSArray *)indexPaths {
+- (void)deleteItemsAtIndexPaths:(NSArray *)indexPaths
+{
   ASDisplayNodeAssertMainThread();
   if (indexPaths.count == 0) {
     return;
@@ -1116,7 +1174,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
                completion:nil];
 }
 
-- (void)reloadItemsAtIndexPaths:(NSArray *)indexPaths {
+- (void)reloadItemsAtIndexPaths:(NSArray *)indexPaths
+{
   ASDisplayNodeAssertMainThread();
   if (indexPaths.count == 0) {
     return;
@@ -1128,7 +1187,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
                completion:nil];
 }
 
-- (void)moveItemAtIndexPath:(NSIndexPath *)indexPath toIndexPath:(NSIndexPath *)newIndexPath {
+- (void)moveItemAtIndexPath:(NSIndexPath *)indexPath toIndexPath:(NSIndexPath *)newIndexPath
+{
   ASDisplayNodeAssertMainThread();
   if (!_reordering) {
     [self
@@ -1143,18 +1203,21 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (BOOL)beginInteractiveMovementForItemAtIndexPath:(NSIndexPath *)indexPath {
+- (BOOL)beginInteractiveMovementForItemAtIndexPath:(NSIndexPath *)indexPath
+{
   BOOL success = [super beginInteractiveMovementForItemAtIndexPath:indexPath];
   _reordering = success;
   return success;
 }
 
-- (void)endInteractiveMovement {
+- (void)endInteractiveMovement
+{
   _reordering = NO;
   [super endInteractiveMovement];
 }
 
-- (void)cancelInteractiveMovement {
+- (void)cancelInteractiveMovement
+{
   _reordering = NO;
   [super cancelInteractiveMovement];
 }
@@ -1162,7 +1225,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 #pragma mark -
 #pragma mark Intercepted selectors.
 
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
   if (_superIsPendingDataLoad) {
     [_rangeController setNeedsUpdate];
     [self _scheduleCheckForBatchFetchingForNumberOfChanges:1];
@@ -1171,13 +1235,15 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return _dataController.visibleMap.numberOfSections;
 }
 
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
   return [_dataController.visibleMap numberOfItemsInSection:section];
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView
                     layout:(UICollectionViewLayout *)layout
-    sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
   ASDisplayNodeAssertMainThread();
   ASCollectionElement *e = [_dataController.visibleMap elementForItemAtIndexPath:indexPath];
   return e ? [self sizeForElement:e] : ASFlowLayoutDefault(layout, itemSize, CGSizeZero);
@@ -1185,7 +1251,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (CGSize)collectionView:(UICollectionView *)cv
                              layout:(UICollectionViewLayout *)l
-    referenceSizeForHeaderInSection:(NSInteger)section {
+    referenceSizeForHeaderInSection:(NSInteger)section
+{
   ASDisplayNodeAssertMainThread();
   ASElementMap *map = _dataController.visibleMap;
   ASCollectionElement *e = [map supplementaryElementOfKind:UICollectionElementKindSectionHeader
@@ -1195,7 +1262,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (CGSize)collectionView:(UICollectionView *)cv
                              layout:(UICollectionViewLayout *)l
-    referenceSizeForFooterInSection:(NSInteger)section {
+    referenceSizeForFooterInSection:(NSInteger)section
+{
   ASDisplayNodeAssertMainThread();
   ASElementMap *map = _dataController.visibleMap;
   ASCollectionElement *e = [map supplementaryElementOfKind:UICollectionElementKindSectionFooter
@@ -1206,7 +1274,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 // For the methods that call delegateIndexPathForSection:withSelector:, translate the section from
 // visibleMap to pendingMap. If the section no longer exists, or the delegate doesn't implement
 // the selector, we will return NSNotFound (and then use the ASFlowLayoutDefault).
-- (NSInteger)delegateIndexForSection:(NSInteger)section withSelector:(SEL)selector {
+- (NSInteger)delegateIndexForSection:(NSInteger)section withSelector:(SEL)selector
+{
   if ([_asyncDelegate respondsToSelector:selector]) {
     return [_dataController.pendingMap convertSection:section fromMap:_dataController.visibleMap];
   } else {
@@ -1216,7 +1285,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)cv
                         layout:(UICollectionViewLayout *)l
-        insetForSectionAtIndex:(NSInteger)section {
+        insetForSectionAtIndex:(NSInteger)section
+{
   section = [self delegateIndexForSection:section withSelector:_cmd];
   if (section != NSNotFound) {
     return [(id)_asyncDelegate collectionView:cv layout:l insetForSectionAtIndex:section];
@@ -1226,7 +1296,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (CGFloat)collectionView:(UICollectionView *)cv
                                       layout:(UICollectionViewLayout *)l
-    minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
+{
   section = [self delegateIndexForSection:section withSelector:_cmd];
   if (section != NSNotFound) {
     return [(id)_asyncDelegate collectionView:cv layout:l minimumInteritemSpacingForSectionAtIndex:section];
@@ -1236,7 +1307,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (CGFloat)collectionView:(UICollectionView *)cv
                                  layout:(UICollectionViewLayout *)l
-    minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    minimumLineSpacingForSectionAtIndex:(NSInteger)section
+{
   section = [self delegateIndexForSection:section withSelector:_cmd];
   if (section != NSNotFound) {
     return [(id)_asyncDelegate collectionView:cv layout:l minimumLineSpacingForSectionAtIndex:section];
@@ -1246,7 +1318,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
            viewForSupplementaryElementOfKind:(NSString *)kind
-                                 atIndexPath:(NSIndexPath *)indexPath {
+                                 atIndexPath:(NSIndexPath *)indexPath
+{
   if ([_registeredSupplementaryKinds containsObject:kind] == NO) {
     [self registerSupplementaryNodeOfKind:kind];
   }
@@ -1267,8 +1340,10 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
                                                                    atIndexPath:indexPath];
   } else {
     ASDisplayNodeAssert(node != nil,
-                        @"Supplementary node should exist.  Kind = %@, indexPath = %@, collectionDataSource = %@", kind,
-                        indexPath, self);
+                        @"Supplementary node should exist.  Kind = %@, indexPath = %@, collectionDataSource = %@",
+                        kind,
+                        indexPath,
+                        self);
     view = [self dequeueReusableSupplementaryViewOfKind:kind
                                     withReuseIdentifier:kReuseIdentifier
                                            forIndexPath:indexPath];
@@ -1286,7 +1361,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
-                  cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+                  cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
   UICollectionViewCell *cell = nil;
   ASCollectionElement *element = [_dataController.visibleMap elementForItemAtIndexPath:indexPath];
   ASCellNode *node = element.node;
@@ -1303,10 +1379,10 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
     cell = [self dequeueReusableCellWithReuseIdentifier:kReuseIdentifier forIndexPath:indexPath];
   }
 
-  ASDisplayNodeAssert(element != nil, @"Element should exist. indexPath = %@, collectionDataSource = %@", indexPath,
-                      self);
-  ASDisplayNodeAssert(cell != nil, @"UICollectionViewCell must not be nil. indexPath = %@, collectionDataSource = %@",
-                      indexPath, self);
+  ASDisplayNodeAssert(
+      element != nil, @"Element should exist. indexPath = %@, collectionDataSource = %@", indexPath, self);
+  ASDisplayNodeAssert(
+      cell != nil, @"UICollectionViewCell must not be nil. indexPath = %@, collectionDataSource = %@", indexPath, self);
 
   if (_ASCollectionViewCell *asCell = ASDynamicCastStrict(cell, _ASCollectionViewCell)) {
     asCell.element = element;
@@ -1318,7 +1394,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (void)collectionView:(UICollectionView *)collectionView
        willDisplayCell:(UICollectionViewCell *)rawCell
-    forItemAtIndexPath:(NSIndexPath *)indexPath {
+    forItemAtIndexPath:(NSIndexPath *)indexPath
+{
   if (_asyncDelegateFlags.interopWillDisplayCell) {
     ASCellNode *node = [self nodeForItemAtIndexPath:indexPath];
     if (node.shouldUseUIKitCell) {
@@ -1383,7 +1460,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (void)collectionView:(UICollectionView *)collectionView
     didEndDisplayingCell:(UICollectionViewCell *)rawCell
-      forItemAtIndexPath:(NSIndexPath *)indexPath {
+      forItemAtIndexPath:(NSIndexPath *)indexPath
+{
   if (_asyncDelegateFlags.interopDidEndDisplayingCell) {
     ASCellNode *node = [self nodeForItemAtIndexPath:indexPath];
     if (node.shouldUseUIKitCell) {
@@ -1433,7 +1511,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 - (void)collectionView:(UICollectionView *)collectionView
     willDisplaySupplementaryView:(UICollectionReusableView *)rawView
                   forElementKind:(NSString *)elementKind
-                     atIndexPath:(NSIndexPath *)indexPath {
+                     atIndexPath:(NSIndexPath *)indexPath
+{
   if (_asyncDelegateFlags.interopWillDisplaySupplementaryView) {
     ASCellNode *node = [self supplementaryNodeForElementKind:elementKind atIndexPath:indexPath];
     if (node.shouldUseUIKitCell) {
@@ -1455,8 +1534,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
                                                                        atIndexPath:indexPath] == view.element);
     [_visibleElements addObject:element];
   } else {
-    ASDisplayNodeAssert(NO, @"Unexpected nil element for willDisplaySupplementaryView: %@, %@, %@", rawView, self,
-                        indexPath);
+    ASDisplayNodeAssert(
+        NO, @"Unexpected nil element for willDisplaySupplementaryView: %@, %@, %@", rawView, self, indexPath);
     return;
   }
 
@@ -1474,7 +1553,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, (void)0);
     ASCellNode *node = element.node;
     ASDisplayNodeAssert([node.supplementaryElementKind isEqualToString:elementKind],
-                        @"Expected node for supplementary element to have kind '%@', got '%@'.", elementKind,
+                        @"Expected node for supplementary element to have kind '%@', got '%@'.",
+                        elementKind,
                         node.supplementaryElementKind);
     [_asyncDelegate collectionNode:collectionNode willDisplaySupplementaryElementWithNode:node];
   }
@@ -1483,7 +1563,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 - (void)collectionView:(UICollectionView *)collectionView
     didEndDisplayingSupplementaryView:(UICollectionReusableView *)rawView
                      forElementOfKind:(NSString *)elementKind
-                          atIndexPath:(NSIndexPath *)indexPath {
+                          atIndexPath:(NSIndexPath *)indexPath
+{
   if (_asyncDelegateFlags.interopdidEndDisplayingSupplementaryView) {
     ASCellNode *node = [self supplementaryNodeForElementKind:elementKind atIndexPath:indexPath];
     if (node.shouldUseUIKitCell) {
@@ -1505,8 +1586,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   if (element) {
     [_visibleElements removeObject:element];
   } else {
-    ASDisplayNodeAssert(NO, @"Unexpected nil element for didEndDisplayingSupplementaryView: %@, %@, %@", rawView, self,
-                        indexPath);
+    ASDisplayNodeAssert(
+        NO, @"Unexpected nil element for didEndDisplayingSupplementaryView: %@, %@, %@", rawView, self, indexPath);
     return;
   }
 
@@ -1514,13 +1595,15 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, (void)0);
     ASCellNode *node = element.node;
     ASDisplayNodeAssert([node.supplementaryElementKind isEqualToString:elementKind],
-                        @"Expected node for supplementary element to have kind '%@', got '%@'.", elementKind,
+                        @"Expected node for supplementary element to have kind '%@', got '%@'.",
+                        elementKind,
                         node.supplementaryElementKind);
     [_asyncDelegate collectionNode:collectionNode didEndDisplayingSupplementaryElementWithNode:node];
   }
 }
 
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
   if (_asyncDelegateFlags.collectionNodeShouldSelectItem) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, NO);
     indexPath = [self convertIndexPathToCollectionNode:indexPath];
@@ -1536,7 +1619,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return YES;
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(nonnull NSIndexPath *)indexPath
+{
   if (_asyncDelegateFlags.collectionNodeDidSelectItem) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, (void)0);
     indexPath = [self convertIndexPathToCollectionNode:indexPath];
@@ -1551,7 +1635,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldDeselectItemAtIndexPath:(NSIndexPath *)indexPath
+{
   if (_asyncDelegateFlags.collectionNodeShouldDeselectItem) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, NO);
     indexPath = [self convertIndexPathToCollectionNode:indexPath];
@@ -1567,7 +1652,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return YES;
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
+- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(nonnull NSIndexPath *)indexPath
+{
   if (_asyncDelegateFlags.collectionNodeDidDeselectItem) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, (void)0);
     indexPath = [self convertIndexPathToCollectionNode:indexPath];
@@ -1582,7 +1668,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath
+{
   if (_asyncDelegateFlags.collectionNodeShouldHighlightItem) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, NO);
     indexPath = [self convertIndexPathToCollectionNode:indexPath];
@@ -1600,7 +1687,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return YES;
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
+- (void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(nonnull NSIndexPath *)indexPath
+{
   if (_asyncDelegateFlags.collectionNodeDidHighlightItem) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, (void)0);
     indexPath = [self convertIndexPathToCollectionNode:indexPath];
@@ -1615,8 +1703,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (void)collectionView:(UICollectionView *)collectionView
-    didUnhighlightItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
+- (void)collectionView:(UICollectionView *)collectionView didUnhighlightItemAtIndexPath:(nonnull NSIndexPath *)indexPath
+{
   if (_asyncDelegateFlags.collectionNodeDidUnhighlightItem) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, (void)0);
     indexPath = [self convertIndexPathToCollectionNode:indexPath];
@@ -1632,7 +1720,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 }
 
 - (BOOL)collectionView:(UICollectionView *)collectionView
-    shouldShowMenuForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    shouldShowMenuForItemAtIndexPath:(nonnull NSIndexPath *)indexPath
+{
   if (_asyncDelegateFlags.collectionNodeShouldShowMenuForItem) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, NO);
     indexPath = [self convertIndexPathToCollectionNode:indexPath];
@@ -1651,7 +1740,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 - (BOOL)collectionView:(UICollectionView *)collectionView
       canPerformAction:(nonnull SEL)action
     forItemAtIndexPath:(nonnull NSIndexPath *)indexPath
-            withSender:(nullable id)sender {
+            withSender:(nullable id)sender
+{
   if (_asyncDelegateFlags.collectionNodeCanPerformActionForItem) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, NO);
     indexPath = [self convertIndexPathToCollectionNode:indexPath];
@@ -1673,7 +1763,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 - (void)collectionView:(UICollectionView *)collectionView
          performAction:(nonnull SEL)action
     forItemAtIndexPath:(nonnull NSIndexPath *)indexPath
-            withSender:(nullable id)sender {
+            withSender:(nullable id)sender
+{
   if (_asyncDelegateFlags.collectionNodePerformActionForItem) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, (void)0);
     indexPath = [self convertIndexPathToCollectionNode:indexPath];
@@ -1688,7 +1779,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (BOOL)collectionView:(UICollectionView *)collectionView canMoveItemAtIndexPath:(NSIndexPath *)indexPath {
+- (BOOL)collectionView:(UICollectionView *)collectionView canMoveItemAtIndexPath:(NSIndexPath *)indexPath
+{
   // Mimic UIKit's gating logic.
   // If the data source doesn't support moving, then all bets are off.
   if (!_asyncDataSourceFlags.collectionNodeMoveItem) {
@@ -1729,7 +1821,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (void)collectionView:(UICollectionView *)collectionView
     moveItemAtIndexPath:(NSIndexPath *)sourceIndexPath
-            toIndexPath:(NSIndexPath *)destinationIndexPath {
+            toIndexPath:(NSIndexPath *)destinationIndexPath
+{
   ASDisplayNodeAssert(_asyncDataSourceFlags.collectionNodeMoveItem,
                       @"Should not allow interactive collection item movement if data source does not support it.");
 
@@ -1755,7 +1848,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   _updatingInResponseToInteractiveMove = NO;
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
   ASInterfaceState interfaceState = [self interfaceStateForRangeController:_rangeController];
   if (ASInterfaceStateIncludesVisible(interfaceState)) {
     [self _checkForBatchFetching];
@@ -1771,7 +1865,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
                      withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint *)targetContentOffset {
+              targetContentOffset:(inout CGPoint *)targetContentOffset
+{
   CGPoint contentOffset = scrollView.contentOffset;
   _deceleratingVelocity = CGPointMake(contentOffset.x - ((targetContentOffset != NULL) ? targetContentOffset->x : 0),
                                       contentOffset.y - ((targetContentOffset != NULL) ? targetContentOffset->y : 0));
@@ -1788,7 +1883,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
   _deceleratingVelocity = CGPointZero;
 
   if (_asyncDelegateFlags.scrollViewDidEndDecelerating) {
@@ -1796,7 +1892,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
   // If a scroll happens the current range mode needs to go to full
   _rangeController.contentHasBeenScrolled = YES;
   [_rangeController updateCurrentRangeWithMode:ASLayoutRangeModeFull];
@@ -1809,7 +1906,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
   for (_ASCollectionViewCell *cell in _cellsForVisibilityUpdates) {
     [cell cellNodeVisibilityEvent:ASCellNodeVisibilityEventDidEndDragging inScrollView:scrollView];
   }
@@ -1820,15 +1918,18 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 #pragma mark - Scroll Direction.
 
-- (BOOL)inverted {
+- (BOOL)inverted
+{
   return _inverted;
 }
 
-- (void)setInverted:(BOOL)inverted {
+- (void)setInverted:(BOOL)inverted
+{
   _inverted = inverted;
 }
 
-- (void)setLeadingScreensForBatching:(CGFloat)leadingScreensForBatching {
+- (void)setLeadingScreensForBatching:(CGFloat)leadingScreensForBatching
+{
   if (_leadingScreensForBatching != leadingScreensForBatching) {
     _leadingScreensForBatching = leadingScreensForBatching;
     // Push this to the next runloop to be sure the scroll view has the right content size
@@ -1838,11 +1939,13 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (CGFloat)leadingScreensForBatching {
+- (CGFloat)leadingScreensForBatching
+{
   return _leadingScreensForBatching;
 }
 
-- (ASScrollDirection)scrollDirection {
+- (ASScrollDirection)scrollDirection
+{
   CGPoint scrollVelocity;
   if (self.isTracking) {
     scrollVelocity = [self.panGestureRecognizer velocityInView:self.superview];
@@ -1854,7 +1957,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return ASScrollDirectionApplyTransform(scrollDirection, self.transform);
 }
 
-- (ASScrollDirection)_scrollDirectionForVelocity:(CGPoint)scrollVelocity {
+- (ASScrollDirection)_scrollDirectionForVelocity:(CGPoint)scrollVelocity
+{
   ASScrollDirection direction = ASScrollDirectionNone;
   ASScrollDirection scrollableDirections = [self scrollableDirections];
 
@@ -1876,12 +1980,14 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return direction;
 }
 
-- (ASScrollDirection)scrollableDirections {
+- (ASScrollDirection)scrollableDirections
+{
   ASDisplayNodeAssertNotNil(self.layoutInspector, @"Layout inspector should be assigned.");
   return [self.layoutInspector scrollableDirections];
 }
 
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
   if (_cellsForLayoutUpdates.count > 0) {
     NSArray<ASCellNode *> *nodes = [_cellsForLayoutUpdates allObjects];
     [_cellsForLayoutUpdates removeAllObjects];
@@ -1929,11 +2035,13 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 #pragma mark - Batch Fetching
 
-- (ASBatchContext *)batchContext {
+- (ASBatchContext *)batchContext
+{
   return _batchContext;
 }
 
-- (BOOL)canBatchFetch {
+- (BOOL)canBatchFetch
+{
   // if the delegate does not respond to this method, there is no point in starting to fetch
   BOOL canFetch =
       _asyncDelegateFlags.collectionNodeWillBeginBatchFetch || _asyncDelegateFlags.collectionViewWillBeginBatchFetch;
@@ -1950,11 +2058,13 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (id<ASBatchFetchingDelegate>)batchFetchingDelegate {
+- (id<ASBatchFetchingDelegate>)batchFetchingDelegate
+{
   return self.collectionNode.batchFetchingDelegate;
 }
 
-- (void)_scheduleCheckForBatchFetchingForNumberOfChanges:(NSUInteger)changes {
+- (void)_scheduleCheckForBatchFetchingForNumberOfChanges:(NSUInteger)changes
+{
   // Prevent fetching will continually trigger in a loop after reaching end of content and no new content was provided
   if (changes == 0 && _hasEverCheckedForBatchFetchingDueToUpdate) {
     return;
@@ -1967,7 +2077,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   });
 }
 
-- (void)_checkForBatchFetching {
+- (void)_checkForBatchFetching
+{
   // Dragging will be handled in scrollViewWillEndDragging:withVelocity:targetContentOffset:
   if (self.isDragging || self.isTracking) {
     return;
@@ -1976,14 +2087,16 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   [self _beginBatchFetchingIfNeededWithContentOffset:self.contentOffset velocity:CGPointZero];
 }
 
-- (void)_beginBatchFetchingIfNeededWithContentOffset:(CGPoint)contentOffset velocity:(CGPoint)velocity {
-  if (ASDisplayShouldFetchBatchForScrollView(self, self.scrollDirection, self.scrollableDirections, contentOffset,
-                                             velocity)) {
+- (void)_beginBatchFetchingIfNeededWithContentOffset:(CGPoint)contentOffset velocity:(CGPoint)velocity
+{
+  if (ASDisplayShouldFetchBatchForScrollView(
+          self, self.scrollDirection, self.scrollableDirections, contentOffset, velocity)) {
     [self _beginBatchFetching];
   }
 }
 
-- (void)_beginBatchFetching {
+- (void)_beginBatchFetching
+{
   as_activity_create_for_scope("Batch fetch for collection node");
   [_batchContext beginBatchFetching];
   if (_asyncDelegateFlags.collectionNodeWillBeginBatchFetch) {
@@ -2004,14 +2117,16 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 #pragma mark - ASDataControllerSource
 
-- (BOOL)dataController:(ASDataController *)dataController shouldEagerlyLayoutNode:(ASCellNode *)node {
+- (BOOL)dataController:(ASDataController *)dataController shouldEagerlyLayoutNode:(ASCellNode *)node
+{
   NSAssert(!ASCellLayoutModeIncludes(ASCellLayoutModeAlwaysLazy),
            @"ASCellLayoutModeAlwaysLazy flag is no longer supported");
   return !node.shouldUseUIKitCell;
 }
 
 - (BOOL)dataController:(ASDataController *)dataController
-    shouldSynchronouslyProcessChangeSet:(_ASHierarchyChangeSet *)changeSet {
+    shouldSynchronouslyProcessChangeSet:(_ASHierarchyChangeSet *)changeSet
+{
   // If we have AlwaysSync set, block and donate main priority.
   if (ASCellLayoutModeIncludes(ASCellLayoutModeAlwaysSync)) {
     return YES;
@@ -2038,11 +2153,13 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return NO;  // ASCellLayoutModeNone
 }
 
-- (BOOL)dataControllerShouldSerializeNodeCreation:(ASDataController *)dataController {
+- (BOOL)dataControllerShouldSerializeNodeCreation:(ASDataController *)dataController
+{
   return ASCellLayoutModeIncludes(ASCellLayoutModeSerializeNodeCreation);
 }
 
-- (id)dataController:(ASDataController *)dataController nodeModelForItemAtIndexPath:(NSIndexPath *)indexPath {
+- (id)dataController:(ASDataController *)dataController nodeModelForItemAtIndexPath:(NSIndexPath *)indexPath
+{
   if (!_asyncDataSourceFlags.nodeModelForItem) {
     return nil;
   }
@@ -2053,7 +2170,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (ASCellNodeBlock)dataController:(ASDataController *)dataController
              nodeBlockAtIndexPath:(NSIndexPath *)indexPath
-                shouldAsyncLayout:(BOOL *)shouldAsyncLayout {
+                shouldAsyncLayout:(BOOL *)shouldAsyncLayout
+{
   ASDisplayNodeAssertMainThread();
   ASCellNodeBlock block = nil;
   ASCellNode *cell = nil;
@@ -2090,7 +2208,9 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
         ASDisplayNodeFailAssert(@"ASCollection could not get a node block for item at index path %@: %@, %@. If you "
                                 @"are trying to display a UICollectionViewCell, make sure your dataSource conforms to "
                                 @"the <ASCollectionDataSourceInterop> protocol!",
-                                indexPath, cell, block);
+                                indexPath,
+                                cell,
+                                block);
         cell = [[ASCellNode alloc] init];
       }
     }
@@ -2107,8 +2227,10 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return ^{
     __typeof__(self) strongSelf = weakSelf;
     ASCellNode *node = (block ? block() : cell);
-    ASDisplayNodeAssert([node isKindOfClass:[ASCellNode class]], @"ASCollectionNode provided a non-ASCellNode! %@, %@",
-                        node, strongSelf);
+    ASDisplayNodeAssert([node isKindOfClass:[ASCellNode class]],
+                        @"ASCollectionNode provided a non-ASCellNode! %@, %@",
+                        node,
+                        strongSelf);
 
     if (!disableRangeController) {
       [node enterHierarchyState:ASHierarchyStateRangeManaged];
@@ -2123,7 +2245,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   };
 }
 
-- (NSUInteger)dataController:(ASDataController *)dataController rowsInSection:(NSUInteger)section {
+- (NSUInteger)dataController:(ASDataController *)dataController rowsInSection:(NSUInteger)section
+{
   if (_asyncDataSourceFlags.collectionNodeNumberOfItemsInSection) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, 0);
     return [_asyncDataSource collectionNode:collectionNode numberOfItemsInSection:section];
@@ -2137,7 +2260,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (NSUInteger)numberOfSectionsInDataController:(ASDataController *)dataController {
+- (NSUInteger)numberOfSectionsInDataController:(ASDataController *)dataController
+{
   if (_asyncDataSourceFlags.numberOfSectionsInCollectionNode) {
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, 0);
     return [_asyncDataSource numberOfSectionsInCollectionNode:collectionNode];
@@ -2153,7 +2277,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 - (BOOL)dataController:(ASDataController *)dataController
     presentedSizeForElement:(ASCollectionElement *)element
-                matchesSize:(CGSize)size {
+                matchesSize:(CGSize)size
+{
   NSIndexPath *indexPath = [self indexPathForNode:element.node];
   if (indexPath == nil) {
     ASDisplayNodeFailAssert(@"Data controller should not ask for presented size for element that is not presented.");
@@ -2175,7 +2300,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 - (ASCellNodeBlock)dataController:(ASDataController *)dataController
      supplementaryNodeBlockOfKind:(NSString *)kind
                       atIndexPath:(NSIndexPath *)indexPath
-                shouldAsyncLayout:(BOOL *)shouldAsyncLayout {
+                shouldAsyncLayout:(BOOL *)shouldAsyncLayout
+{
   ASDisplayNodeAssertMainThread();
   ASCellNodeBlock block = nil;
   ASCellNode *cell = nil;
@@ -2233,8 +2359,10 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   return ^{
     __typeof__(self) strongSelf = weakSelf;
     ASCellNode *node = block();
-    ASDisplayNodeAssert([node isKindOfClass:[ASCellNode class]], @"ASCollectionNode provided a non-ASCellNode! %@, %@",
-                        node, strongSelf);
+    ASDisplayNodeAssert([node isKindOfClass:[ASCellNode class]],
+                        @"ASCollectionNode provided a non-ASCellNode! %@, %@",
+                        node,
+                        strongSelf);
 
     // TODO: ASRangeController doesn't currently support managing interfaceState for supplementary nodes.
     // For now, we allow the standard ASInterfaceStateInHierarchy behavior by ensuring we do not inform
@@ -2256,7 +2384,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 }
 
 - (NSArray<NSString *> *)dataController:(ASDataController *)dataController
-       supplementaryNodeKindsInSections:(NSIndexSet *)sections {
+       supplementaryNodeKindsInSections:(NSIndexSet *)sections
+{
   if (_asyncDataSourceFlags.collectionNodeSupplementaryElementKindsInSection) {
     const auto kinds = [[NSMutableSet<NSString *> alloc] init];
     GET_COLLECTIONNODE_OR_RETURN(collectionNode, @[]);
@@ -2273,27 +2402,31 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 }
 
 - (ASSizeRange)dataController:(ASDataController *)dataController
-    constrainedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath {
+    constrainedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath
+{
   return [self.layoutInspector collectionView:self constrainedSizeForNodeAtIndexPath:indexPath];
 }
 
 - (ASSizeRange)dataController:(ASDataController *)dataController
     constrainedSizeForSupplementaryNodeOfKind:(NSString *)kind
-                                  atIndexPath:(NSIndexPath *)indexPath {
+                                  atIndexPath:(NSIndexPath *)indexPath
+{
   if (_layoutInspectorFlags.constrainedSizeForSupplementaryNodeOfKindAtIndexPath) {
     return [self.layoutInspector collectionView:self
         constrainedSizeForSupplementaryNodeOfKind:kind
                                       atIndexPath:indexPath];
   }
 
-  ASDisplayNodeAssert(NO, @"To support supplementary nodes in ASCollectionView, it must have a layoutInspector for "
-                          @"layout inspection. (See ASCollectionViewFlowLayoutInspector for an example.)");
+  ASDisplayNodeAssert(NO,
+                      @"To support supplementary nodes in ASCollectionView, it must have a layoutInspector for "
+                      @"layout inspection. (See ASCollectionViewFlowLayoutInspector for an example.)");
   return ASSizeRangeMake(CGSizeZero, CGSizeZero);
 }
 
 - (NSUInteger)dataController:(ASDataController *)dataController
     supplementaryNodesOfKind:(NSString *)kind
-                   inSection:(NSUInteger)section {
+                   inSection:(NSUInteger)section
+{
   if (_asyncDataSource == nil) {
     return 0;
   }
@@ -2302,12 +2435,14 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
     return [self.layoutInspector collectionView:self supplementaryNodesOfKind:kind inSection:section];
   }
 
-  ASDisplayNodeAssert(NO, @"To support supplementary nodes in ASCollectionView, it must have a layoutInspector for "
-                          @"layout inspection. (See ASCollectionViewFlowLayoutInspector for an example.)");
+  ASDisplayNodeAssert(NO,
+                      @"To support supplementary nodes in ASCollectionView, it must have a layoutInspector for "
+                      @"layout inspection. (See ASCollectionViewFlowLayoutInspector for an example.)");
   return 0;
 }
 
-- (id<ASSectionContext>)dataController:(ASDataController *)dataController contextForSection:(NSInteger)section {
+- (id<ASSectionContext>)dataController:(ASDataController *)dataController contextForSection:(NSInteger)section
+{
   ASDisplayNodeAssertMainThread();
   id<ASSectionContext> context = nil;
 
@@ -2324,39 +2459,47 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 #pragma mark - ASRangeControllerDataSource
 
-- (ASRangeController *)rangeController {
+- (ASRangeController *)rangeController
+{
   return _rangeController;
 }
 
-- (NSHashTable<ASCollectionElement *> *)visibleElementsForRangeController:(ASRangeController *)rangeController {
+- (NSHashTable<ASCollectionElement *> *)visibleElementsForRangeController:(ASRangeController *)rangeController
+{
   return ASPointerTableByFlatMapping(_visibleElements, id element, element);
 }
 
-- (ASElementMap *)elementMapForRangeController:(ASRangeController *)rangeController {
+- (ASElementMap *)elementMapForRangeController:(ASRangeController *)rangeController
+{
   return _dataController.visibleMap;
 }
 
-- (ASScrollDirection)scrollDirectionForRangeController:(ASRangeController *)rangeController {
+- (ASScrollDirection)scrollDirectionForRangeController:(ASRangeController *)rangeController
+{
   return self.scrollDirection;
 }
 
-- (ASInterfaceState)interfaceStateForRangeController:(ASRangeController *)rangeController {
+- (ASInterfaceState)interfaceStateForRangeController:(ASRangeController *)rangeController
+{
   return ASInterfaceStateForDisplayNode(self.collectionNode, self.window);
 }
 
-- (NSString *)nameForRangeControllerDataSource {
+- (NSString *)nameForRangeControllerDataSource
+{
   return self.asyncDataSource ? NSStringFromClass([self.asyncDataSource class]) : NSStringFromClass([self class]);
 }
 
 #pragma mark - ASRangeControllerDelegate
 
-- (BOOL)rangeControllerShouldUpdateRanges:(ASRangeController *)rangeController {
+- (BOOL)rangeControllerShouldUpdateRanges:(ASRangeController *)rangeController
+{
   return !ASCellLayoutModeIncludes(ASCellLayoutModeDisableRangeController);
 }
 
 - (void)rangeController:(ASRangeController *)rangeController
     updateWithChangeSet:(_ASHierarchyChangeSet *)changeSet
-                updates:(dispatch_block_t)updates {
+                updates:(dispatch_block_t)updates
+{
   ASDisplayNodeAssertMainThread();
   if (!self.asyncDataSource || _superIsPendingDataLoad || _updatingInResponseToInteractiveMove) {
     updates();
@@ -2394,8 +2537,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
       __block NSUInteger numberOfUpdates = 0;
       const auto completion = ^(BOOL finished) {
-        as_activity_scope(as_activity_create("Handle collection update completion", changeSet.rootActivity,
-                                             OS_ACTIVITY_FLAG_DEFAULT));
+        as_activity_scope(as_activity_create(
+            "Handle collection update completion", changeSet.rootActivity, OS_ACTIVITY_FLAG_DEFAULT));
         as_log_verbose(ASCollectionLog(), "Update animation finished %{public}@", self.collectionNode);
         // Flush any range changes that happened as part of the update animations ending.
         [_rangeController updateIfNeeded];
@@ -2467,7 +2610,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 #pragma mark - ASCellNodeDelegate
 
-- (void)nodeSelectedStateDidChange:(ASCellNode *)node {
+- (void)nodeSelectedStateDidChange:(ASCellNode *)node
+{
   NSIndexPath *indexPath = [self indexPathForNode:node];
   if (indexPath) {
     if (node.isSelected) {
@@ -2478,19 +2622,22 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (void)nodeHighlightedStateDidChange:(ASCellNode *)node {
+- (void)nodeHighlightedStateDidChange:(ASCellNode *)node
+{
   NSIndexPath *indexPath = [self indexPathForNode:node];
   if (indexPath) {
     [self cellForItemAtIndexPath:indexPath].highlighted = node.isHighlighted;
   }
 }
 
-- (void)nodeDidInvalidateSize:(ASCellNode *)node {
+- (void)nodeDidInvalidateSize:(ASCellNode *)node
+{
   [_cellsForLayoutUpdates addObject:node];
   [self setNeedsLayout];
 }
 
-- (void)nodesDidRelayout:(NSArray<ASCellNode *> *)nodes {
+- (void)nodesDidRelayout:(NSArray<ASCellNode *> *)nodes
+{
   ASDisplayNodeAssertMainThread();
 
   if (nodes.count == 0) {
@@ -2533,7 +2680,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 #pragma mark - _ASDisplayView behavior substitutions
 // Need these to drive interfaceState so we know when we are visible, if not nested in another range-managing element.
 // Because our superclass is a true UIKit class, we cannot also subclass _ASDisplayView.
-- (void)willMoveToWindow:(UIWindow *)newWindow {
+- (void)willMoveToWindow:(UIWindow *)newWindow
+{
   BOOL visible = (newWindow != nil);
   ASDisplayNode *node = self.collectionNode;
   if (visible && !node.inHierarchy) {
@@ -2541,7 +2689,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (void)didMoveToWindow {
+- (void)didMoveToWindow
+{
   BOOL visible = (self.window != nil);
   ASDisplayNode *node = self.collectionNode;
   BOOL rangeControllerNeedsUpdate = ![node supportsRangeManagedInterfaceState];
@@ -2571,13 +2720,15 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   }
 }
 
-- (void)willMoveToSuperview:(UIView *)newSuperview {
+- (void)willMoveToSuperview:(UIView *)newSuperview
+{
   if (self.superview == nil && newSuperview != nil) {
     _keepalive_node = self.collectionNode;
   }
 }
 
-- (void)didMoveToSuperview {
+- (void)didMoveToSuperview
+{
   if (self.superview == nil) {
     _keepalive_node = nil;
   }
@@ -2602,7 +2753,8 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
  *
  * @see @p testThatNodeCalculatedSizesAreUpdatedBeforeFirstPrepareLayoutAfterRotation
  */
-- (void)layer:(CALayer *)layer didChangeBoundsWithOldValue:(CGRect)oldBounds newValue:(CGRect)newBounds {
+- (void)layer:(CALayer *)layer didChangeBoundsWithOldValue:(CGRect)oldBounds newValue:(CGRect)newBounds
+{
   CGSize newSize = newBounds.size;
   CGSize lastUsedSize = _lastBoundsSizeUsedForMeasuringNodes;
   if (CGSizeEqualToSize(lastUsedSize, newSize)) {
@@ -2634,17 +2786,20 @@ static NSString *const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
 
 #pragma mark - UICollectionView dead-end intercepts
 
-- (void)setPrefetchDataSource:(id<UICollectionViewDataSourcePrefetching>)prefetchDataSource {
+- (void)setPrefetchDataSource:(id<UICollectionViewDataSourcePrefetching>)prefetchDataSource
+{
   return;
 }
 
-- (void)setPrefetchingEnabled:(BOOL)prefetchingEnabled {
+- (void)setPrefetchingEnabled:(BOOL)prefetchingEnabled
+{
   return;
 }
 
 #pragma mark - Accessibility overrides
 
-- (NSArray *)accessibilityElements {
+- (NSArray *)accessibilityElements
+{
   if (!ASActivateExperimentalFeature(ASExperimentalSkipAccessibilityWait)) {
     [self waitUntilAllUpdatesAreCommitted];
   }

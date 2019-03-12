@@ -18,8 +18,10 @@
 
 @implementation NSParagraphStyle (ASText)
 
-+ (NSParagraphStyle *)as_styleWithCTStyle:(CTParagraphStyleRef)CTStyle {
-  if (CTStyle == NULL) return nil;
++ (NSParagraphStyle *)as_styleWithCTStyle:(CTParagraphStyleRef)CTStyle
+{
+  if (CTStyle == NULL)
+    return nil;
 
   NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
 
@@ -27,82 +29,82 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   CGFloat lineSpacing;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierLineSpacing, sizeof(CGFloat),
-                                           &lineSpacing)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierLineSpacing, sizeof(CGFloat), &lineSpacing)) {
     style.lineSpacing = lineSpacing;
   }
 #pragma clang diagnostic pop
 #endif
 
   CGFloat paragraphSpacing;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierParagraphSpacing, sizeof(CGFloat),
-                                           &paragraphSpacing)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierParagraphSpacing, sizeof(CGFloat), &paragraphSpacing)) {
     style.paragraphSpacing = paragraphSpacing;
   }
 
   CTTextAlignment alignment;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierAlignment, sizeof(CTTextAlignment),
-                                           &alignment)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierAlignment, sizeof(CTTextAlignment), &alignment)) {
     style.alignment = NSTextAlignmentFromCTTextAlignment(alignment);
   }
 
   CGFloat firstLineHeadIndent;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat),
-                                           &firstLineHeadIndent)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat), &firstLineHeadIndent)) {
     style.firstLineHeadIndent = firstLineHeadIndent;
   }
 
   CGFloat headIndent;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierHeadIndent, sizeof(CGFloat),
-                                           &headIndent)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierHeadIndent, sizeof(CGFloat), &headIndent)) {
     style.headIndent = headIndent;
   }
 
   CGFloat tailIndent;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierTailIndent, sizeof(CGFloat),
-                                           &tailIndent)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierTailIndent, sizeof(CGFloat), &tailIndent)) {
     style.tailIndent = tailIndent;
   }
 
   CTLineBreakMode lineBreakMode;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierLineBreakMode, sizeof(CTLineBreakMode),
-                                           &lineBreakMode)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierLineBreakMode, sizeof(CTLineBreakMode), &lineBreakMode)) {
     style.lineBreakMode = (NSLineBreakMode)lineBreakMode;
   }
 
   CGFloat minimumLineHeight;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierMinimumLineHeight, sizeof(CGFloat),
-                                           &minimumLineHeight)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierMinimumLineHeight, sizeof(CGFloat), &minimumLineHeight)) {
     style.minimumLineHeight = minimumLineHeight;
   }
 
   CGFloat maximumLineHeight;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierMaximumLineHeight, sizeof(CGFloat),
-                                           &maximumLineHeight)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierMaximumLineHeight, sizeof(CGFloat), &maximumLineHeight)) {
     style.maximumLineHeight = maximumLineHeight;
   }
 
   CTWritingDirection baseWritingDirection;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierBaseWritingDirection,
-                                           sizeof(CTWritingDirection), &baseWritingDirection)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierBaseWritingDirection, sizeof(CTWritingDirection), &baseWritingDirection)) {
     style.baseWritingDirection = (NSWritingDirection)baseWritingDirection;
   }
 
   CGFloat lineHeightMultiple;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierLineHeightMultiple, sizeof(CGFloat),
-                                           &lineHeightMultiple)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierLineHeightMultiple, sizeof(CGFloat), &lineHeightMultiple)) {
     style.lineHeightMultiple = lineHeightMultiple;
   }
 
   CGFloat paragraphSpacingBefore;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierParagraphSpacingBefore, sizeof(CGFloat),
-                                           &paragraphSpacingBefore)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierParagraphSpacingBefore, sizeof(CGFloat), &paragraphSpacingBefore)) {
     style.paragraphSpacingBefore = paragraphSpacingBefore;
   }
 
   CFArrayRef tabStops;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierTabStops, sizeof(CFArrayRef),
-                                           &tabStops)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierTabStops, sizeof(CFArrayRef), &tabStops)) {
     NSMutableArray *tabs = [NSMutableArray new];
     [((__bridge NSArray *)(tabStops)) enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
       CTTextTabRef ctTab = (__bridge CTTextTabRef)obj;
@@ -119,15 +121,16 @@
   }
 
   CGFloat defaultTabInterval;
-  if (CTParagraphStyleGetValueForSpecifier(CTStyle, kCTParagraphStyleSpecifierDefaultTabInterval, sizeof(CGFloat),
-                                           &defaultTabInterval)) {
+  if (CTParagraphStyleGetValueForSpecifier(
+          CTStyle, kCTParagraphStyleSpecifierDefaultTabInterval, sizeof(CGFloat), &defaultTabInterval)) {
     style.defaultTabInterval = defaultTabInterval;
   }
 
   return style;
 }
 
-- (CTParagraphStyleRef)as_CTStyle CF_RETURNS_RETAINED {
+- (CTParagraphStyleRef)as_CTStyle CF_RETURNS_RETAINED
+{
   CTParagraphStyleSetting set[kCTParagraphStyleSpecifierCount] = {};
   int count = 0;
 
@@ -212,8 +215,8 @@
   NSInteger numTabs = self.tabStops.count;
   if (numTabs) {
     [self.tabStops enumerateObjectsUsingBlock:^(NSTextTab *tab, NSUInteger idx, BOOL *stop) {
-      CTTextTabRef ctTab = CTTextTabCreate(NSTextAlignmentToCTTextAlignment(tab.alignment), tab.location,
-                                           (__bridge CFDictionaryRef)tab.options);
+      CTTextTabRef ctTab = CTTextTabCreate(
+          NSTextAlignmentToCTTextAlignment(tab.alignment), tab.location, (__bridge CFDictionaryRef)tab.options);
       [tabs addObject:(__bridge id)ctTab];
       CFRelease(ctTab);
     }];

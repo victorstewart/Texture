@@ -19,27 +19,33 @@ typedef struct {
   CGFloat lineSpacing;
 } ASStackLayoutSpecStyle;
 
-inline CGFloat stackDimension(const ASStackLayoutDirection direction, const CGSize size) {
+inline CGFloat stackDimension(const ASStackLayoutDirection direction, const CGSize size)
+{
   return (direction == ASStackLayoutDirectionVertical) ? size.height : size.width;
 }
 
-inline CGFloat crossDimension(const ASStackLayoutDirection direction, const CGSize size) {
+inline CGFloat crossDimension(const ASStackLayoutDirection direction, const CGSize size)
+{
   return (direction == ASStackLayoutDirectionVertical) ? size.width : size.height;
 }
 
-inline BOOL compareCrossDimension(const ASStackLayoutDirection direction, const CGSize a, const CGSize b) {
+inline BOOL compareCrossDimension(const ASStackLayoutDirection direction, const CGSize a, const CGSize b)
+{
   return crossDimension(direction, a) < crossDimension(direction, b);
 }
 
-inline CGPoint directionPoint(const ASStackLayoutDirection direction, const CGFloat stack, const CGFloat cross) {
+inline CGPoint directionPoint(const ASStackLayoutDirection direction, const CGFloat stack, const CGFloat cross)
+{
   return (direction == ASStackLayoutDirectionVertical) ? CGPointMake(cross, stack) : CGPointMake(stack, cross);
 }
 
-inline CGSize directionSize(const ASStackLayoutDirection direction, const CGFloat stack, const CGFloat cross) {
+inline CGSize directionSize(const ASStackLayoutDirection direction, const CGFloat stack, const CGFloat cross)
+{
   return (direction == ASStackLayoutDirectionVertical) ? CGSizeMake(cross, stack) : CGSizeMake(stack, cross);
 }
 
-inline void setStackValueToPoint(const ASStackLayoutDirection direction, const CGFloat stack, CGPoint &point) {
+inline void setStackValueToPoint(const ASStackLayoutDirection direction, const CGFloat stack, CGPoint &point)
+{
   (direction == ASStackLayoutDirectionVertical) ? (point.y = stack) : (point.x = stack);
 }
 
@@ -47,12 +53,13 @@ inline ASSizeRange directionSizeRange(const ASStackLayoutDirection direction,
                                       const CGFloat stackMin,
                                       const CGFloat stackMax,
                                       const CGFloat crossMin,
-                                      const CGFloat crossMax) {
+                                      const CGFloat crossMax)
+{
   return {directionSize(direction, stackMin, crossMin), directionSize(direction, stackMax, crossMax)};
 }
 
-inline ASStackLayoutAlignItems alignment(ASStackLayoutAlignSelf childAlignment,
-                                         ASStackLayoutAlignItems stackAlignment) {
+inline ASStackLayoutAlignItems alignment(ASStackLayoutAlignSelf childAlignment, ASStackLayoutAlignItems stackAlignment)
+{
   switch (childAlignment) {
     case ASStackLayoutAlignSelfCenter:
       return ASStackLayoutAlignItemsCenter;
@@ -68,7 +75,8 @@ inline ASStackLayoutAlignItems alignment(ASStackLayoutAlignSelf childAlignment,
   }
 }
 
-inline ASStackLayoutAlignItems alignment(ASHorizontalAlignment alignment, ASStackLayoutAlignItems defaultAlignment) {
+inline ASStackLayoutAlignItems alignment(ASHorizontalAlignment alignment, ASStackLayoutAlignItems defaultAlignment)
+{
   switch (alignment) {
     case ASHorizontalAlignmentLeft:
       return ASStackLayoutAlignItemsStart;
@@ -82,7 +90,8 @@ inline ASStackLayoutAlignItems alignment(ASHorizontalAlignment alignment, ASStac
   }
 }
 
-inline ASStackLayoutAlignItems alignment(ASVerticalAlignment alignment, ASStackLayoutAlignItems defaultAlignment) {
+inline ASStackLayoutAlignItems alignment(ASVerticalAlignment alignment, ASStackLayoutAlignItems defaultAlignment)
+{
   switch (alignment) {
     case ASVerticalAlignmentTop:
       return ASStackLayoutAlignItemsStart;
@@ -97,7 +106,8 @@ inline ASStackLayoutAlignItems alignment(ASVerticalAlignment alignment, ASStackL
 }
 
 inline ASStackLayoutJustifyContent justifyContent(ASHorizontalAlignment alignment,
-                                                  ASStackLayoutJustifyContent defaultJustifyContent) {
+                                                  ASStackLayoutJustifyContent defaultJustifyContent)
+{
   switch (alignment) {
     case ASHorizontalAlignmentLeft:
       return ASStackLayoutJustifyContentStart;
@@ -112,7 +122,8 @@ inline ASStackLayoutJustifyContent justifyContent(ASHorizontalAlignment alignmen
 }
 
 inline ASStackLayoutJustifyContent justifyContent(ASVerticalAlignment alignment,
-                                                  ASStackLayoutJustifyContent defaultJustifyContent) {
+                                                  ASStackLayoutJustifyContent defaultJustifyContent)
+{
   switch (alignment) {
     case ASVerticalAlignmentTop:
       return ASStackLayoutJustifyContentStart;

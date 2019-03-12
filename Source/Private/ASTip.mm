@@ -15,7 +15,8 @@
 
 @implementation ASTip
 
-- (instancetype)initWithNode:(ASDisplayNode *)node kind:(ASTipKind)kind format:(NSString *)format, ... {
+- (instancetype)initWithNode:(ASDisplayNode *)node kind:(ASTipKind)kind format:(NSString *)format, ...
+{
   if (self = [super init]) {
     _node = node;
     _kind = kind;

@@ -55,11 +55,13 @@
  */
 #define ASDK_STYLE_PROP_OBJ(PROPERTY_TYPE, PROPERTY_NAME, SETTER_NAME)                                \
   @dynamic PROPERTY_NAME;                                                                             \
-  -(PROPERTY_TYPE)PROPERTY_NAME {                                                                     \
+  -(PROPERTY_TYPE)PROPERTY_NAME                                                                       \
+  {                                                                                                   \
     return (PROPERTY_TYPE)objc_getAssociatedObject(self, @selector(PROPERTY_NAME));                   \
   }                                                                                                   \
                                                                                                       \
-  -(void)SETTER_NAME : (PROPERTY_TYPE)PROPERTY_NAME {                                                 \
+  -(void)SETTER_NAME : (PROPERTY_TYPE)PROPERTY_NAME                                                   \
+  {                                                                                                   \
     objc_setAssociatedObject(self, @selector(PROPERTY_NAME), PROPERTY_NAME, OBJC_ASSOCIATION_RETAIN); \
   }
 
@@ -68,7 +70,8 @@
  */
 #define ASDK_STYLE_PROP_PRIM(PROPERTY_TYPE, PROPERTY_NAME, SETTER_NAME, DEFAULT_VALUE)                   \
   @dynamic PROPERTY_NAME;                                                                                \
-  -(PROPERTY_TYPE)PROPERTY_NAME {                                                                        \
+  -(PROPERTY_TYPE)PROPERTY_NAME                                                                          \
+  {                                                                                                      \
     id obj = objc_getAssociatedObject(self, @selector(PROPERTY_NAME));                                   \
                                                                                                          \
     if (obj != nil) {                                                                                    \
@@ -78,7 +81,8 @@
     return DEFAULT_VALUE;                                                                                \
   }                                                                                                      \
                                                                                                          \
-  -(void)SETTER_NAME : (PROPERTY_TYPE)PROPERTY_NAME {                                                    \
+  -(void)SETTER_NAME : (PROPERTY_TYPE)PROPERTY_NAME                                                      \
+  {                                                                                                      \
     objc_setAssociatedObject(self, @selector(PROPERTY_NAME), @(PROPERTY_NAME), OBJC_ASSOCIATION_RETAIN); \
   }
 
@@ -87,7 +91,8 @@
  */
 #define ASDK_STYLE_PROP_STR(PROPERTY_TYPE, PROPERTY_NAME, SETTER_NAME, DEFAULT_STRUCT)           \
   @dynamic PROPERTY_NAME;                                                                        \
-  -(PROPERTY_TYPE)PROPERTY_NAME {                                                                \
+  -(PROPERTY_TYPE)PROPERTY_NAME                                                                  \
+  {                                                                                              \
     id obj = objc_getAssociatedObject(self, @selector(PROPERTY_NAME));                           \
     if (obj == nil) {                                                                            \
       return DEFAULT_STRUCT;                                                                     \
@@ -97,8 +102,10 @@
     return PROPERTY_NAME;                                                                        \
   }                                                                                              \
                                                                                                  \
-  -(void)SETTER_NAME : (PROPERTY_TYPE)PROPERTY_NAME {                                            \
-    objc_setAssociatedObject(self, @selector(PROPERTY_NAME),                                     \
+  -(void)SETTER_NAME : (PROPERTY_TYPE)PROPERTY_NAME                                              \
+  {                                                                                              \
+    objc_setAssociatedObject(self,                                                               \
+                             @selector(PROPERTY_NAME),                                           \
                              [NSValue value:&PROPERTY_NAME withObjCType:@encode(PROPERTY_TYPE)], \
                              OBJC_ASSOCIATION_RETAIN_NONATOMIC);                                 \
   }\

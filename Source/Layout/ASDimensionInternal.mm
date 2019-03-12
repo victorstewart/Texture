@@ -11,7 +11,8 @@
 
 #pragma mark - ASLayoutElementSize
 
-NSString *NSStringFromASLayoutElementSize(ASLayoutElementSize size) {
+NSString *NSStringFromASLayoutElementSize(ASLayoutElementSize size)
+{
   return [NSString stringWithFormat:@"<ASLayoutElementSize: exact=%@, min=%@, max=%@>",
                                     NSStringFromASLayoutSize(ASLayoutSizeMake(size.width, size.height)),
                                     NSStringFromASLayoutSize(ASLayoutSizeMake(size.minWidth, size.minHeight)),
@@ -19,7 +20,8 @@ NSString *NSStringFromASLayoutElementSize(ASLayoutElementSize size) {
 }
 
 ASDISPLAYNODE_INLINE void ASLayoutElementSizeConstrain(
-    CGFloat minVal, CGFloat exactVal, CGFloat maxVal, CGFloat *outMin, CGFloat *outMax) {
+    CGFloat minVal, CGFloat exactVal, CGFloat maxVal, CGFloat *outMin, CGFloat *outMax)
+{
   NSCAssert(!isnan(minVal), @"minVal must not be NaN");
   NSCAssert(!isnan(maxVal), @"maxVal must not be NaN");
   // Avoid use of min/max primitives since they're harder to reason
@@ -52,7 +54,8 @@ ASDISPLAYNODE_INLINE void ASLayoutElementSizeConstrain(
 
 ASSizeRange ASLayoutElementSizeResolveAutoSize(ASLayoutElementSize size,
                                                const CGSize parentSize,
-                                               ASSizeRange autoASSizeRange) {
+                                               ASSizeRange autoASSizeRange)
+{
   CGSize resolvedExact = ASLayoutSizeResolveSize(ASLayoutSizeMake(size.width, size.height), parentSize, {NAN, NAN});
   CGSize resolvedMin =
       ASLayoutSizeResolveSize(ASLayoutSizeMake(size.minWidth, size.minHeight), parentSize, autoASSizeRange.min);
@@ -60,9 +63,9 @@ ASSizeRange ASLayoutElementSizeResolveAutoSize(ASLayoutElementSize size,
       ASLayoutSizeResolveSize(ASLayoutSizeMake(size.maxWidth, size.maxHeight), parentSize, autoASSizeRange.max);
 
   CGSize rangeMin, rangeMax;
-  ASLayoutElementSizeConstrain(resolvedMin.width, resolvedExact.width, resolvedMax.width, &rangeMin.width,
-                               &rangeMax.width);
-  ASLayoutElementSizeConstrain(resolvedMin.height, resolvedExact.height, resolvedMax.height, &rangeMin.height,
-                               &rangeMax.height);
+  ASLayoutElementSizeConstrain(
+      resolvedMin.width, resolvedExact.width, resolvedMax.width, &rangeMin.width, &rangeMax.width);
+  ASLayoutElementSizeConstrain(
+      resolvedMin.height, resolvedExact.height, resolvedMax.height, &rangeMin.height, &rangeMax.height);
   return {rangeMin, rangeMax};
 }

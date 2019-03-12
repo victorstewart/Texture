@@ -40,7 +40,8 @@ static NSString *const _ASPhotosURLQueryKeyCropHeight = @"crop_h";
 
 @implementation ASPhotosFrameworkImageRequest
 
-- (instancetype)initWithAssetIdentifier:(NSString *)assetIdentifier {
+- (instancetype)initWithAssetIdentifier:(NSString *)assetIdentifier
+{
   self = [super init];
   if (self) {
     _assetIdentifier = assetIdentifier;
@@ -53,7 +54,8 @@ static NSString *const _ASPhotosURLQueryKeyCropHeight = @"crop_h";
 
 #pragma mark NSCopying
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   ASPhotosFrameworkImageRequest *copy =
       [[ASPhotosFrameworkImageRequest alloc] initWithAssetIdentifier:self.assetIdentifier];
   copy.options = [self.options copy];
@@ -64,7 +66,8 @@ static NSString *const _ASPhotosURLQueryKeyCropHeight = @"crop_h";
 
 #pragma mark Converting to URL
 
-- (NSURL *)url {
+- (NSURL *)url
+{
   NSURLComponents *comp = [NSURLComponents new];
   comp.scheme = ASPhotosURLScheme;
   comp.host = _assetIdentifier;
@@ -100,7 +103,8 @@ static NSString *const _ASPhotosURLQueryKeyCropHeight = @"crop_h";
 
 #pragma mark Converting from URL
 
-+ (ASPhotosFrameworkImageRequest *)requestWithURL:(NSURL *)url {
++ (ASPhotosFrameworkImageRequest *)requestWithURL:(NSURL *)url
+{
   // not a photos URL
   if (![url.scheme isEqualToString:ASPhotosURLScheme]) {
     return nil;
@@ -144,7 +148,8 @@ static NSString *const _ASPhotosURLQueryKeyCropHeight = @"crop_h";
 
 #pragma mark NSObject
 
-- (BOOL)isEqual:(id)object {
+- (BOOL)isEqual:(id)object
+{
   if (![object isKindOfClass:ASPhotosFrameworkImageRequest.class]) {
     return NO;
   }

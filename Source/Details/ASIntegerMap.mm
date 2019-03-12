@@ -27,7 +27,8 @@
 
 #pragma mark - Singleton
 
-+ (ASIntegerMap *)identityMap NS_RETURNS_RETAINED {
++ (ASIntegerMap *)identityMap NS_RETURNS_RETAINED
+{
   static ASIntegerMap *identityMap;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -38,7 +39,8 @@
   return identityMap;
 }
 
-+ (ASIntegerMap *)emptyMap NS_RETURNS_RETAINED {
++ (ASIntegerMap *)emptyMap NS_RETURNS_RETAINED
+{
   static ASIntegerMap *emptyMap;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -51,7 +53,8 @@
 
 + (ASIntegerMap *)mapForUpdateWithOldCount:(NSInteger)oldCount
                                    deleted:(NSIndexSet *)deletions
-                                  inserted:(NSIndexSet *)insertions NS_RETURNS_RETAINED {
+                                  inserted:(NSIndexSet *)insertions NS_RETURNS_RETAINED
+{
   if (oldCount == 0) {
     return ASIntegerMap.emptyMap;
   }
@@ -90,7 +93,8 @@
   return result;
 }
 
-- (NSInteger)integerForKey:(NSInteger)key {
+- (NSInteger)integerForKey:(NSInteger)key
+{
   if (_isIdentity) {
     return key;
   } else if (_isEmpty) {
@@ -101,7 +105,8 @@
   return result != _map.end() ? result->second : NSNotFound;
 }
 
-- (void)setInteger:(NSInteger)value forKey:(NSInteger)key {
+- (void)setInteger:(NSInteger)value forKey:(NSInteger)key
+{
   if (_immutable) {
     ASDisplayNodeFailAssert(@"Cannot mutate special integer map: %@", self);
     return;
@@ -110,7 +115,8 @@
   _map[key] = value;
 }
 
-- (ASIntegerMap *)inverseMap {
+- (ASIntegerMap *)inverseMap
+{
   if (_isIdentity || _isEmpty) {
     return self;
   }
@@ -125,7 +131,8 @@
 
 #pragma mark - NSCopying
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   if (_immutable) {
     return self;
   }
@@ -137,7 +144,8 @@
 
 #pragma mark - Description
 
-- (NSMutableArray<NSDictionary *> *)propertiesForDescription {
+- (NSMutableArray<NSDictionary *> *)propertiesForDescription
+{
   NSMutableArray *result = [NSMutableArray array];
 
   if (_isIdentity) {
@@ -160,11 +168,13 @@
   return result;
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
   return ASObjectDescriptionMakeWithoutObject([self propertiesForDescription]);
 }
 
-- (BOOL)isEqual:(id)object {
+- (BOOL)isEqual:(id)object
+{
   if ([super isEqual:object]) {
     return YES;
   }

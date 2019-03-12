@@ -36,11 +36,13 @@
 
 + (instancetype)centerLayoutSpecWithCenteringOptions:(ASCenterLayoutSpecCenteringOptions)centeringOptions
                                        sizingOptions:(ASCenterLayoutSpecSizingOptions)sizingOptions
-                                               child:(id<ASLayoutElement>)child NS_RETURNS_RETAINED {
+                                               child:(id<ASLayoutElement>)child NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithCenteringOptions:centeringOptions sizingOptions:sizingOptions child:child];
 }
 
-- (void)setCenteringOptions:(ASCenterLayoutSpecCenteringOptions)centeringOptions {
+- (void)setCenteringOptions:(ASCenterLayoutSpecCenteringOptions)centeringOptions
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
   _centeringOptions = centeringOptions;
 
@@ -48,14 +50,16 @@
   [self setVerticalPosition:[self verticalPositionFromCenteringOptions:centeringOptions]];
 }
 
-- (void)setSizingOptions:(ASCenterLayoutSpecSizingOptions)sizingOptions {
+- (void)setSizingOptions:(ASCenterLayoutSpecSizingOptions)sizingOptions
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
   _sizingOptions = sizingOptions;
   [self setSizingOption:sizingOptions];
 }
 
 - (ASRelativeLayoutSpecPosition)horizontalPositionFromCenteringOptions:
-    (ASCenterLayoutSpecCenteringOptions)centeringOptions {
+    (ASCenterLayoutSpecCenteringOptions)centeringOptions
+{
   if ((centeringOptions & ASCenterLayoutSpecCenteringX) != 0) {
     return ASRelativeLayoutSpecPositionCenter;
   } else {
@@ -64,7 +68,8 @@
 }
 
 - (ASRelativeLayoutSpecPosition)verticalPositionFromCenteringOptions:
-    (ASCenterLayoutSpecCenteringOptions)centeringOptions {
+    (ASCenterLayoutSpecCenteringOptions)centeringOptions
+{
   if ((centeringOptions & ASCenterLayoutSpecCenteringY) != 0) {
     return ASRelativeLayoutSpecPositionCenter;
   } else {

@@ -17,9 +17,11 @@
 @dynamic asyncdisplaykit_asyncLayerTransactions;
 
 // No-ops in the base class. Mostly exposed for testing.
-- (void)asyncdisplaykit_asyncTransactionContainerWillBeginTransaction:(_ASAsyncTransaction *)transaction {
+- (void)asyncdisplaykit_asyncTransactionContainerWillBeginTransaction:(_ASAsyncTransaction *)transaction
+{
 }
-- (void)asyncdisplaykit_asyncTransactionContainerDidCompleteTransaction:(_ASAsyncTransaction *)transaction {
+- (void)asyncdisplaykit_asyncTransactionContainerDidCompleteTransaction:(_ASAsyncTransaction *)transaction
+{
 }
 @end
 
@@ -27,13 +29,15 @@
 @dynamic asyncdisplaykit_currentAsyncTransaction;
 @dynamic asyncdisplaykit_asyncTransactionContainer;
 
-- (ASAsyncTransactionContainerState)asyncdisplaykit_asyncTransactionContainerState {
+- (ASAsyncTransactionContainerState)asyncdisplaykit_asyncTransactionContainerState
+{
   return ([self.asyncdisplaykit_asyncLayerTransactions count] == 0)
              ? ASAsyncTransactionContainerStateNoTransactions
              : ASAsyncTransactionContainerStatePendingTransactions;
 }
 
-- (void)asyncdisplaykit_cancelAsyncTransactions {
+- (void)asyncdisplaykit_cancelAsyncTransactions
+{
   // If there was an open transaction, commit and clear the current transaction. Otherwise:
   // (1) The run loop observer will try to commit a canceled transaction which is not allowed
   // (2) We leave the canceled transaction attached to the layer, dooming future operations
@@ -46,7 +50,8 @@
   }
 }
 
-- (_ASAsyncTransaction *)asyncdisplaykit_asyncTransaction {
+- (_ASAsyncTransaction *)asyncdisplaykit_asyncTransaction
+{
   _ASAsyncTransaction *transaction = self.asyncdisplaykit_currentAsyncTransaction;
   if (transaction == nil) {
     NSHashTable *transactions = self.asyncdisplaykit_asyncLayerTransactions;
@@ -72,7 +77,8 @@
   return transaction;
 }
 
-- (CALayer *)asyncdisplaykit_parentTransactionContainer {
+- (CALayer *)asyncdisplaykit_parentTransactionContainer
+{
   CALayer *containerLayer = self;
   while (containerLayer && !containerLayer.asyncdisplaykit_isAsyncTransactionContainer) {
     containerLayer = containerLayer.superlayer;
@@ -84,31 +90,38 @@
 
 @implementation UIView (ASAsyncTransactionContainer)
 
-- (BOOL)asyncdisplaykit_isAsyncTransactionContainer {
+- (BOOL)asyncdisplaykit_isAsyncTransactionContainer
+{
   return self.layer.asyncdisplaykit_isAsyncTransactionContainer;
 }
 
-- (void)asyncdisplaykit_setAsyncTransactionContainer:(BOOL)asyncTransactionContainer {
+- (void)asyncdisplaykit_setAsyncTransactionContainer:(BOOL)asyncTransactionContainer
+{
   self.layer.asyncdisplaykit_asyncTransactionContainer = asyncTransactionContainer;
 }
 
-- (ASAsyncTransactionContainerState)asyncdisplaykit_asyncTransactionContainerState {
+- (ASAsyncTransactionContainerState)asyncdisplaykit_asyncTransactionContainerState
+{
   return self.layer.asyncdisplaykit_asyncTransactionContainerState;
 }
 
-- (void)asyncdisplaykit_cancelAsyncTransactions {
+- (void)asyncdisplaykit_cancelAsyncTransactions
+{
   [self.layer asyncdisplaykit_cancelAsyncTransactions];
 }
 
-- (void)asyncdisplaykit_asyncTransactionContainerStateDidChange {
+- (void)asyncdisplaykit_asyncTransactionContainerStateDidChange
+{
   // No-op in the base class.
 }
 
-- (void)asyncdisplaykit_setCurrentAsyncTransaction:(_ASAsyncTransaction *)transaction {
+- (void)asyncdisplaykit_setCurrentAsyncTransaction:(_ASAsyncTransaction *)transaction
+{
   self.layer.asyncdisplaykit_currentAsyncTransaction = transaction;
 }
 
-- (_ASAsyncTransaction *)asyncdisplaykit_currentAsyncTransaction {
+- (_ASAsyncTransaction *)asyncdisplaykit_currentAsyncTransaction
+{
   return self.layer.asyncdisplaykit_currentAsyncTransaction;
 }
 

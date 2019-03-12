@@ -61,7 +61,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
 
 #pragma mark - Lifecycle
 
-- (instancetype)init {
+- (instancetype)init
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -86,7 +87,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
   return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
 #if AS_RANGECONTROLLER_LOG_UPDATE_FREQ
   [_displayLink invalidate];
 #endif
@@ -100,12 +102,14 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
 
 #pragma mark - Core visible node range management API
 
-+ (BOOL)isFirstRangeUpdateForRangeMode:(ASLayoutRangeMode)rangeMode {
++ (BOOL)isFirstRangeUpdateForRangeMode:(ASLayoutRangeMode)rangeMode
+{
   return (rangeMode == ASLayoutRangeModeUnspecified);
 }
 
 + (ASLayoutRangeMode)rangeModeForInterfaceState:(ASInterfaceState)interfaceState
-                               currentRangeMode:(ASLayoutRangeMode)currentRangeMode {
+                               currentRangeMode:(ASLayoutRangeMode)currentRangeMode
+{
   BOOL isVisible = (ASInterfaceStateIncludesVisible(interfaceState));
   BOOL isFirstRangeUpdate = [self isFirstRangeUpdateForRangeMode:currentRangeMode];
   if (!isVisible || isFirstRangeUpdate) {
@@ -115,7 +119,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
   return ASLayoutRangeModeFull;
 }
 
-- (ASInterfaceState)interfaceState {
+- (ASInterfaceState)interfaceState
+{
   ASInterfaceState selfInterfaceState = ASInterfaceStateNone;
   if (_dataSource) {
     selfInterfaceState = [_dataSource interfaceStateForRangeController:self];
@@ -128,7 +133,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
   return selfInterfaceState;
 }
 
-- (void)setNeedsUpdate {
+- (void)setNeedsUpdate
+{
   if (!_needsRangeUpdate) {
     _needsRangeUpdate = YES;
 
@@ -139,18 +145,21 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
   }
 }
 
-- (void)updateIfNeeded {
+- (void)updateIfNeeded
+{
   if (_needsRangeUpdate) {
     [self updateRanges];
   }
 }
 
-- (void)updateRanges {
+- (void)updateRanges
+{
   _needsRangeUpdate = NO;
   [self _updateVisibleNodeIndexPaths];
 }
 
-- (void)updateCurrentRangeWithMode:(ASLayoutRangeMode)rangeMode {
+- (void)updateCurrentRangeWithMode:(ASLayoutRangeMode)rangeMode
+{
   _preserveCurrentRangeMode = YES;
   if (_currentRangeMode != rangeMode) {
     _currentRangeMode = rangeMode;
@@ -159,14 +168,16 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
   }
 }
 
-- (void)setLayoutController:(id<ASLayoutController>)layoutController {
+- (void)setLayoutController:(id<ASLayoutController>)layoutController
+{
   _layoutController = layoutController;
   if (layoutController && _dataSource) {
     [self updateIfNeeded];
   }
 }
 
-- (void)setDataSource:(id<ASRangeControllerDataSource>)dataSource {
+- (void)setDataSource:(id<ASRangeControllerDataSource>)dataSource
+{
   _dataSource = dataSource;
   if (dataSource && _layoutController) {
     [self updateIfNeeded];
@@ -181,7 +192,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
 // NOTE: There is a minor risk here, if a node is transferred from one range controller
 // to another before the first rc updates and clears the node out of this set. It's a pretty
 // wild scenario that I doubt happens in practice.
-- (void)_setVisibleNodes:(NSHashTable *)newVisibleNodes {
+- (void)_setVisibleNodes:(NSHashTable *)newVisibleNodes
+{
   for (ASCellNode *node in _visibleNodes) {
     if (![newVisibleNodes containsObject:node] && node.isVisible) {
       [node exitInterfaceState:ASInterfaceStateVisible];
@@ -190,11 +202,12 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
   _visibleNodes = newVisibleNodes;
 }
 
-- (void)_updateVisibleNodeIndexPaths {
+- (void)_updateVisibleNodeIndexPaths
+{
   as_activity_scope_verbose(
       as_activity_create("Update range controller", AS_ACTIVITY_CURRENT, OS_ACTIVITY_FLAG_DEFAULT));
-  as_log_verbose(ASCollectionLog(), "Updating ranges for %@",
-                 ASViewToDisplayNode(ASDynamicCast(self.delegate, UIView)));
+  as_log_verbose(
+      ASCollectionLog(), "Updating ranges for %@", ASViewToDisplayNode(ASDynamicCast(self.delegate, UIView)));
   ASDisplayNodeAssert(_layoutController, @"An ASLayoutController is required by ASRangeController");
   if (!_layoutController || !_dataSource) {
     return;
@@ -449,7 +462,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
   //  }
   [modifiedIndexPaths sortUsingSelector:@selector(compare:)];
   NSLog(@"Range update complete; modifiedIndexPaths: %@, rangeMode: %d",
-        [self descriptionWithIndexPaths:modifiedIndexPaths], rangeMode);
+        [self descriptionWithIndexPaths:modifiedIndexPaths],
+        rangeMode);
 #endif
 
   ASSignpostEnd(ASSignpostRangeControllerUpdate);
@@ -461,7 +475,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
  * If we're in a restricted range mode, but we're going to change to a full range mode soon,
  * go ahead and schedule the transition as soon as all the currently-scheduled rendering is done #1163.
  */
-- (void)registerForNodeDisplayNotificationsForInterfaceStateIfNeeded:(ASInterfaceState)interfaceState {
+- (void)registerForNodeDisplayNotificationsForInterfaceStateIfNeeded:(ASInterfaceState)interfaceState
+{
   // Do not schedule to listen if we're already in full range mode.
   // This avoids updating the range controller during a collection teardown when it is removed
   // from the hierarchy and its data source is cleared, causing UIKit to call -reloadData.
@@ -478,7 +493,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
   }
 }
 
-- (void)scheduledNodesDidDisplay:(NSNotification *)notification {
+- (void)scheduledNodesDidDisplay:(NSNotification *)notification
+{
   CFAbsoluteTime notificationTimestamp =
       ((NSNumber *)notification.userInfo[ASRenderingEngineDidDisplayNodesScheduledBeforeTimestamp]).doubleValue;
   if (_pendingDisplayNodesTimestamp < notificationTimestamp) {
@@ -494,7 +510,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
 
 #pragma mark - Cell node view handling
 
-- (void)configureContentView:(UIView *)contentView forCellNode:(ASCellNode *)node {
+- (void)configureContentView:(UIView *)contentView forCellNode:(ASCellNode *)node
+{
   ASDisplayNodeAssertMainThread();
   ASDisplayNodeAssert(node, @"Cannot move a nil node to a view");
   ASDisplayNodeAssert(contentView, @"Cannot move a node to a non-existent view");
@@ -520,12 +537,14 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
 
 - (void)setTuningParameters:(ASRangeTuningParameters)tuningParameters
                forRangeMode:(ASLayoutRangeMode)rangeMode
-                  rangeType:(ASLayoutRangeType)rangeType {
+                  rangeType:(ASLayoutRangeType)rangeType
+{
   [_layoutController setTuningParameters:tuningParameters forRangeMode:rangeMode rangeType:rangeType];
 }
 
 - (ASRangeTuningParameters)tuningParametersForRangeMode:(ASLayoutRangeMode)rangeMode
-                                              rangeType:(ASLayoutRangeType)rangeType {
+                                              rangeType:(ASLayoutRangeType)rangeType
+{
   return [_layoutController tuningParametersForRangeMode:rangeMode rangeType:rangeType];
 }
 
@@ -533,7 +552,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
 
 - (void)dataController:(ASDataController *)dataController
     updateWithChangeSet:(_ASHierarchyChangeSet *)changeSet
-                updates:(dispatch_block_t)updates {
+                updates:(dispatch_block_t)updates
+{
   ASDisplayNodeAssertMainThread();
   if (changeSet.includesReloadData) {
     [self _setVisibleNodes:nil];
@@ -546,7 +566,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
 
 // Skip the many method calls of the recursive operation if the top level cell node already has the right
 // interfaceState.
-- (void)clearContents {
+- (void)clearContents
+{
   ASDisplayNodeAssertMainThread();
   for (ASCollectionElement *element in [_dataSource elementMapForRangeController:self]) {
     ASCellNode *node = element.nodeIfAllocated;
@@ -556,7 +577,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
   }
 }
 
-- (void)clearPreloadedData {
+- (void)clearPreloadedData
+{
   ASDisplayNodeAssertMainThread();
   for (ASCollectionElement *element in [_dataSource elementMapForRangeController:self]) {
     ASCellNode *node = element.nodeIfAllocated;
@@ -568,7 +590,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
 
 #pragma mark - Class Methods (Application Notification Handlers)
 
-+ (ASWeakSet *)allRangeControllersWeakSet {
++ (ASWeakSet *)allRangeControllersWeakSet
+{
   static ASWeakSet<ASRangeController *> *__allRangeControllersWeakSet;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -578,7 +601,8 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
   return __allRangeControllersWeakSet;
 }
 
-+ (void)registerSharedApplicationNotifications {
++ (void)registerSharedApplicationNotifications
+{
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
 #if ASRangeControllerAutomaticLowMemoryHandling
   [center addObserver:self
@@ -597,14 +621,16 @@ static UIApplicationState __ApplicationState = UIApplicationStateActive;
 }
 
 static ASLayoutRangeMode __rangeModeForMemoryWarnings = ASLayoutRangeModeLowMemory;
-+ (void)setRangeModeForMemoryWarnings:(ASLayoutRangeMode)rangeMode {
++ (void)setRangeModeForMemoryWarnings:(ASLayoutRangeMode)rangeMode
+{
   ASDisplayNodeAssert(rangeMode == ASLayoutRangeModeVisibleOnly || rangeMode == ASLayoutRangeModeLowMemory,
                       @"It is highly inadvisable to engage a larger range mode when a memory warning occurs, as this "
                       @"will almost certainly cause app eviction");
   __rangeModeForMemoryWarnings = rangeMode;
 }
 
-+ (void)didReceiveMemoryWarning:(NSNotification *)notification {
++ (void)didReceiveMemoryWarning:(NSNotification *)notification
+{
   NSArray *allRangeControllers = [[self allRangeControllersWeakSet] allObjects];
   for (ASRangeController *rangeController in allRangeControllers) {
     BOOL isDisplay = ASInterfaceStateIncludesDisplay([rangeController interfaceState]);
@@ -619,7 +645,8 @@ static ASLayoutRangeMode __rangeModeForMemoryWarnings = ASLayoutRangeModeLowMemo
 #endif
 }
 
-+ (void)didEnterBackground:(NSNotification *)notification {
++ (void)didEnterBackground:(NSNotification *)notification
+{
   NSArray *allRangeControllers = [[self allRangeControllersWeakSet] allObjects];
   for (ASRangeController *rangeController in allRangeControllers) {
     // We do not want to fully collapse the Display ranges of any visible range controllers so that flashes can be
@@ -643,7 +670,8 @@ static ASLayoutRangeMode __rangeModeForMemoryWarnings = ASLayoutRangeModeLowMemo
 #endif
 }
 
-+ (void)willEnterForeground:(NSNotification *)notification {
++ (void)willEnterForeground:(NSNotification *)notification
+{
   NSArray *allRangeControllers = [[self allRangeControllersWeakSet] allObjects];
   __ApplicationState = UIApplicationStateActive;
   for (ASRangeController *rangeController in allRangeControllers) {
@@ -661,7 +689,8 @@ static ASLayoutRangeMode __rangeModeForMemoryWarnings = ASLayoutRangeModeLowMemo
 #pragma mark - Debugging
 
 #if AS_RANGECONTROLLER_LOG_UPDATE_FREQ
-- (void)_updateCountDisplayLinkDidFire {
+- (void)_updateCountDisplayLinkDidFire
+{
   if (_updateCountThisFrame > 1) {
     NSLog(@"ASRangeController %p updated %lu times this frame.", self, (unsigned long)_updateCountThisFrame);
   }
@@ -669,7 +698,8 @@ static ASLayoutRangeMode __rangeModeForMemoryWarnings = ASLayoutRangeModeLowMemo
 }
 #endif
 
-- (NSString *)descriptionWithIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
+- (NSString *)descriptionWithIndexPaths:(NSArray<NSIndexPath *> *)indexPaths
+{
   NSMutableString *description =
       [NSMutableString stringWithFormat:@"%@ %@", [super description], @" allPreviousIndexPaths:\n"];
   for (NSIndexPath *indexPath in indexPaths) {
@@ -679,13 +709,17 @@ static ASLayoutRangeMode __rangeModeForMemoryWarnings = ASLayoutRangeModeLowMemo
     BOOL inVisible = ASInterfaceStateIncludesVisible(interfaceState);
     BOOL inDisplay = ASInterfaceStateIncludesDisplay(interfaceState);
     BOOL inPreload = ASInterfaceStateIncludesPreload(interfaceState);
-    [description appendFormat:@"indexPath %@, Visible: %d, Display: %d, Preload: %d\n", indexPath, inVisible, inDisplay,
+    [description appendFormat:@"indexPath %@, Visible: %d, Display: %d, Preload: %d\n",
+                              indexPath,
+                              inVisible,
+                              inDisplay,
                               inPreload];
   }
   return description;
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
   NSArray<NSIndexPath *> *indexPaths =
       [[_allPreviousIndexPaths allObjects] sortedArrayUsingSelector:@selector(compare:)];
   return [self descriptionWithIndexPaths:indexPaths];
@@ -695,7 +729,8 @@ static ASLayoutRangeMode __rangeModeForMemoryWarnings = ASLayoutRangeModeLowMemo
 
 @implementation ASDisplayNode (RangeModeConfiguring)
 
-+ (void)setRangeModeForMemoryWarnings:(ASLayoutRangeMode)rangeMode {
++ (void)setRangeModeForMemoryWarnings:(ASLayoutRangeMode)rangeMode
+{
   [ASRangeController setRangeModeForMemoryWarnings:rangeMode];
 }
 

@@ -21,26 +21,31 @@
 
 #pragma mark - Class
 
-+ (instancetype)absoluteLayoutSpecWithChildren:(NSArray *)children NS_RETURNS_RETAINED {
++ (instancetype)absoluteLayoutSpecWithChildren:(NSArray *)children NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithChildren:children];
 }
 
 + (instancetype)absoluteLayoutSpecWithSizing:(ASAbsoluteLayoutSpecSizing)sizing
-                                    children:(NSArray<id<ASLayoutElement>> *)children NS_RETURNS_RETAINED {
+                                    children:(NSArray<id<ASLayoutElement>> *)children NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithSizing:sizing children:children];
 }
 
 #pragma mark - Lifecycle
 
-- (instancetype)init {
+- (instancetype)init
+{
   return [self initWithChildren:nil];
 }
 
-- (instancetype)initWithChildren:(NSArray *)children {
+- (instancetype)initWithChildren:(NSArray *)children
+{
   return [self initWithSizing:ASAbsoluteLayoutSpecSizingDefault children:children];
 }
 
-- (instancetype)initWithSizing:(ASAbsoluteLayoutSpecSizing)sizing children:(NSArray<id<ASLayoutElement>> *)children {
+- (instancetype)initWithSizing:(ASAbsoluteLayoutSpecSizing)sizing children:(NSArray<id<ASLayoutElement>> *)children
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -53,7 +58,8 @@
 
 #pragma mark - ASLayoutSpec
 
-- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize {
+- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize
+{
   CGSize size = {ASPointsValidForSize(constrainedSize.max.width) == NO ? ASLayoutElementParentDimensionUndefined
                                                                        : constrainedSize.max.width,
                  ASPointsValidForSize(constrainedSize.max.height) == NO ? ASLayoutElementParentDimensionUndefined

@@ -12,11 +12,18 @@
 #if AS_TLS_AVAILABLE
 
 static _Thread_local int tls_mainThreadAssertionsDisabledCount;
-BOOL ASMainThreadAssertionsAreDisabled() { return tls_mainThreadAssertionsDisabledCount > 0; }
+BOOL ASMainThreadAssertionsAreDisabled()
+{
+  return tls_mainThreadAssertionsDisabledCount > 0;
+}
 
-void ASPushMainThreadAssertionsDisabled() { tls_mainThreadAssertionsDisabledCount += 1; }
+void ASPushMainThreadAssertionsDisabled()
+{
+  tls_mainThreadAssertionsDisabledCount += 1;
+}
 
-void ASPopMainThreadAssertionsDisabled() {
+void ASPopMainThreadAssertionsDisabled()
+{
   tls_mainThreadAssertionsDisabledCount -= 1;
   ASDisplayNodeCAssert(tls_mainThreadAssertionsDisabledCount >= 0,
                        @"Attempt to pop thread assertion-disabling without corresponding push.");
@@ -26,7 +33,8 @@ void ASPopMainThreadAssertionsDisabled() {
 
 #import <dispatch/once.h>
 
-static pthread_key_t ASMainThreadAssertionsDisabledKey() {
+static pthread_key_t ASMainThreadAssertionsDisabledKey()
+{
   static pthread_key_t k;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -35,17 +43,20 @@ static pthread_key_t ASMainThreadAssertionsDisabledKey() {
   return k;
 }
 
-BOOL ASMainThreadAssertionsAreDisabled() {
+BOOL ASMainThreadAssertionsAreDisabled()
+{
   return (nullptr != pthread_getspecific(ASMainThreadAssertionsDisabledKey()));
 }
 
-void ASPushMainThreadAssertionsDisabled() {
+void ASPushMainThreadAssertionsDisabled()
+{
   const auto key = ASMainThreadAssertionsDisabledKey();
   const auto oldVal = (intptr_t)pthread_getspecific(key);
   pthread_setspecific(key, (void *)(oldVal + 1));
 }
 
-void ASPopMainThreadAssertionsDisabled() {
+void ASPopMainThreadAssertionsDisabled()
+{
   const auto key = ASMainThreadAssertionsDisabledKey();
   const auto oldVal = (intptr_t)pthread_getspecific(key);
   pthread_setspecific(key, (void *)(oldVal - 1));

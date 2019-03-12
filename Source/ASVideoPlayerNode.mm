@@ -97,7 +97,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
 
 #pragma mark - Lifecycle
 
-- (instancetype)init {
+- (instancetype)init
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -107,7 +108,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   return self;
 }
 
-- (instancetype)initWithAsset:(AVAsset *)asset {
+- (instancetype)initWithAsset:(AVAsset *)asset
+{
   if (!(self = [self init])) {
     return nil;
   }
@@ -117,13 +119,15 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   return self;
 }
 
-- (instancetype)initWithURL:(NSURL *)URL {
+- (instancetype)initWithURL:(NSURL *)URL
+{
   return [self initWithAsset:[AVAsset assetWithURL:URL]];
 }
 
 - (instancetype)initWithAsset:(AVAsset *)asset
              videoComposition:(AVVideoComposition *)videoComposition
-                     audioMix:(AVAudioMix *)audioMix {
+                     audioMix:(AVAudioMix *)audioMix
+{
   if (!(self = [self initWithAsset:asset])) {
     return nil;
   }
@@ -134,7 +138,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   return self;
 }
 
-- (void)_initControlsAndVideoNode {
+- (void)_initControlsAndVideoNode
+{
   _defaultControlsColor = [UIColor whiteColor];
   _cachedControls = [[NSMutableDictionary alloc] init];
 
@@ -145,13 +150,15 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
 
 #pragma mark - Setter / Getter
 
-- (void)setAssetURL:(NSURL *)assetURL {
+- (void)setAssetURL:(NSURL *)assetURL
+{
   ASDisplayNodeAssertMainThread();
 
   self.asset = [AVAsset assetWithURL:assetURL];
 }
 
-- (NSURL *)assetURL {
+- (NSURL *)assetURL
+{
   NSURL *url = nil;
   {
     ASLockScopeSelf();
@@ -163,7 +170,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   return url ?: _videoNode.assetURL;
 }
 
-- (void)setAsset:(AVAsset *)asset {
+- (void)setAsset:(AVAsset *)asset
+{
   ASDisplayNodeAssertMainThread();
 
   [self lock];
@@ -183,19 +191,22 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   [self unlock];
 }
 
-- (AVAsset *)asset {
+- (AVAsset *)asset
+{
   return ASLockedSelf(_pendingAsset) ?: _videoNode.asset;
 }
 
 #pragma mark - ASDisplayNode
 
-- (void)didLoad {
+- (void)didLoad
+{
   [super didLoad];
 
   [self createControls];
 }
 
-- (void)didEnterPreloadState {
+- (void)didEnterPreloadState
+{
   [super didEnterPreloadState];
 
   AVAsset *pendingAsset = nil;
@@ -211,13 +222,15 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (BOOL)supportsLayerBacking {
+- (BOOL)supportsLayerBacking
+{
   return NO;
 }
 
 #pragma mark - UI
 
-- (void)createControls {
+- (void)createControls
+{
   {
     ASLockScopeSelf();
 
@@ -286,18 +299,22 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   });
 }
 
-- (NSArray *)createDefaultControlElementArray {
+- (NSArray *)createDefaultControlElementArray
+{
   if (_delegateFlags.delegateNeededDefaultControls) {
     return [_delegate videoPlayerNodeNeededDefaultControls:self];
   }
 
   return @[
-    @(ASVideoPlayerNodeControlTypePlaybackButton), @(ASVideoPlayerNodeControlTypeElapsedText),
-    @(ASVideoPlayerNodeControlTypeScrubber), @(ASVideoPlayerNodeControlTypeDurationText)
+    @(ASVideoPlayerNodeControlTypePlaybackButton),
+    @(ASVideoPlayerNodeControlTypeElapsedText),
+    @(ASVideoPlayerNodeControlTypeScrubber),
+    @(ASVideoPlayerNodeControlTypeDurationText)
   ];
 }
 
-- (void)removeControls {
+- (void)removeControls
+{
   NSMutableDictionary *cachedControls = nil;
   {
     ASLockScope(self);
@@ -312,7 +329,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (void)_locked_cleanCachedControls {
+- (void)_locked_cleanCachedControls
+{
   [_cachedControls removeAllObjects];
 
   _playbackButtonNode = nil;
@@ -322,7 +340,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   _scrubberNode = nil;
 }
 
-- (void)_locked_createPlaybackButton {
+- (void)_locked_createPlaybackButton
+{
   ASAssertLocked(__instanceLock__);
 
   if (_playbackButtonNode == nil) {
@@ -351,7 +370,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (void)_locked_createFullScreenButton {
+- (void)_locked_createFullScreenButton
+{
   ASAssertLocked(__instanceLock__);
 
   if (_fullScreenButtonNode == nil) {
@@ -375,7 +395,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (void)_locked_createElapsedTextField {
+- (void)_locked_createElapsedTextField
+{
   ASAssertLocked(__instanceLock__);
 
   if (_elapsedTextNode == nil) {
@@ -392,7 +413,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (void)_locked_createDurationTextField {
+- (void)_locked_createDurationTextField
+{
   ASAssertLocked(__instanceLock__);
 
   if (_durationTextNode == nil) {
@@ -410,7 +432,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (void)_locked_createScrubber {
+- (void)_locked_createScrubber
+{
   ASAssertLocked(__instanceLock__);
 
   if (_scrubberNode == nil) {
@@ -458,7 +481,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (void)_locked_createControlFlexGrowSpacer {
+- (void)_locked_createControlFlexGrowSpacer
+{
   ASAssertLocked(__instanceLock__);
 
   if (_controlFlexGrowSpacerSpec == nil) {
@@ -469,7 +493,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   [_cachedControls setObject:_controlFlexGrowSpacerSpec forKey:@(ASVideoPlayerNodeControlTypeFlexGrowSpacer)];
 }
 
-- (void)updateDurationTimeLabel {
+- (void)updateDurationTimeLabel
+{
   if (!_durationTextNode) {
     return;
   }
@@ -479,7 +504,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
                                                                forControlType:ASVideoPlayerNodeControlTypeDurationText];
 }
 
-- (void)updateElapsedTimeLabel:(NSTimeInterval)seconds {
+- (void)updateElapsedTimeLabel:(NSTimeInterval)seconds
+{
   if (!_elapsedTextNode) {
     return;
   }
@@ -491,7 +517,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
 }
 
 - (NSAttributedString *)timeLabelAttributedStringForString:(NSString *)string
-                                            forControlType:(ASVideoPlayerNodeControlType)controlType {
+                                            forControlType:(ASVideoPlayerNodeControlType)controlType
+{
   NSDictionary *options;
   if (_delegateFlags.delegateTimeLabelAttributes) {
     options = [_delegate videoPlayerNodeTimeLabelAttributes:self timeLabelType:controlType];
@@ -508,7 +535,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
 #pragma mark - ASVideoNodeDelegate
 - (void)videoNode:(ASVideoNode *)videoNode
     willChangePlayerState:(ASVideoNodePlayerState)state
-                  toState:(ASVideoNodePlayerState)toState {
+                  toState:(ASVideoNodePlayerState)toState
+{
   if (_delegateFlags.delegateVideoNodeWillChangeState) {
     [_delegate videoPlayerNode:self willChangeVideoNodeState:state toVideoNodeState:toState];
   }
@@ -536,14 +564,16 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (BOOL)videoNode:(ASVideoNode *)videoNode shouldChangePlayerStateTo:(ASVideoNodePlayerState)state {
+- (BOOL)videoNode:(ASVideoNode *)videoNode shouldChangePlayerStateTo:(ASVideoNodePlayerState)state
+{
   if (_delegateFlags.delegateVideoNodeShouldChangeState) {
     return [_delegate videoPlayerNode:self shouldChangeVideoNodeStateTo:state];
   }
   return YES;
 }
 
-- (void)videoNode:(ASVideoNode *)videoNode didPlayToTimeInterval:(NSTimeInterval)timeInterval {
+- (void)videoNode:(ASVideoNode *)videoNode didPlayToTimeInterval:(NSTimeInterval)timeInterval
+{
   if (_delegateFlags.delegateVideoNodeDidPlayToTime) {
     [_delegate videoPlayerNode:self didPlayToTime:_videoNode.player.currentTime];
   }
@@ -561,13 +591,15 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (void)videoDidPlayToEnd:(ASVideoNode *)videoNode {
+- (void)videoDidPlayToEnd:(ASVideoNode *)videoNode
+{
   if (_delegateFlags.delegateVideoNodePlaybackDidFinish) {
     [_delegate videoPlayerNodeDidPlayToEnd:self];
   }
 }
 
-- (void)didTapVideoNode:(ASVideoNode *)videoNode {
+- (void)didTapVideoNode:(ASVideoNode *)videoNode
+{
   if (_delegateFlags.delegateDidTapVideoPlayerNode) {
     [_delegate didTapVideoPlayerNode:self];
   } else {
@@ -575,38 +607,44 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (void)videoNode:(ASVideoNode *)videoNode didSetCurrentItem:(AVPlayerItem *)currentItem {
+- (void)videoNode:(ASVideoNode *)videoNode didSetCurrentItem:(AVPlayerItem *)currentItem
+{
   if (_delegateFlags.delegateVideoPlayerNodeDidSetCurrentItem) {
     [_delegate videoPlayerNode:self didSetCurrentItem:currentItem];
   }
 }
 
-- (void)videoNode:(ASVideoNode *)videoNode didStallAtTimeInterval:(NSTimeInterval)timeInterval {
+- (void)videoNode:(ASVideoNode *)videoNode didStallAtTimeInterval:(NSTimeInterval)timeInterval
+{
   if (_delegateFlags.delegateVideoPlayerNodeDidStallAtTimeInterval) {
     [_delegate videoPlayerNode:self didStallAtTimeInterval:timeInterval];
   }
 }
 
-- (void)videoNodeDidStartInitialLoading:(ASVideoNode *)videoNode {
+- (void)videoNodeDidStartInitialLoading:(ASVideoNode *)videoNode
+{
   if (_delegateFlags.delegateVideoPlayerNodeDidStartInitialLoading) {
     [_delegate videoPlayerNodeDidStartInitialLoading:self];
   }
 }
 
-- (void)videoNodeDidFinishInitialLoading:(ASVideoNode *)videoNode {
+- (void)videoNodeDidFinishInitialLoading:(ASVideoNode *)videoNode
+{
   if (_delegateFlags.delegateVideoPlayerNodeDidFinishInitialLoading) {
     [_delegate videoPlayerNodeDidFinishInitialLoading:self];
   }
 }
 
-- (void)videoNodeDidRecoverFromStall:(ASVideoNode *)videoNode {
+- (void)videoNodeDidRecoverFromStall:(ASVideoNode *)videoNode
+{
   if (_delegateFlags.delegateVideoPlayerNodeDidRecoverFromStall) {
     [_delegate videoPlayerNodeDidRecoverFromStall:self];
   }
 }
 
 #pragma mark - Actions
-- (void)togglePlayPause {
+- (void)togglePlayPause
+{
   if (_videoNode.playerState == ASVideoNodePlayerStatePlaying) {
     [_videoNode pause];
   } else {
@@ -614,7 +652,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (void)showSpinner {
+- (void)showSpinner
+{
   ASLockScopeSelf();
 
   if (!_spinnerNode) {
@@ -648,7 +687,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   [(UIActivityIndicatorView *)_spinnerNode.view startAnimating];
 }
 
-- (void)removeSpinner {
+- (void)removeSpinner
+{
   ASDisplayNode *spinnerNode = nil;
   {
     ASLockScopeSelf();
@@ -663,31 +703,37 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   [spinnerNode removeFromSupernode];
 }
 
-- (void)didTapPlaybackButton:(ASControlNode *)node {
+- (void)didTapPlaybackButton:(ASControlNode *)node
+{
   [self togglePlayPause];
 }
 
-- (void)didTapFullScreenButton:(ASButtonNode *)node {
+- (void)didTapFullScreenButton:(ASButtonNode *)node
+{
   if (_delegateFlags.delegateDidTapFullScreenButtonNode) {
     [_delegate didTapFullScreenButtonNode:node];
   }
 }
 
-- (void)beginSeek {
+- (void)beginSeek
+{
   _isSeeking = YES;
 }
 
-- (void)endSeek {
+- (void)endSeek
+{
   _isSeeking = NO;
 }
 
-- (void)seekTimeDidChange:(UISlider *)slider {
+- (void)seekTimeDidChange:(UISlider *)slider
+{
   CGFloat percentage = slider.value * 100;
   [self seekToTime:percentage];
 }
 
 #pragma mark - Public API
-- (void)seekToTime:(CGFloat)percentComplete {
+- (void)seekToTime:(CGFloat)percentComplete
+{
   CGFloat seconds = (CMTimeGetSeconds(_duration) * percentComplete) / 100;
 
   [self updateElapsedTimeLabel:seconds];
@@ -698,23 +744,28 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (void)play {
+- (void)play
+{
   [_videoNode play];
 }
 
-- (void)pause {
+- (void)pause
+{
   [_videoNode pause];
 }
 
-- (BOOL)isPlaying {
+- (BOOL)isPlaying
+{
   return [_videoNode isPlaying];
 }
 
-- (void)resetToPlaceholder {
+- (void)resetToPlaceholder
+{
   [_videoNode resetToPlaceholder];
 }
 
-- (NSArray *)controlsForLayoutSpec {
+- (NSArray *)controlsForLayoutSpec
+{
   NSMutableArray *controls = [[NSMutableArray alloc] initWithCapacity:_cachedControls.count];
 
   if (_cachedControls[@(ASVideoPlayerNodeControlTypePlaybackButton)]) {
@@ -742,7 +793,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
 
 #pragma mark - Layout
 
-- (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
+- (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize
+{
   CGSize maxSize = constrainedSize.max;
 
   // Prevent crashes through if infinite width or height
@@ -778,7 +830,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   return [ASAbsoluteLayoutSpec absoluteLayoutSpecWithChildren:children];
 }
 
-- (ASLayoutSpec *)defaultLayoutSpecThatFits:(CGSize)maxSize {
+- (ASLayoutSpec *)defaultLayoutSpecThatFits:(CGSize)maxSize
+{
   _scrubberNode.style.preferredSize = CGSizeMake(maxSize.width, 44.0);
 
   ASLayoutSpec *spacer = [[ASLayoutSpec alloc] init];
@@ -808,11 +861,13 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
 }
 
 #pragma mark - Properties
-- (id<ASVideoPlayerNodeDelegate>)delegate {
+- (id<ASVideoPlayerNodeDelegate>)delegate
+{
   return _delegate;
 }
 
-- (void)setDelegate:(id<ASVideoPlayerNodeDelegate>)delegate {
+- (void)setDelegate:(id<ASVideoPlayerNodeDelegate>)delegate
+{
   if (delegate == _delegate) {
     return;
   }
@@ -869,7 +924,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (void)setControlsDisabled:(BOOL)controlsDisabled {
+- (void)setControlsDisabled:(BOOL)controlsDisabled
+{
   if (_controlsDisabled == controlsDisabled) {
     return;
   }
@@ -883,7 +939,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   }
 }
 
-- (void)setShouldAutoPlay:(BOOL)shouldAutoPlay {
+- (void)setShouldAutoPlay:(BOOL)shouldAutoPlay
+{
   if (_shouldAutoPlay == shouldAutoPlay) {
     return;
   }
@@ -891,7 +948,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   _videoNode.shouldAutoplay = _shouldAutoPlay;
 }
 
-- (void)setShouldAutoRepeat:(BOOL)shouldAutoRepeat {
+- (void)setShouldAutoRepeat:(BOOL)shouldAutoRepeat
+{
   if (_shouldAutoRepeat == shouldAutoRepeat) {
     return;
   }
@@ -899,7 +957,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   _videoNode.shouldAutorepeat = _shouldAutoRepeat;
 }
 
-- (void)setMuted:(BOOL)muted {
+- (void)setMuted:(BOOL)muted
+{
   if (_muted == muted) {
     return;
   }
@@ -907,7 +966,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   _videoNode.muted = _muted;
 }
 
-- (void)setPeriodicTimeObserverTimescale:(int32_t)periodicTimeObserverTimescale {
+- (void)setPeriodicTimeObserverTimescale:(int32_t)periodicTimeObserverTimescale
+{
   if (_periodicTimeObserverTimescale == periodicTimeObserverTimescale) {
     return;
   }
@@ -915,14 +975,16 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   _videoNode.periodicTimeObserverTimescale = _periodicTimeObserverTimescale;
 }
 
-- (NSString *)gravity {
+- (NSString *)gravity
+{
   if (_gravity == nil) {
     _gravity = _videoNode.gravity;
   }
   return _gravity;
 }
 
-- (void)setGravity:(NSString *)gravity {
+- (void)setGravity:(NSString *)gravity
+{
   if (_gravity == gravity) {
     return;
   }
@@ -930,27 +992,33 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
   _videoNode.gravity = _gravity;
 }
 
-- (ASVideoNodePlayerState)playerState {
+- (ASVideoNodePlayerState)playerState
+{
   return _videoNode.playerState;
 }
 
-- (BOOL)shouldAggressivelyRecoverFromStall {
+- (BOOL)shouldAggressivelyRecoverFromStall
+{
   return _videoNode.shouldAggressivelyRecoverFromStall;
 }
 
-- (void)setPlaceholderImageURL:(NSURL *)placeholderImageURL {
+- (void)setPlaceholderImageURL:(NSURL *)placeholderImageURL
+{
   _videoNode.URL = placeholderImageURL;
 }
 
-- (NSURL *)placeholderImageURL {
+- (NSURL *)placeholderImageURL
+{
   return _videoNode.URL;
 }
 
-- (ASVideoNode *)videoNode {
+- (ASVideoNode *)videoNode
+{
   return _videoNode;
 }
 
-- (void)setShouldAggressivelyRecoverFromStall:(BOOL)shouldAggressivelyRecoverFromStall {
+- (void)setShouldAggressivelyRecoverFromStall:(BOOL)shouldAggressivelyRecoverFromStall
+{
   if (_shouldAggressivelyRecoverFromStall == shouldAggressivelyRecoverFromStall) {
     return;
   }
@@ -959,7 +1027,8 @@ static void *ASVideoPlayerNodeContext = &ASVideoPlayerNodeContext;
 }
 
 #pragma mark - Helpers
-- (NSString *)timeStringForCMTime:(CMTime)time forTimeLabelType:(ASVideoPlayerNodeControlType)type {
+- (NSString *)timeStringForCMTime:(CMTime)time forTimeLabelType:(ASVideoPlayerNodeControlType)type
+{
   if (!CMTIME_IS_VALID(time)) {
     return @"00:00";
   }

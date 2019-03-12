@@ -13,23 +13,28 @@
 @implementation ASDisplayNode (DebugTiming)
 
 #if TIME_DISPLAYNODE_OPS
-- (NSTimeInterval)debugTimeToCreateView {
+- (NSTimeInterval)debugTimeToCreateView
+{
   return _debugTimeToCreateView;
 }
 
-- (NSTimeInterval)debugTimeToApplyPendingState {
+- (NSTimeInterval)debugTimeToApplyPendingState
+{
   return _debugTimeToApplyPendingState;
 }
 
-- (NSTimeInterval)debugTimeToAddSubnodeViews {
+- (NSTimeInterval)debugTimeToAddSubnodeViews
+{
   return _debugTimeToAddSubnodeViews;
 }
 
-- (NSTimeInterval)debugTimeForDidLoad {
+- (NSTimeInterval)debugTimeForDidLoad
+{
   return _debugTimeForDidLoad;
 }
 
-- (NSTimeInterval)debugAllCreationTime {
+- (NSTimeInterval)debugAllCreationTime
+{
   return self.debugTimeToCreateView + self.debugTimeToApplyPendingState + self.debugTimeToAddSubnodeViews +
          self.debugTimeForDidLoad;
 }
@@ -52,23 +57,28 @@
 #else
 
 // These ivars are compiled out so we don't have the info available
-- (NSTimeInterval)debugTimeToCreateView {
+- (NSTimeInterval)debugTimeToCreateView
+{
   return -1;
 }
 
-- (NSTimeInterval)debugTimeToApplyPendingState {
+- (NSTimeInterval)debugTimeToApplyPendingState
+{
   return -1;
 }
 
-- (NSTimeInterval)debugTimeToAddSubnodeViews {
+- (NSTimeInterval)debugTimeToAddSubnodeViews
+{
   return -1;
 }
 
-- (NSTimeInterval)debugTimeForDidLoad {
+- (NSTimeInterval)debugTimeForDidLoad
+{
   return -1;
 }
 
-- (NSTimeInterval)debugAllCreationTime {
+- (NSTimeInterval)debugAllCreationTime
+{
   return -1;
 }
 

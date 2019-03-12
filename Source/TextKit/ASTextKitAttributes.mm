@@ -16,7 +16,8 @@
 NSString *const ASTextKitTruncationAttributeName = @"ck_truncation";
 NSString *const ASTextKitEntityAttributeName = @"ck_entity";
 
-size_t ASTextKitAttributes::hash() const {
+size_t ASTextKitAttributes::hash() const
+{
 #pragma clang diagnostic push
 #pragma clang diagnostic warning "-Wpadded"
   struct {

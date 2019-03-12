@@ -35,7 +35,8 @@
   } _propertiesProviderFlags;
 }
 
-- (instancetype)initWithScrollableDirections:(ASScrollDirection)scrollableDirections {
+- (instancetype)initWithScrollableDirections:(ASScrollDirection)scrollableDirections
+{
   self = [super init];
   if (self) {
     // Scrollable directions must be either vertical or horizontal, but not both
@@ -48,12 +49,14 @@
   return self;
 }
 
-- (ASScrollDirection)scrollableDirections {
+- (ASScrollDirection)scrollableDirections
+{
   ASDisplayNodeAssertMainThread();
   return _scrollableDirections;
 }
 
-- (void)setPropertiesProvider:(id<ASCollectionGalleryLayoutPropertiesProviding>)propertiesProvider {
+- (void)setPropertiesProvider:(id<ASCollectionGalleryLayoutPropertiesProviding>)propertiesProvider
+{
   ASDisplayNodeAssertMainThread();
   if (propertiesProvider == nil) {
     _propertiesProvider = nil;
@@ -69,7 +72,8 @@
   }
 }
 
-- (id)additionalInfoForLayoutWithElements:(ASElementMap *)elements {
+- (id)additionalInfoForLayoutWithElements:(ASElementMap *)elements
+{
   ASDisplayNodeAssertMainThread();
   id<ASCollectionGalleryLayoutPropertiesProviding> propertiesProvider = _propertiesProvider;
   if (propertiesProvider == nil) {
@@ -93,7 +97,8 @@
                                                      sectionInset:sectionInset];
 }
 
-+ (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context {
++ (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context
+{
   ASElementMap *elements = context.elements;
   CGSize pageSize = context.viewportSize;
   ASScrollDirection scrollableDirections = context.scrollableDirections;
@@ -105,7 +110,8 @@
   }
 
   NSArray<_ASGalleryLayoutItem *> *children =
-      ASArrayByFlatMapping(elements.itemElements, ASCollectionElement * element,
+      ASArrayByFlatMapping(elements.itemElements,
+                           ASCollectionElement * element,
                            [[_ASGalleryLayoutItem alloc] initWithItemSize:itemSize collectionElement:element]);
   if (children.count == 0) {
     return [[ASCollectionLayoutState alloc] initWithContext:context];

@@ -20,13 +20,15 @@ static NSUInteger const kOverlayChildIndex = 1;
 #pragma mark - Class
 
 + (instancetype)overlayLayoutSpecWithChild:(id<ASLayoutElement>)child
-                                   overlay:(id<ASLayoutElement>)overlay NS_RETURNS_RETAINED {
+                                   overlay:(id<ASLayoutElement>)overlay NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithChild:child overlay:overlay];
 }
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithChild:(id<ASLayoutElement>)child overlay:(id<ASLayoutElement>)overlay {
+- (instancetype)initWithChild:(id<ASLayoutElement>)child overlay:(id<ASLayoutElement>)overlay
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -37,21 +39,25 @@ static NSUInteger const kOverlayChildIndex = 1;
 
 #pragma mark - Setter / Getter
 
-- (void)setChild:(id<ASLayoutElement>)child {
+- (void)setChild:(id<ASLayoutElement>)child
+{
   ASDisplayNodeAssertNotNil(child, @"Child that will be overlayed on shouldn't be nil");
   [super setChild:child atIndex:kUnderlayChildIndex];
 }
 
-- (id<ASLayoutElement>)child {
+- (id<ASLayoutElement>)child
+{
   return [super childAtIndex:kUnderlayChildIndex];
 }
 
-- (void)setOverlay:(id<ASLayoutElement>)overlay {
+- (void)setOverlay:(id<ASLayoutElement>)overlay
+{
   ASDisplayNodeAssertNotNil(overlay, @"Overlay cannot be nil");
   [super setChild:overlay atIndex:kOverlayChildIndex];
 }
 
-- (id<ASLayoutElement>)overlay {
+- (id<ASLayoutElement>)overlay
+{
   return [super childAtIndex:kOverlayChildIndex];
 }
 
@@ -62,7 +68,8 @@ static NSUInteger const kOverlayChildIndex = 1;
  */
 - (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize
                      restrictedToSize:(ASLayoutElementSize)size
-                 relativeToParentSize:(CGSize)parentSize {
+                 relativeToParentSize:(CGSize)parentSize
+{
   ASLayout *contentsLayout = [self.child layoutThatFits:constrainedSize parentSize:parentSize];
   contentsLayout.position = CGPointZero;
   ASLayout *rawSublayouts[2];

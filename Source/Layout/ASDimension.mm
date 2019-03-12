@@ -17,7 +17,8 @@
 
 ASDimension const ASDimensionAuto = {ASDimensionUnitAuto, 0};
 
-ASOVERLOADABLE ASDimension ASDimensionMake(NSString *dimension) {
+ASOVERLOADABLE ASDimension ASDimensionMake(NSString *dimension)
+{
   if (dimension.length > 0) {
     // Handle points
     if ([dimension hasSuffix:@"pt"]) {
@@ -38,7 +39,8 @@ ASOVERLOADABLE ASDimension ASDimensionMake(NSString *dimension) {
   return ASDimensionAuto;
 }
 
-NSString *NSStringFromASDimension(ASDimension dimension) {
+NSString *NSStringFromASDimension(ASDimension dimension)
+{
   switch (dimension.unit) {
     case ASDimensionUnitPoints:
       return [NSString stringWithFormat:@"%.0fpt", dimension.value];
@@ -67,7 +69,8 @@ struct _Range {
    Intersects another dimension range. If the other range does not overlap, this size range "wins" by returning a
    single point within its own range that is closest to the non-overlapping range.
    */
-  _Range intersect(const _Range &other) const {
+  _Range intersect(const _Range &other) const
+  {
     CGFloat newMin = MAX(min, other.min);
     CGFloat newMax = MIN(max, other.max);
     if (newMin <= newMax) {
@@ -83,7 +86,8 @@ struct _Range {
   }
 };
 
-ASSizeRange ASSizeRangeIntersect(ASSizeRange sizeRange, ASSizeRange otherSizeRange) {
+ASSizeRange ASSizeRangeIntersect(ASSizeRange sizeRange, ASSizeRange otherSizeRange)
+{
   const auto w = _Range({sizeRange.min.width, sizeRange.max.width})
                      .intersect({otherSizeRange.min.width, otherSizeRange.max.width});
   const auto h = _Range({sizeRange.min.height, sizeRange.max.height})
@@ -91,20 +95,29 @@ ASSizeRange ASSizeRangeIntersect(ASSizeRange sizeRange, ASSizeRange otherSizeRan
   return {{w.min, h.min}, {w.max, h.max}};
 }
 
-NSString *NSStringFromASSizeRange(ASSizeRange sizeRange) {
+NSString *NSStringFromASSizeRange(ASSizeRange sizeRange)
+{
   // 17 field length copied from iOS 10.3 impl of NSStringFromCGSize.
   if (CGSizeEqualToSize(sizeRange.min, sizeRange.max)) {
     return [NSString stringWithFormat:@"{{%.*g, %.*g}}", 17, sizeRange.min.width, 17, sizeRange.min.height];
   }
-  return [NSString stringWithFormat:@"{{%.*g, %.*g}, {%.*g, %.*g}}", 17, sizeRange.min.width, 17, sizeRange.min.height,
-                                    17, sizeRange.max.width, 17, sizeRange.max.height];
+  return [NSString stringWithFormat:@"{{%.*g, %.*g}, {%.*g, %.*g}}",
+                                    17,
+                                    sizeRange.min.width,
+                                    17,
+                                    sizeRange.min.height,
+                                    17,
+                                    sizeRange.max.width,
+                                    17,
+                                    sizeRange.max.height];
 }
 
 #if YOGA
 #pragma mark - Yoga - ASEdgeInsets
 ASEdgeInsets const ASEdgeInsetsZero = {};
 
-ASEdgeInsets ASEdgeInsetsMake(UIEdgeInsets edgeInsets) {
+ASEdgeInsets ASEdgeInsetsMake(UIEdgeInsets edgeInsets)
+{
   ASEdgeInsets asEdgeInsets = ASEdgeInsetsZero;
   asEdgeInsets.top = ASDimensionMake(edgeInsets.top);
   asEdgeInsets.left = ASDimensionMake(edgeInsets.left);

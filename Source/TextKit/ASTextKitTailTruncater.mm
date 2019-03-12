@@ -22,7 +22,8 @@
 
 - (instancetype)initWithContext:(ASTextKitContext *)context
      truncationAttributedString:(NSAttributedString *)truncationAttributedString
-         avoidTailTruncationSet:(NSCharacterSet *)avoidTailTruncationSet {
+         avoidTailTruncationSet:(NSCharacterSet *)avoidTailTruncationSet
+{
   if (self = [super init]) {
     _context = context;
     _truncationAttributedString = truncationAttributedString;
@@ -36,7 +37,8 @@
  */
 - (NSUInteger)_calculateCharacterIndexBeforeTruncationMessage:(NSLayoutManager *)layoutManager
                                                   textStorage:(NSTextStorage *)textStorage
-                                                textContainer:(NSTextContainer *)textContainer {
+                                                textContainer:(NSTextContainer *)textContainer
+{
   CGRect constrainedRect = (CGRect){.size = textContainer.size};
 
   NSRange visibleGlyphRange = [layoutManager glyphRangeForBoundingRect:constrainedRect inTextContainer:textContainer];
@@ -78,8 +80,8 @@
   }];
   CGFloat truncationOriginX =
       (leftAligned ? CGRectGetMaxX(constrainedRect) - truncationUsedRect.size.width : CGRectGetMinX(constrainedRect));
-  CGRect translatedTruncationRect = CGRectMake(truncationOriginX, CGRectGetMinY(lastLineRect),
-                                               truncationUsedRect.size.width, truncationUsedRect.size.height);
+  CGRect translatedTruncationRect = CGRectMake(
+      truncationOriginX, CGRectGetMinY(lastLineRect), truncationUsedRect.size.width, truncationUsedRect.size.height);
 
   // Determine which glyph is the first to be clipped / overlaps the truncation message.
   CGFloat truncationMessageX =
@@ -107,7 +109,8 @@
  */
 - (NSUInteger)_findTruncationInsertionPointAtOrBeforeCharacterIndex:(NSUInteger)firstCharacterIndexToReplace
                                                       layoutManager:(NSLayoutManager *)layoutManager
-                                                        textStorage:(NSTextStorage *)textStorage {
+                                                        textStorage:(NSTextStorage *)textStorage
+{
   // Don't attempt to truncate beyond the end of the string
   if (firstCharacterIndexToReplace >= textStorage.length) {
     return 0;
@@ -140,9 +143,10 @@
   }
 }
 
-- (void)truncate {
-  [_context performBlockWithLockedTextKitComponents:^(NSLayoutManager *layoutManager, NSTextStorage *textStorage,
-                                                      NSTextContainer *textContainer) {
+- (void)truncate
+{
+  [_context performBlockWithLockedTextKitComponents:^(
+                NSLayoutManager *layoutManager, NSTextStorage *textStorage, NSTextContainer *textContainer) {
     NSUInteger originalStringLength = textStorage.length;
 
     [layoutManager ensureLayoutForTextContainer:textContainer];
@@ -173,7 +177,8 @@
   }];
 }
 
-- (NSRange)firstVisibleRange {
+- (NSRange)firstVisibleRange
+{
   std::vector<NSRange> visibleRanges = _visibleRanges;
   if (visibleRanges.size() > 0) {
     return visibleRanges[0];

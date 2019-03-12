@@ -13,16 +13,21 @@ static pthread_mutex_t _sharedDebugLock;
 static CFMutableSetRef _sharedDebugTargets = nil;
 static ASTextDebugOption *_sharedDebugOption = nil;
 
-static const void *_as_sharedDebugSetRetain(CFAllocatorRef allocator, const void *value) { return value; }
+static const void *_as_sharedDebugSetRetain(CFAllocatorRef allocator, const void *value)
+{
+  return value;
+}
 
 static void _as_sharedDebugSetRelease(CFAllocatorRef allocator, const void *value) {}
 
-void _as_sharedDebugSetFunction(const void *value, void *context) {
+void _as_sharedDebugSetFunction(const void *value, void *context)
+{
   id<ASTextDebugTarget> target = (__bridge id<ASTextDebugTarget>)(value);
   [target setDebugOption:_sharedDebugOption];
 }
 
-static void _initSharedDebug() {
+static void _initSharedDebug()
+{
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     pthread_mutex_init(&_sharedDebugLock, NULL);
@@ -33,7 +38,8 @@ static void _initSharedDebug() {
   });
 }
 
-static void _setSharedDebugOption(ASTextDebugOption *option) {
+static void _setSharedDebugOption(ASTextDebugOption *option)
+{
   _initSharedDebug();
   pthread_mutex_lock(&_sharedDebugLock);
   _sharedDebugOption = option.copy;
@@ -41,7 +47,8 @@ static void _setSharedDebugOption(ASTextDebugOption *option) {
   pthread_mutex_unlock(&_sharedDebugLock);
 }
 
-static ASTextDebugOption *_getSharedDebugOption() {
+static ASTextDebugOption *_getSharedDebugOption()
+{
   _initSharedDebug();
   pthread_mutex_lock(&_sharedDebugLock);
   ASTextDebugOption *op = _sharedDebugOption;
@@ -49,14 +56,16 @@ static ASTextDebugOption *_getSharedDebugOption() {
   return op;
 }
 
-static void _addDebugTarget(id<ASTextDebugTarget> target) {
+static void _addDebugTarget(id<ASTextDebugTarget> target)
+{
   _initSharedDebug();
   pthread_mutex_lock(&_sharedDebugLock);
   CFSetAddValue(_sharedDebugTargets, (__bridge const void *)(target));
   pthread_mutex_unlock(&_sharedDebugLock);
 }
 
-static void _removeDebugTarget(id<ASTextDebugTarget> target) {
+static void _removeDebugTarget(id<ASTextDebugTarget> target)
+{
   _initSharedDebug();
   pthread_mutex_lock(&_sharedDebugLock);
   CFSetRemoveValue(_sharedDebugTargets, (__bridge const void *)(target));
@@ -65,7 +74,8 @@ static void _removeDebugTarget(id<ASTextDebugTarget> target) {
 
 @implementation ASTextDebugOption
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   ASTextDebugOption *op = [self.class new];
   op.baselineColor = self.baselineColor;
   op.CTFrameBorderColor = self.CTFrameBorderColor;
@@ -81,7 +91,8 @@ static void _removeDebugTarget(id<ASTextDebugTarget> target) {
   return op;
 }
 
-- (BOOL)needDrawDebug {
+- (BOOL)needDrawDebug
+{
   if (self.baselineColor || self.CTFrameBorderColor || self.CTFrameFillColor || self.CTLineBorderColor ||
       self.CTLineFillColor || self.CTLineNumberColor || self.CTRunBorderColor || self.CTRunFillColor ||
       self.CTRunNumberColor || self.CGGlyphBorderColor || self.CGGlyphFillColor)
@@ -89,7 +100,8 @@ static void _removeDebugTarget(id<ASTextDebugTarget> target) {
   return NO;
 }
 
-- (void)clear {
+- (void)clear
+{
   self.baselineColor = nil;
   self.CTFrameBorderColor = nil;
   self.CTFrameFillColor = nil;
@@ -103,19 +115,25 @@ static void _removeDebugTarget(id<ASTextDebugTarget> target) {
   self.CGGlyphFillColor = nil;
 }
 
-+ (void)addDebugTarget:(id<ASTextDebugTarget>)target {
-  if (target) _addDebugTarget(target);
++ (void)addDebugTarget:(id<ASTextDebugTarget>)target
+{
+  if (target)
+    _addDebugTarget(target);
 }
 
-+ (void)removeDebugTarget:(id<ASTextDebugTarget>)target {
-  if (target) _removeDebugTarget(target);
++ (void)removeDebugTarget:(id<ASTextDebugTarget>)target
+{
+  if (target)
+    _removeDebugTarget(target);
 }
 
-+ (ASTextDebugOption *)sharedDebugOption {
++ (ASTextDebugOption *)sharedDebugOption
+{
   return _getSharedDebugOption();
 }
 
-+ (void)setSharedDebugOption:(ASTextDebugOption *)option {
++ (void)setSharedDebugOption:(ASTextDebugOption *)option
+{
   NSAssert([NSThread isMainThread], @"This method must be called on the main thread");
   _setSharedDebugOption(option);
 }

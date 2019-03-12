@@ -28,7 +28,8 @@ using AS::MutexLocker;
  * Search the whole layout stack if at least one layout has a layoutElement object that can not be layed out
  * asynchronous. This can be the case for example if a node was already loaded
  */
-static inline BOOL ASLayoutCanTransitionAsynchronous(ASLayout *layout) {
+static inline BOOL ASLayoutCanTransitionAsynchronous(ASLayout *layout)
+{
   // Queue used to keep track of sublayouts while traversing this layout in a BFS fashion.
   std::queue<ASLayout *> queue;
   queue.push(layout);
@@ -69,7 +70,8 @@ static inline BOOL ASLayoutCanTransitionAsynchronous(ASLayout *layout) {
 
 - (instancetype)initWithNode:(ASDisplayNode *)node
                pendingLayout:(const ASDisplayNodeLayout &)pendingLayout
-              previousLayout:(const ASDisplayNodeLayout &)previousLayout {
+              previousLayout:(const ASDisplayNodeLayout &)previousLayout
+{
   self = [super init];
   if (self) {
     __instanceLock__ = std::make_shared<AS::RecursiveMutex>();
@@ -81,17 +83,20 @@ static inline BOOL ASLayoutCanTransitionAsynchronous(ASLayout *layout) {
   return self;
 }
 
-- (BOOL)isSynchronous {
+- (BOOL)isSynchronous
+{
   MutexLocker l(*__instanceLock__);
   return !ASLayoutCanTransitionAsynchronous(_pendingLayout.layout);
 }
 
-- (void)commitTransition {
+- (void)commitTransition
+{
   [self applySubnodeRemovals];
   [self applySubnodeInsertionsAndMoves];
 }
 
-- (void)applySubnodeInsertionsAndMoves {
+- (void)applySubnodeInsertionsAndMoves
+{
   MutexLocker l(*__instanceLock__);
   [self calculateSubnodeOperationsIfNeeded];
 
@@ -127,7 +132,8 @@ static inline BOOL ASLayoutCanTransitionAsynchronous(ASLayout *layout) {
   }
 }
 
-- (void)applySubnodeRemovals {
+- (void)applySubnodeRemovals
+{
   as_activity_scope(as_activity_create("Apply subnode removals", AS_ACTIVITY_CURRENT, OS_ACTIVITY_FLAG_DEFAULT));
   MutexLocker l(*__instanceLock__);
   [self calculateSubnodeOperationsIfNeeded];
@@ -147,7 +153,8 @@ static inline BOOL ASLayoutCanTransitionAsynchronous(ASLayout *layout) {
   }
 }
 
-- (void)calculateSubnodeOperationsIfNeeded {
+- (void)calculateSubnodeOperationsIfNeeded
+{
   MutexLocker l(*__instanceLock__);
   if (_calculatedSubnodeOperations) {
     return;
@@ -169,7 +176,8 @@ static inline BOOL ASLayoutCanTransitionAsynchronous(ASLayout *layout) {
     }
 
     // Sort by ascending order of move destinations, this will allow easy loop of `insertSubnode:AtIndex` later.
-    std::sort(_subnodeMoves.begin(), _subnodeMoves.end(),
+    std::sort(_subnodeMoves.begin(),
+              _subnodeMoves.end(),
               [](std::pair<id<ASLayoutElement>, NSUInteger> a, std::pair<ASDisplayNode *, NSUInteger> b) {
                 return a.second < b.second;
               });
@@ -198,24 +206,28 @@ static inline BOOL ASLayoutCanTransitionAsynchronous(ASLayout *layout) {
 
 #pragma mark - _ASTransitionContextDelegate
 
-- (NSArray<ASDisplayNode *> *)currentSubnodesWithTransitionContext:(_ASTransitionContext *)context {
+- (NSArray<ASDisplayNode *> *)currentSubnodesWithTransitionContext:(_ASTransitionContext *)context
+{
   MutexLocker l(*__instanceLock__);
   return _node.subnodes;
 }
 
-- (NSArray<ASDisplayNode *> *)insertedSubnodesWithTransitionContext:(_ASTransitionContext *)context {
+- (NSArray<ASDisplayNode *> *)insertedSubnodesWithTransitionContext:(_ASTransitionContext *)context
+{
   MutexLocker l(*__instanceLock__);
   [self calculateSubnodeOperationsIfNeeded];
   return _insertedSubnodes;
 }
 
-- (NSArray<ASDisplayNode *> *)removedSubnodesWithTransitionContext:(_ASTransitionContext *)context {
+- (NSArray<ASDisplayNode *> *)removedSubnodesWithTransitionContext:(_ASTransitionContext *)context
+{
   MutexLocker l(*__instanceLock__);
   [self calculateSubnodeOperationsIfNeeded];
   return _removedSubnodes;
 }
 
-- (ASLayout *)transitionContext:(_ASTransitionContext *)context layoutForKey:(NSString *)key {
+- (ASLayout *)transitionContext:(_ASTransitionContext *)context layoutForKey:(NSString *)key
+{
   MutexLocker l(*__instanceLock__);
   if ([key isEqualToString:ASTransitionContextFromLayoutKey]) {
     return _previousLayout.layout;
@@ -226,7 +238,8 @@ static inline BOOL ASLayoutCanTransitionAsynchronous(ASLayout *layout) {
   }
 }
 
-- (ASSizeRange)transitionContext:(_ASTransitionContext *)context constrainedSizeForKey:(NSString *)key {
+- (ASSizeRange)transitionContext:(_ASTransitionContext *)context constrainedSizeForKey:(NSString *)key
+{
   MutexLocker l(*__instanceLock__);
   if ([key isEqualToString:ASTransitionContextFromLayoutKey]) {
     return _previousLayout.constrainedSize;
@@ -245,7 +258,8 @@ static inline BOOL ASLayoutCanTransitionAsynchronous(ASLayout *layout) {
  */
 static inline std::vector<NSUInteger> findNodesInLayoutAtIndexes(ASLayout *layout,
                                                                  NSIndexSet *indexes,
-                                                                 NSArray<ASDisplayNode *> *__strong *storedNodes) {
+                                                                 NSArray<ASDisplayNode *> *__strong *storedNodes)
+{
   return findNodesInLayoutAtIndexesWithFilteredNodes(layout, indexes, nil, storedNodes);
 }
 
@@ -258,7 +272,8 @@ static inline std::vector<NSUInteger> findNodesInLayoutAtIndexesWithFilteredNode
     ASLayout *layout,
     NSIndexSet *indexes,
     NSArray<ASDisplayNode *> *filteredNodes,
-    NSArray<ASDisplayNode *> *__strong *storedNodes) {
+    NSArray<ASDisplayNode *> *__strong *storedNodes)
+{
   NSMutableArray<ASDisplayNode *> *nodes = [NSMutableArray arrayWithCapacity:indexes.count];
   std::vector<NSUInteger> positions = std::vector<NSUInteger>();
 
@@ -272,9 +287,10 @@ static inline std::vector<NSUInteger> findNodesInLayoutAtIndexesWithFilteredNode
     }
     if (idx >= firstIndex && [indexes containsIndex:idx]) {
       ASDisplayNode *node = (ASDisplayNode *)(sublayout.layoutElement);
-      ASDisplayNodeCAssert(node, @"ASDisplayNode was deallocated before it was added to a subnode. It's likely the "
-                                 @"case that you use automatically manages subnodes and allocate a ASDisplayNode in "
-                                 @"layoutSpecThatFits: and don't have any strong reference to it.");
+      ASDisplayNodeCAssert(node,
+                           @"ASDisplayNode was deallocated before it was added to a subnode. It's likely the "
+                           @"case that you use automatically manages subnodes and allocate a ASDisplayNode in "
+                           @"layoutSpecThatFits: and don't have any strong reference to it.");
       ASDisplayNodeCAssert(
           [node isKindOfClass:[ASDisplayNode class]],
           @"sublayout is an ASLayout, but not an ASDisplayNode - only call findNodesInLayoutAtIndexesWithFilteredNodes "

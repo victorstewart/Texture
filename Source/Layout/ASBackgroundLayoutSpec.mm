@@ -22,13 +22,15 @@ static NSUInteger const kBackgroundChildIndex = 1;
 #pragma mark - Class
 
 + (instancetype)backgroundLayoutSpecWithChild:(id<ASLayoutElement>)child
-                                   background:(id<ASLayoutElement>)background NS_RETURNS_RETAINED {
+                                   background:(id<ASLayoutElement>)background NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithChild:child background:background];
 }
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithChild:(id<ASLayoutElement>)child background:(id<ASLayoutElement>)background {
+- (instancetype)initWithChild:(id<ASLayoutElement>)child background:(id<ASLayoutElement>)background
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -44,7 +46,8 @@ static NSUInteger const kBackgroundChildIndex = 1;
  */
 - (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize
                      restrictedToSize:(ASLayoutElementSize)size
-                 relativeToParentSize:(CGSize)parentSize {
+                 relativeToParentSize:(CGSize)parentSize
+{
   ASLayout *contentsLayout = [self.child layoutThatFits:constrainedSize parentSize:parentSize];
 
   ASLayout *rawSublayouts[2];
@@ -65,21 +68,25 @@ static NSUInteger const kBackgroundChildIndex = 1;
 
 #pragma mark - Background
 
-- (void)setChild:(id<ASLayoutElement>)child {
+- (void)setChild:(id<ASLayoutElement>)child
+{
   ASDisplayNodeAssertNotNil(child, @"Child cannot be nil");
   [super setChild:child atIndex:kForegroundChildIndex];
 }
 
-- (id<ASLayoutElement>)child {
+- (id<ASLayoutElement>)child
+{
   return [super childAtIndex:kForegroundChildIndex];
 }
 
-- (void)setBackground:(id<ASLayoutElement>)background {
+- (void)setBackground:(id<ASLayoutElement>)background
+{
   ASDisplayNodeAssertNotNil(background, @"Background cannot be nil");
   [super setChild:background atIndex:kBackgroundChildIndex];
 }
 
-- (id<ASLayoutElement>)background {
+- (id<ASLayoutElement>)background
+{
   return [super childAtIndex:kBackgroundChildIndex];
 }
 

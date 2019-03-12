@@ -14,7 +14,8 @@
 
 @implementation ASDisplayNodeTipState
 
-- (instancetype)initWithNode:(ASDisplayNode *)node {
+- (instancetype)initWithNode:(ASDisplayNode *)node
+{
   if (self = [super init]) {
     _node = node;
   }

@@ -24,7 +24,8 @@
 #define rul_set_thread(l, t) atomic_store_explicit(&l->_thread, t, memory_order_release)
 #define rul_get_thread(l) atomic_load_explicit(&l->_thread, memory_order_acquire)
 
-void ASRecursiveUnfairLockLock(ASRecursiveUnfairLock *l) {
+void ASRecursiveUnfairLockLock(ASRecursiveUnfairLock *l)
+{
   // Try to lock without blocking. If we fail, check what thread owns it.
   // Note that the owning thread CAN CHANGE freely, but it can't become `self`
   // because only we are `self`. And if it's already `self` then we already have
@@ -46,7 +47,8 @@ void ASRecursiveUnfairLockLock(ASRecursiveUnfairLock *l) {
   l->_count++;
 }
 
-BOOL ASRecursiveUnfairLockTryLock(ASRecursiveUnfairLock *l) {
+BOOL ASRecursiveUnfairLockTryLock(ASRecursiveUnfairLock *l)
+{
   // Same as Lock above. See comments there.
 
   const pthread_t s = pthread_self();
@@ -64,7 +66,8 @@ BOOL ASRecursiveUnfairLockTryLock(ASRecursiveUnfairLock *l) {
   return YES;
 }
 
-void ASRecursiveUnfairLockUnlock(ASRecursiveUnfairLock *l) {
+void ASRecursiveUnfairLockUnlock(ASRecursiveUnfairLock *l)
+{
   // Ensure we have the lock. This check may miss some pathological cases,
   // but it'll catch 99.999999% of this serious programmer error.
   NSCAssert(rul_get_thread(l) == pthread_self(), @"Unlocking from a different thread than locked.");

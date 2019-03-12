@@ -85,8 +85,10 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
 
 @dynamic image;
 
-- (instancetype)initWithCache:(id<ASImageCacheProtocol>)cache downloader:(id<ASImageDownloaderProtocol>)downloader {
-  if (!(self = [super init])) return nil;
+- (instancetype)initWithCache:(id<ASImageCacheProtocol>)cache downloader:(id<ASImageDownloaderProtocol>)downloader
+{
+  if (!(self = [super init]))
+    return nil;
 
   _cache = (id<ASImageCacheProtocol>)cache;
   _downloader = (id<ASImageDownloaderProtocol>)downloader;
@@ -113,7 +115,8 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
   return self;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
 #if AS_PIN_REMOTE_IMAGE
   return [self initWithCache:[ASPINRemoteImageDownloader sharedDownloader]
                   downloader:[ASPINRemoteImageDownloader sharedDownloader]];
@@ -122,11 +125,13 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
 #endif
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
   [self _cancelImageDownloadWithResumePossibility:NO];
 }
 
-- (dispatch_queue_t)callbackQueue {
+- (dispatch_queue_t)callbackQueue
+{
   return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 }
 
@@ -134,12 +139,14 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
 
 /// Setter for public image property. It has the side effect of setting an internal _imageWasSetExternally that prevents
 /// setting an image internally. Setting an image internally should happen with the _setImage: method
-- (void)setImage:(UIImage *)image {
+- (void)setImage:(UIImage *)image
+{
   ASLockScopeSelf();
   [self _locked_setImage:image];
 }
 
-- (void)_locked_setImage:(UIImage *)image {
+- (void)_locked_setImage:(UIImage *)image
+{
   ASAssertLocked(__instanceLock__);
 
   BOOL imageWasSetExternally = (image != nil);
@@ -147,8 +154,9 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
   _imageWasSetExternally = imageWasSetExternally;
   if (shouldCancelAndClear) {
     ASDisplayNodeAssertNil(
-        _URL, @"Directly setting an image on an ASNetworkImageNode causes it to behave like an ASImageNode instead of "
-              @"an ASNetworkImageNode. If this is what you want, set the URL to nil first.");
+        _URL,
+        @"Directly setting an image on an ASNetworkImageNode causes it to behave like an ASImageNode instead of "
+        @"an ASNetworkImageNode. If this is what you want, set the URL to nil first.");
     _URL = nil;
     [self _locked_cancelDownloadAndClearImageWithResumePossibility:NO];
   }
@@ -162,31 +170,37 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
 }
 
 /// Setter for private image property. See @c _locked_setImage why this is needed
-- (void)_setImage:(UIImage *)image {
+- (void)_setImage:(UIImage *)image
+{
   ASLockScopeSelf();
   [self _locked__setImage:image];
 }
 
-- (void)_locked__setImage:(UIImage *)image {
+- (void)_locked__setImage:(UIImage *)image
+{
   ASAssertLocked(__instanceLock__);
   [super _locked_setImage:image];
 }
 
 // Deprecated
-- (void)setURLs:(NSArray<NSURL *> *)URLs {
+- (void)setURLs:(NSArray<NSURL *> *)URLs
+{
   [self setURL:[URLs firstObject]];
 }
 
 // Deprecated
-- (NSArray<NSURL *> *)URLs {
+- (NSArray<NSURL *> *)URLs
+{
   return @[ self.URL ];
 }
 
-- (void)setURL:(NSURL *)URL {
+- (void)setURL:(NSURL *)URL
+{
   [self setURL:URL resetToDefault:YES];
 }
 
-- (void)setURL:(NSURL *)URL resetToDefault:(BOOL)reset {
+- (void)setURL:(NSURL *)URL resetToDefault:(BOOL)reset
+{
   {
     ASLockScopeSelf();
 
@@ -220,17 +234,20 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
   [self setNeedsPreload];
 }
 
-- (NSURL *)URL {
+- (NSURL *)URL
+{
   return ASLockedSelf(_URL);
 }
 
-- (void)setDefaultImage:(UIImage *)defaultImage {
+- (void)setDefaultImage:(UIImage *)defaultImage
+{
   ASLockScopeSelf();
 
   [self _locked_setDefaultImage:defaultImage];
 }
 
-- (void)_locked_setDefaultImage:(UIImage *)defaultImage {
+- (void)_locked_setDefaultImage:(UIImage *)defaultImage
+{
   if (ASObjectIsEqual(defaultImage, _defaultImage)) {
     return;
   }
@@ -243,16 +260,19 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
   }
 }
 
-- (UIImage *)defaultImage {
+- (UIImage *)defaultImage
+{
   return ASLockedSelf(_defaultImage);
 }
 
-- (void)setCurrentImageQuality:(CGFloat)currentImageQuality {
+- (void)setCurrentImageQuality:(CGFloat)currentImageQuality
+{
   ASLockScopeSelf();
   _currentImageQuality = currentImageQuality;
 }
 
-- (CGFloat)currentImageQuality {
+- (CGFloat)currentImageQuality
+{
   return ASLockedSelf(_currentImageQuality);
 }
 
@@ -262,23 +282,27 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
  * so we always have to dispatch to the main thread to ensure that we queue the operations in the correct order.
  * (see comment in displayDidFinish)
  */
-- (void)_setCurrentImageQuality:(CGFloat)imageQuality {
+- (void)_setCurrentImageQuality:(CGFloat)imageQuality
+{
   dispatch_async(dispatch_get_main_queue(), ^{
     self.currentImageQuality = imageQuality;
   });
 }
 
-- (void)setRenderedImageQuality:(CGFloat)renderedImageQuality {
+- (void)setRenderedImageQuality:(CGFloat)renderedImageQuality
+{
   ASLockScopeSelf();
   _renderedImageQuality = renderedImageQuality;
 }
 
-- (CGFloat)renderedImageQuality {
+- (CGFloat)renderedImageQuality
+{
   ASLockScopeSelf();
   return _renderedImageQuality;
 }
 
-- (void)setDelegate:(id<ASNetworkImageNodeDelegate>)delegate {
+- (void)setDelegate:(id<ASNetworkImageNodeDelegate>)delegate
+{
   ASLockScopeSelf();
   _delegate = delegate;
 
@@ -297,30 +321,35 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
   _delegateFlags.delegateDidLoadImageWithInfo = [delegate respondsToSelector:@selector(imageNode:didLoadImage:info:)];
 }
 
-- (id<ASNetworkImageNodeDelegate>)delegate {
+- (id<ASNetworkImageNodeDelegate>)delegate
+{
   ASLockScopeSelf();
   return _delegate;
 }
 
-- (void)setShouldRenderProgressImages:(BOOL)shouldRenderProgressImages {
+- (void)setShouldRenderProgressImages:(BOOL)shouldRenderProgressImages
+{
   if (ASLockedSelfCompareAssign(_shouldRenderProgressImages, shouldRenderProgressImages)) {
     [self _updateProgressImageBlockOnDownloaderIfNeeded];
   }
 }
 
-- (BOOL)shouldRenderProgressImages {
+- (BOOL)shouldRenderProgressImages
+{
   ASLockScopeSelf();
   return _shouldRenderProgressImages;
 }
 
-- (BOOL)placeholderShouldPersist {
+- (BOOL)placeholderShouldPersist
+{
   ASLockScopeSelf();
   return (self.image == nil && self.animatedImage == nil && _URL != nil);
 }
 
 /* displayWillStartAsynchronously: in ASMultiplexImageNode has a very similar implementation. Changes here are likely
  necessary in ASMultiplexImageNode as well. */
-- (void)displayWillStartAsynchronously:(BOOL)asynchronously {
+- (void)displayWillStartAsynchronously:(BOOL)asynchronously
+{
   [super displayWillStartAsynchronously:asynchronously];
 
   id<ASNetworkImageNodeDelegate> delegate;
@@ -368,26 +397,30 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
 
 /* visibileStateDidChange in ASMultiplexImageNode has a very similar implementation. Changes here are likely necessary
  in ASMultiplexImageNode as well. */
-- (void)didEnterVisibleState {
+- (void)didEnterVisibleState
+{
   [super didEnterVisibleState];
   [self _updatePriorityOnDownloaderIfNeededWithDefaultPriority:ASImageDownloaderPriorityVisible];
   [self _updateProgressImageBlockOnDownloaderIfNeeded];
 }
 
-- (void)didExitVisibleState {
+- (void)didExitVisibleState
+{
   [super didExitVisibleState];
   [self _updatePriorityOnDownloaderIfNeededWithDefaultPriority:ASImageDownloaderPriorityPreload];
   [self _updateProgressImageBlockOnDownloaderIfNeeded];
 }
 
-- (void)didExitDisplayState {
+- (void)didExitDisplayState
+{
   [super didExitDisplayState];
   if (ASActivateExperimentalFeature(ASExperimentalImageDownloaderPriority)) {
     [self _updatePriorityOnDownloaderIfNeededWithDefaultPriority:ASImageDownloaderPriorityPreload];
   }
 }
 
-- (void)didExitPreloadState {
+- (void)didExitPreloadState
+{
   [super didExitPreloadState];
 
   // If the image was set explicitly we don't want to remove it while exiting the preload state
@@ -398,18 +431,21 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
   [self _cancelDownloadAndClearImageWithResumePossibility:YES];
 }
 
-- (void)didEnterPreloadState {
+- (void)didEnterPreloadState
+{
   [super didEnterPreloadState];
 
   // Image was set externally no need to load an image
   [self _lazilyLoadImageIfNecessary];
 }
 
-+ (void)setUseMainThreadDelegateCallbacks:(BOOL)useMainThreadDelegateCallbacks {
++ (void)setUseMainThreadDelegateCallbacks:(BOOL)useMainThreadDelegateCallbacks
+{
   _useMainThreadDelegateCallbacks = useMainThreadDelegateCallbacks;
 }
 
-+ (BOOL)useMainThreadDelegateCallbacks {
++ (BOOL)useMainThreadDelegateCallbacks
+{
   return _useMainThreadDelegateCallbacks;
 }
 
@@ -417,7 +453,8 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
 
 - (void)handleProgressImage:(UIImage *)progressImage
                    progress:(CGFloat)progress
-         downloadIdentifier:(nullable id)downloadIdentifier {
+         downloadIdentifier:(nullable id)downloadIdentifier
+{
   ASLockScopeSelf();
 
   // Getting a result back for a different download identifier, download must not have been successfully canceled
@@ -430,7 +467,8 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
   [self _locked__setImage:progressImage];
 }
 
-- (void)_updatePriorityOnDownloaderIfNeededWithDefaultPriority:(ASImageDownloaderPriority)defaultPriority {
+- (void)_updatePriorityOnDownloaderIfNeededWithDefaultPriority:(ASImageDownloaderPriority)defaultPriority
+{
   if (_downloaderFlags.downloaderImplementsSetPriority) {
     ASLockScopeSelf();
 
@@ -445,7 +483,8 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
   }
 }
 
-- (void)_updateProgressImageBlockOnDownloaderIfNeeded {
+- (void)_updateProgressImageBlockOnDownloaderIfNeeded
+{
   // If the downloader doesn't do progress, we are done.
   if (_downloaderFlags.downloaderImplementsSetProgress == NO) {
     return;
@@ -509,12 +548,14 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
   }
 }
 
-- (void)_cancelDownloadAndClearImageWithResumePossibility:(BOOL)storeResume {
+- (void)_cancelDownloadAndClearImageWithResumePossibility:(BOOL)storeResume
+{
   ASLockScopeSelf();
   [self _locked_cancelDownloadAndClearImageWithResumePossibility:storeResume];
 }
 
-- (void)_locked_cancelDownloadAndClearImageWithResumePossibility:(BOOL)storeResume {
+- (void)_locked_cancelDownloadAndClearImageWithResumePossibility:(BOOL)storeResume
+{
   ASAssertLocked(__instanceLock__);
 
   [self _locked_cancelImageDownloadWithResumePossibility:storeResume];
@@ -533,12 +574,14 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
   }
 }
 
-- (void)_cancelImageDownloadWithResumePossibility:(BOOL)storeResume {
+- (void)_cancelImageDownloadWithResumePossibility:(BOOL)storeResume
+{
   ASLockScopeSelf();
   [self _locked_cancelImageDownloadWithResumePossibility:storeResume];
 }
 
-- (void)_locked_cancelImageDownloadWithResumePossibility:(BOOL)storeResume {
+- (void)_locked_cancelImageDownloadWithResumePossibility:(BOOL)storeResume
+{
   ASAssertLocked(__instanceLock__);
 
   if (!_downloadIdentifier) {
@@ -550,8 +593,8 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
       as_log_verbose(ASImageLoadingLog(), "Canceling image download w resume for %@ id: %@", self, _downloadIdentifier);
       [_downloader cancelImageDownloadWithResumePossibilityForIdentifier:_downloadIdentifier];
     } else {
-      as_log_verbose(ASImageLoadingLog(), "Canceling image download no resume for %@ id: %@", self,
-                     _downloadIdentifier);
+      as_log_verbose(
+          ASImageLoadingLog(), "Canceling image download no resume for %@ id: %@", self, _downloadIdentifier);
       [_downloader cancelImageDownloadForIdentifier:_downloadIdentifier];
     }
   }
@@ -560,7 +603,8 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
 }
 
 - (void)_downloadImageWithCompletion:
-    (void (^)(id<ASImageContainerProtocol> imageContainer, NSError *, id downloadIdentifier, id userInfo))finished {
+    (void (^)(id<ASImageContainerProtocol> imageContainer, NSError *, id downloadIdentifier, id userInfo))finished
+{
   ASPerformBlockOnBackgroundThread(^{
     NSURL *url;
     id downloadIdentifier;
@@ -578,13 +622,14 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
 
     dispatch_queue_t callbackQueue = [self callbackQueue];
     ASImageDownloaderProgress downloadProgress = NULL;
-    ASImageDownloaderCompletion completion =
-        ^(id<ASImageContainerProtocol> _Nullable imageContainer, NSError *_Nullable error,
-          id _Nullable downloadIdentifier, id _Nullable userInfo) {
-          if (finished != NULL) {
-            finished(imageContainer, error, downloadIdentifier, userInfo);
-          }
-        };
+    ASImageDownloaderCompletion completion = ^(id<ASImageContainerProtocol> _Nullable imageContainer,
+                                               NSError *_Nullable error,
+                                               id _Nullable downloadIdentifier,
+                                               id _Nullable userInfo) {
+      if (finished != NULL) {
+        finished(imageContainer, error, downloadIdentifier, userInfo);
+      }
+    };
 
     if (self->_downloaderFlags.downloaderImplementsDownloadWithPriority &&
         ASActivateExperimentalFeature(ASExperimentalImageDownloaderPriority)) {
@@ -632,8 +677,8 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
 
     if (cancelAndReattempt) {
       if (downloadIdentifier != nil) {
-        as_log_verbose(ASImageLoadingLog(), "Canceling image download no resume for %@ id: %@", self,
-                       downloadIdentifier);
+        as_log_verbose(
+            ASImageLoadingLog(), "Canceling image download no resume for %@ id: %@", self, downloadIdentifier);
         [self->_downloader cancelImageDownloadForIdentifier:downloadIdentifier];
       }
       [self _downloadImageWithCompletion:finished];
@@ -644,7 +689,8 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
   });
 }
 
-- (void)_lazilyLoadImageIfNecessary {
+- (void)_lazilyLoadImageIfNecessary
+{
   ASDisplayNodeAssertMainThread();
 
   [self lock];
@@ -726,16 +772,19 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
       });
     } else {
       __weak __typeof__(self) weakSelf = self;
-      const auto finished = ^(id<ASImageContainerProtocol> imageContainer, NSError *error, id downloadIdentifier,
-                              ASNetworkImageSourceType imageSource, id userInfo) {
+      const auto finished = ^(id<ASImageContainerProtocol> imageContainer,
+                              NSError *error,
+                              id downloadIdentifier,
+                              ASNetworkImageSourceType imageSource,
+                              id userInfo) {
         ASPerformBlockOnBackgroundThread(^{
           __typeof__(self) strongSelf = weakSelf;
           if (strongSelf == nil) {
             return;
           }
 
-          as_log_verbose(ASImageLoadingLog(), "Downloaded image for %@ img: %@ url: %@", self,
-                         [imageContainer asdk_image], URL);
+          as_log_verbose(
+              ASImageLoadingLog(), "Downloaded image for %@ img: %@ url: %@", self, [imageContainer asdk_image], URL);
 
           // Grab the lock for the rest of the block
           ASLockScope(strongSelf);
@@ -823,16 +872,16 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
             if (delegateWillLoadImageFromNetwork) {
               [delegate imageNodeWillLoadImageFromNetwork:self];
             }
-            [self _downloadImageWithCompletion:^(id<ASImageContainerProtocol> imageContainer, NSError *error,
-                                                 id downloadIdentifier, id userInfo) {
+            [self _downloadImageWithCompletion:^(
+                      id<ASImageContainerProtocol> imageContainer, NSError *error, id downloadIdentifier, id userInfo) {
               finished(imageContainer, error, downloadIdentifier, ASNetworkImageSourceDownload, userInfo);
             }];
           } else {
             if (delegateDidLoadImageFromCache) {
               [delegate imageNodeDidLoadImageFromCache:self];
             }
-            as_log_verbose(ASImageLoadingLog(), "Decached image for %@ img: %@ url: %@", self,
-                           [imageContainer asdk_image], URL);
+            as_log_verbose(
+                ASImageLoadingLog(), "Decached image for %@ img: %@ url: %@", self, [imageContainer asdk_image], URL);
             finished(imageContainer, nil, nil, ASNetworkImageSourceAsynchronousCache, nil);
           }
         };
@@ -845,8 +894,8 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
         if (delegateWillLoadImageFromNetwork) {
           [delegate imageNodeWillLoadImageFromNetwork:self];
         }
-        [self _downloadImageWithCompletion:^(id<ASImageContainerProtocol> imageContainer, NSError *error,
-                                             id downloadIdentifier, id userInfo) {
+        [self _downloadImageWithCompletion:^(
+                  id<ASImageContainerProtocol> imageContainer, NSError *error, id downloadIdentifier, id userInfo) {
           finished(imageContainer, error, downloadIdentifier, ASNetworkImageSourceDownload, userInfo);
         }];
       }
@@ -856,7 +905,8 @@ static std::atomic_bool _useMainThreadDelegateCallbacks(true);
 
 #pragma mark - ASDisplayNode+Subclasses
 
-- (void)displayDidFinish {
+- (void)displayDidFinish
+{
   [super displayDidFinish];
 
   id<ASNetworkImageNodeDelegate> delegate = nil;

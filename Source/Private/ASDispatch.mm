@@ -21,7 +21,8 @@
 void ASDispatchApply(size_t iterationCount,
                      dispatch_queue_t queue,
                      NSUInteger threadCount,
-                     NS_NOESCAPE void (^work)(size_t i)) {
+                     NS_NOESCAPE void (^work)(size_t i))
+{
   if (threadCount == 0) {
     if (ASActivateExperimentalFeature(ASExperimentalDispatchApply)) {
       dispatch_apply(iterationCount, queue, work);
@@ -51,7 +52,8 @@ void ASDispatchApply(size_t iterationCount,
 void ASDispatchAsync(size_t iterationCount,
                      dispatch_queue_t queue,
                      NSUInteger threadCount,
-                     NS_NOESCAPE void (^work)(size_t i)) {
+                     NS_NOESCAPE void (^work)(size_t i))
+{
   if (threadCount == 0) {
     threadCount = NSProcessInfo.processInfo.activeProcessorCount * 2;
   }

@@ -21,7 +21,8 @@ CGFloat const kViolationEpsilon = 0.01;
 static CGFloat resolveCrossDimensionMaxForStretchChild(const ASStackLayoutSpecStyle &style,
                                                        const ASStackLayoutSpecChild &child,
                                                        const CGFloat stackMax,
-                                                       const CGFloat crossMax) {
+                                                       const CGFloat crossMax)
+{
   // stretched children may have a cross direction max that is smaller than the minimum size constraint of the parent.
   const CGFloat computedMax =
       (style.direction == ASStackLayoutDirectionVertical
@@ -33,7 +34,8 @@ static CGFloat resolveCrossDimensionMaxForStretchChild(const ASStackLayoutSpecSt
 static CGFloat resolveCrossDimensionMinForStretchChild(const ASStackLayoutSpecStyle &style,
                                                        const ASStackLayoutSpecChild &child,
                                                        const CGFloat stackMax,
-                                                       const CGFloat crossMin) {
+                                                       const CGFloat crossMin)
+{
   // stretched children will have a cross dimension of at least crossMin, unless they explicitly define a child size
   // that is smaller than the constraint of the parent.
   return (style.direction == ASStackLayoutDirectionVertical
@@ -51,7 +53,8 @@ static ASLayout *crossChildLayout(const ASStackLayoutSpecChild &child,
                                   const CGFloat stackMax,
                                   const CGFloat crossMin,
                                   const CGFloat crossMax,
-                                  const CGSize parentSize) {
+                                  const CGSize parentSize)
+{
   const ASStackLayoutAlignItems alignItems = alignment(child.style.alignSelf, style.alignItems);
   // stretched children will have a cross dimension of at least crossMin
   const CGFloat childCrossMin = (alignItems == ASStackLayoutAlignItemsStretch
@@ -63,12 +66,13 @@ static ASLayout *crossChildLayout(const ASStackLayoutSpecChild &child,
   const ASSizeRange childSizeRange =
       directionSizeRange(style.direction, stackMin, stackMax, childCrossMin, childCrossMax);
   ASLayout *layout = [child.element layoutThatFits:childSizeRange parentSize:parentSize];
-  ASDisplayNodeCAssertNotNil(layout, @"ASLayout returned from -layoutThatFits:parentSize: must not be nil: %@",
-                             child.element);
+  ASDisplayNodeCAssertNotNil(
+      layout, @"ASLayout returned from -layoutThatFits:parentSize: must not be nil: %@", child.element);
   return layout ?: [ASLayout layoutWithLayoutElement:child.element size:{0, 0}];
 }
 
-static void dispatchApplyIfNeeded(size_t iterationCount, BOOL forced, void (^work)(size_t i)) {
+static void dispatchApplyIfNeeded(size_t iterationCount, BOOL forced, void (^work)(size_t i))
+{
   if (iterationCount == 0) {
     return;
   }
@@ -106,8 +110,10 @@ static void dispatchApplyIfNeeded(size_t iterationCount, BOOL forced, void (^wor
  @param lines unpositioned lines
  */
 static CGFloat computeLinesCrossDimensionSum(const std::vector<ASStackUnpositionedLine> &lines,
-                                             const ASStackLayoutSpecStyle &style) {
-  return std::accumulate(lines.begin(), lines.end(),
+                                             const ASStackLayoutSpecStyle &style)
+{
+  return std::accumulate(lines.begin(),
+                         lines.end(),
                          // Start from default spacing between each line:
                          lines.empty() ? 0 : style.lineSpacing * (lines.size() - 1),
                          [&](CGFloat x, const ASStackUnpositionedLine &l) { return x + l.crossSize; });
@@ -148,7 +154,8 @@ static CGFloat computeLinesCrossDimensionSum(const std::vector<ASStackUnposition
  */
 CGFloat ASStackUnpositionedLayout::computeCrossViolation(const CGFloat crossDimensionSum,
                                                          const ASStackLayoutSpecStyle &style,
-                                                         const ASSizeRange &sizeRange) {
+                                                         const ASSizeRange &sizeRange)
+{
   const CGFloat minCrossDimension = crossDimension(style.direction, sizeRange.min);
   const CGFloat maxCrossDimension = crossDimension(style.direction, sizeRange.max);
   if (crossDimensionSum < minCrossDimension) {
@@ -195,7 +202,8 @@ static void stretchItemsAlongCrossDimension(std::vector<ASStackLayoutSpecItem> &
                                             const ASStackLayoutSpecStyle &style,
                                             const BOOL concurrent,
                                             const CGSize parentSize,
-                                            const CGFloat crossSize) {
+                                            const CGFloat crossSize)
+{
   dispatchApplyIfNeeded(items.size(), concurrent, ^(size_t i) {
     auto &item = items[i];
     const ASStackLayoutAlignItems alignItems = alignment(item.child.style.alignSelf, style.alignItems);
@@ -222,7 +230,8 @@ static void stretchLinesAlongCrossDimension(std::vector<ASStackUnpositionedLine>
                                             const ASStackLayoutSpecStyle &style,
                                             const BOOL concurrent,
                                             const ASSizeRange &sizeRange,
-                                            const CGSize parentSize) {
+                                            const CGSize parentSize)
+{
   ASDisplayNodeCAssertFalse(lines.empty());
   const std::size_t numOfLines = lines.size();
   const CGFloat violation =
@@ -242,13 +251,15 @@ static void stretchLinesAlongCrossDimension(std::vector<ASStackUnpositionedLine>
   }
 }
 
-static BOOL itemIsBaselineAligned(const ASStackLayoutSpecStyle &style, const ASStackLayoutSpecItem &l) {
+static BOOL itemIsBaselineAligned(const ASStackLayoutSpecStyle &style, const ASStackLayoutSpecItem &l)
+{
   ASStackLayoutAlignItems alignItems = alignment(l.child.style.alignSelf, style.alignItems);
   return alignItems == ASStackLayoutAlignItemsBaselineFirst || alignItems == ASStackLayoutAlignItemsBaselineLast;
 }
 
 CGFloat ASStackUnpositionedLayout::baselineForItem(const ASStackLayoutSpecStyle &style,
-                                                   const ASStackLayoutSpecItem &item) {
+                                                   const ASStackLayoutSpecItem &item)
+{
   switch (alignment(item.child.style.alignSelf, style.alignItems)) {
     case ASStackLayoutAlignItemsBaselineFirst:
       return item.child.style.ascender;
@@ -269,7 +280,8 @@ CGFloat ASStackUnpositionedLayout::baselineForItem(const ASStackLayoutSpecStyle 
  */
 static void computeLinesCrossSizeAndBaseline(std::vector<ASStackUnpositionedLine> &lines,
                                              const ASStackLayoutSpecStyle &style,
-                                             const ASSizeRange &sizeRange) {
+                                             const ASSizeRange &sizeRange)
+{
   ASDisplayNodeCAssertFalse(lines.empty());
   const BOOL isSingleLine = (lines.size() == 1);
 
@@ -335,7 +347,8 @@ static void computeLinesCrossSizeAndBaseline(std::vector<ASStackUnpositionedLine
  Returns a lambda that computes the relevant flex factor based on the given violation.
  @param violation The amount that the stack layout violates its size range.  See header for sign interpretation.
  */
-static std::function<CGFloat(const ASStackLayoutSpecItem &)> flexFactorInViolationDirection(const CGFloat violation) {
+static std::function<CGFloat(const ASStackLayoutSpecItem &)> flexFactorInViolationDirection(const CGFloat violation)
+{
   if (std::fabs(violation) < kViolationEpsilon) {
     return [](const ASStackLayoutSpecItem &item) { return 0.0; };
   } else if (violation > 0) {
@@ -347,7 +360,8 @@ static std::function<CGFloat(const ASStackLayoutSpecItem &)> flexFactorInViolati
 
 static inline CGFloat scaledFlexShrinkFactor(const ASStackLayoutSpecItem &item,
                                              const ASStackLayoutSpecStyle &style,
-                                             const CGFloat flexFactorSum) {
+                                             const CGFloat flexFactorSum)
+{
   return stackDimension(style.direction, item.layout.size) * (item.child.style.flexShrink / flexFactorSum);
 }
 
@@ -363,7 +377,8 @@ static std::function<CGFloat(const ASStackLayoutSpecItem &)> flexShrinkAdjustmen
     const std::vector<ASStackLayoutSpecItem> &items,
     const ASStackLayoutSpecStyle &style,
     const CGFloat violation,
-    const CGFloat flexFactorSum) {
+    const CGFloat flexFactorSum)
+{
   const CGFloat scaledFlexShrinkFactorSum =
       std::accumulate(items.begin(), items.end(), 0.0, [&](CGFloat x, const ASStackLayoutSpecItem &item) {
         return x + scaledFlexShrinkFactor(item, style, flexFactorSum);
@@ -389,7 +404,8 @@ static std::function<CGFloat(const ASStackLayoutSpecItem &)> flexShrinkAdjustmen
  @return A lambda capable of computing the flex grow adjustment, if any, for a particular item.
  */
 static std::function<CGFloat(const ASStackLayoutSpecItem &)> flexGrowAdjustment(
-    const std::vector<ASStackLayoutSpecItem> &items, const CGFloat violation, const CGFloat flexFactorSum) {
+    const std::vector<ASStackLayoutSpecItem> &items, const CGFloat violation, const CGFloat flexFactorSum)
+{
   // To compute the flex grow adjustment distribute the violation proportionally based on each item's flex grow factor.
   return [violation, flexFactorSum](const ASStackLayoutSpecItem &item) {
     return std::floor(violation * (item.child.style.flexGrow / flexFactorSum));
@@ -408,7 +424,8 @@ static std::function<CGFloat(const ASStackLayoutSpecItem &)> flexAdjustmentInVio
     const std::vector<ASStackLayoutSpecItem> &items,
     const ASStackLayoutSpecStyle &style,
     const CGFloat violation,
-    const CGFloat flexFactorSum) {
+    const CGFloat flexFactorSum)
+{
   if (violation > 0) {
     return flexGrowAdjustment(items, violation, flexFactorSum);
   } else {
@@ -416,7 +433,8 @@ static std::function<CGFloat(const ASStackLayoutSpecItem &)> flexAdjustmentInVio
   }
 }
 
-ASDISPLAYNODE_INLINE BOOL isFlexibleInBothDirections(const ASStackLayoutSpecChild &child) {
+ASDISPLAYNODE_INLINE BOOL isFlexibleInBothDirections(const ASStackLayoutSpecChild &child)
+{
   return child.style.flexGrow > 0 && child.style.flexShrink > 0;
 }
 
@@ -428,12 +446,18 @@ static void layoutFlexibleChildrenAtZeroSize(std::vector<ASStackLayoutSpecItem> 
                                              const ASStackLayoutSpecStyle &style,
                                              const BOOL concurrent,
                                              const ASSizeRange &sizeRange,
-                                             const CGSize parentSize) {
+                                             const CGSize parentSize)
+{
   dispatchApplyIfNeeded(items.size(), concurrent, ^(size_t i) {
     auto &item = items[i];
     if (isFlexibleInBothDirections(item.child)) {
-      item.layout = crossChildLayout(item.child, style, 0, 0, crossDimension(style.direction, sizeRange.min),
-                                     crossDimension(style.direction, sizeRange.max), parentSize);
+      item.layout = crossChildLayout(item.child,
+                                     style,
+                                     0,
+                                     0,
+                                     crossDimension(style.direction, sizeRange.min),
+                                     crossDimension(style.direction, sizeRange.max),
+                                     parentSize);
     }
   });
 }
@@ -453,9 +477,11 @@ static void layoutFlexibleChildrenAtZeroSize(std::vector<ASStackLayoutSpecItem> 
  @param style the layout style of the overall stack layout
  */
 static CGFloat computeItemsStackDimensionSum(const std::vector<ASStackLayoutSpecItem> &items,
-                                             const ASStackLayoutSpecStyle &style) {
+                                             const ASStackLayoutSpecStyle &style)
+{
   // Sum up the childrens' spacing
-  const CGFloat childSpacingSum = std::accumulate(items.begin(), items.end(),
+  const CGFloat childSpacingSum = std::accumulate(items.begin(),
+                                                  items.end(),
                                                   // Start from default spacing between each child:
                                                   items.empty() ? 0 : style.spacing * (items.size() - 1),
                                                   [&](CGFloat x, const ASStackLayoutSpecItem &l) {
@@ -463,9 +489,10 @@ static CGFloat computeItemsStackDimensionSum(const std::vector<ASStackLayoutSpec
                                                   });
 
   // Sum up the childrens' dimensions (including spacing) in the stack direction.
-  const CGFloat childStackDimensionSum = std::accumulate(
-      items.begin(), items.end(), childSpacingSum,
-      [&](CGFloat x, const ASStackLayoutSpecItem &l) { return x + stackDimension(style.direction, l.layout.size); });
+  const CGFloat childStackDimensionSum =
+      std::accumulate(items.begin(), items.end(), childSpacingSum, [&](CGFloat x, const ASStackLayoutSpecItem &l) {
+        return x + stackDimension(style.direction, l.layout.size);
+      });
   return childStackDimensionSum;
 }
 
@@ -504,7 +531,8 @@ static CGFloat computeItemsStackDimensionSum(const std::vector<ASStackLayoutSpec
  */
 CGFloat ASStackUnpositionedLayout::computeStackViolation(const CGFloat stackDimensionSum,
                                                          const ASStackLayoutSpecStyle &style,
-                                                         const ASSizeRange &sizeRange) {
+                                                         const ASSizeRange &sizeRange)
+{
   const CGFloat minStackDimension = stackDimension(style.direction, sizeRange.min);
   const CGFloat maxStackDimension = stackDimension(style.direction, sizeRange.max);
   if (stackDimensionSum < minStackDimension) {
@@ -521,7 +549,8 @@ CGFloat ASStackUnpositionedLayout::computeStackViolation(const CGFloat stackDime
  */
 ASDISPLAYNODE_INLINE BOOL useOptimizedFlexing(const std::vector<ASStackLayoutSpecChild> &children,
                                               const ASStackLayoutSpecStyle &style,
-                                              const ASSizeRange &sizeRange) {
+                                              const ASSizeRange &sizeRange)
+{
   const NSUInteger flexibleChildren = std::count_if(children.begin(), children.end(), isFlexibleInBothDirections);
   return ((flexibleChildren == 1) &&
           (stackDimension(style.direction, sizeRange.min) == stackDimension(style.direction, sizeRange.max)));
@@ -545,7 +574,8 @@ static void flexLinesAlongStackDimension(std::vector<ASStackUnpositionedLine> &l
                                          const BOOL concurrent,
                                          const ASSizeRange &sizeRange,
                                          const CGSize parentSize,
-                                         const BOOL useOptimizedFlexing) {
+                                         const BOOL useOptimizedFlexing)
+{
   for (auto &line : lines) {
     auto &items = line.items;
     const CGFloat violation =
@@ -554,8 +584,9 @@ static void flexLinesAlongStackDimension(std::vector<ASStackUnpositionedLine> &l
     // The flex factor sum is needed to determine if flexing is necessary.
     // This value is also needed if the violation is positive and flexible items need to grow, so keep it around.
     const CGFloat flexFactorSum =
-        std::accumulate(items.begin(), items.end(), 0.0,
-                        [&](CGFloat x, const ASStackLayoutSpecItem &item) { return x + flexFactor(item); });
+        std::accumulate(items.begin(), items.end(), 0.0, [&](CGFloat x, const ASStackLayoutSpecItem &item) {
+          return x + flexFactor(item);
+        });
 
     // If no items are able to flex then there is nothing left to do with this line. Bail.
     if (flexFactorSum == 0) {
@@ -570,8 +601,9 @@ static void flexLinesAlongStackDimension(std::vector<ASStackUnpositionedLine> &l
         flexAdjustmentInViolationDirection(items, style, violation, flexFactorSum);
     // Compute any remaining violation to the first flexible item.
     const CGFloat remainingViolation =
-        std::accumulate(items.begin(), items.end(), violation,
-                        [&](CGFloat x, const ASStackLayoutSpecItem &item) { return x - flexAdjustment(item); });
+        std::accumulate(items.begin(), items.end(), violation, [&](CGFloat x, const ASStackLayoutSpecItem &item) {
+          return x - flexAdjustment(item);
+        });
 
     size_t firstFlexItem = -1;
     for (size_t i = 0; i < items.size(); i++) {
@@ -594,9 +626,13 @@ static void flexLinesAlongStackDimension(std::vector<ASStackUnpositionedLine> &l
         // Only apply the remaining violation for the first flexible item that has a flex grow factor.
         const CGFloat flexedStackSize = originalStackSize + currentFlexAdjustment +
                                         (i == firstFlexItem && item.child.style.flexGrow > 0 ? remainingViolation : 0);
-        item.layout = crossChildLayout(item.child, style, MAX(flexedStackSize, 0), MAX(flexedStackSize, 0),
+        item.layout = crossChildLayout(item.child,
+                                       style,
+                                       MAX(flexedStackSize, 0),
+                                       MAX(flexedStackSize, 0),
                                        crossDimension(style.direction, sizeRange.min),
-                                       crossDimension(style.direction, sizeRange.max), parentSize);
+                                       crossDimension(style.direction, sizeRange.max),
+                                       parentSize);
       }
     });
   }
@@ -607,7 +643,8 @@ static void flexLinesAlongStackDimension(std::vector<ASStackUnpositionedLine> &l
  */
 static std::vector<ASStackUnpositionedLine> collectChildrenIntoLines(const std::vector<ASStackLayoutSpecItem> &items,
                                                                      const ASStackLayoutSpecStyle &style,
-                                                                     const ASSizeRange &sizeRange) {
+                                                                     const ASSizeRange &sizeRange)
+{
   // TODO if infinite max stack size, fast path
   if (style.flexWrap == ASStackLayoutFlexWrapNoWrap) {
     return std::vector<ASStackUnpositionedLine>(1, {.items = std::move(items)});
@@ -655,7 +692,8 @@ static void layoutItemsAlongUnconstrainedStackDimension(std::vector<ASStackLayou
                                                         const BOOL concurrent,
                                                         const ASSizeRange &sizeRange,
                                                         const CGSize parentSize,
-                                                        const BOOL useOptimizedFlexing) {
+                                                        const BOOL useOptimizedFlexing)
+{
   const CGFloat minCrossDimension = crossDimension(style.direction, sizeRange.min);
   const CGFloat maxCrossDimension = crossDimension(style.direction, sizeRange.max);
 
@@ -665,10 +703,13 @@ static void layoutItemsAlongUnconstrainedStackDimension(std::vector<ASStackLayou
       item.layout = [ASLayout layoutWithLayoutElement:item.child.element size:{0, 0}];
     } else {
       item.layout = crossChildLayout(
-          item.child, style,
+          item.child,
+          style,
           ASDimensionResolve(item.child.style.flexBasis, stackDimension(style.direction, parentSize), 0),
           ASDimensionResolve(item.child.style.flexBasis, stackDimension(style.direction, parentSize), INFINITY),
-          minCrossDimension, maxCrossDimension, parentSize);
+          minCrossDimension,
+          maxCrossDimension,
+          parentSize);
     }
   });
 }
@@ -676,7 +717,8 @@ static void layoutItemsAlongUnconstrainedStackDimension(std::vector<ASStackLayou
 ASStackUnpositionedLayout ASStackUnpositionedLayout::compute(const std::vector<ASStackLayoutSpecChild> &children,
                                                              const ASStackLayoutSpecStyle &style,
                                                              const ASSizeRange &sizeRange,
-                                                             const BOOL concurrent) {
+                                                             const BOOL concurrent)
+{
   if (children.empty()) {
     return {};
   }

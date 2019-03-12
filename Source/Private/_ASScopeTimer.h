@@ -25,12 +25,19 @@
 
  */
 
-namespace AS {
+namespace AS
+{
 struct ScopeTimer {
   NSTimeInterval begin;
   NSTimeInterval &outT;
-  ScopeTimer(NSTimeInterval &outRef) : outT(outRef) { begin = CACurrentMediaTime(); }
-  ~ScopeTimer() { outT = CACurrentMediaTime() - begin; }
+  ScopeTimer(NSTimeInterval &outRef) : outT(outRef)
+  {
+    begin = CACurrentMediaTime();
+  }
+  ~ScopeTimer()
+  {
+    outT = CACurrentMediaTime() - begin;
+  }
 };
 
 // variant where repeated calls are summed
@@ -38,12 +45,14 @@ struct SumScopeTimer {
   NSTimeInterval begin;
   NSTimeInterval &outT;
   BOOL enable;
-  SumScopeTimer(NSTimeInterval &outRef, BOOL enable = YES) : outT(outRef), enable(enable) {
+  SumScopeTimer(NSTimeInterval &outRef, BOOL enable = YES) : outT(outRef), enable(enable)
+  {
     if (enable) {
       begin = CACurrentMediaTime();
     }
   }
-  ~SumScopeTimer() {
+  ~SumScopeTimer()
+  {
     if (enable) {
       outT += CACurrentMediaTime() - begin;
     }

@@ -30,7 +30,8 @@
 
 #pragma mark - Lifecycle
 
-- (instancetype)init {
+- (instancetype)init
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -42,21 +43,25 @@
   return self;
 }
 
-- (ASLayoutElementType)layoutElementType {
+- (ASLayoutElementType)layoutElementType
+{
   return ASLayoutElementTypeLayoutSpec;
 }
 
-- (BOOL)canLayoutAsynchronous {
+- (BOOL)canLayoutAsynchronous
+{
   return YES;
 }
 
-- (BOOL)implementsLayoutMethod {
+- (BOOL)implementsLayoutMethod
+{
   return YES;
 }
 
 #pragma mark - Style
 
-- (ASLayoutElementStyle *)style {
+- (ASLayoutElementStyle *)style
+{
   AS::MutexLocker l(__instanceLock__);
   if (_style == nil) {
     _style = [[ASLayoutElementStyle alloc] init];
@@ -64,7 +69,8 @@
   return _style;
 }
 
-- (instancetype)styledWithBlock:(AS_NOESCAPE void (^)(__kindof ASLayoutElementStyle *style))styleBlock {
+- (instancetype)styledWithBlock:(AS_NOESCAPE void (^)(__kindof ASLayoutElementStyle *style))styleBlock
+{
   styleBlock(self.style);
   return self;
 }
@@ -73,13 +79,15 @@
 
 ASLayoutElementLayoutCalculationDefaults
 
-    - (ASLayout *)calculateLayoutThatFits : (ASSizeRange)constrainedSize {
+    - (ASLayout *)calculateLayoutThatFits : (ASSizeRange)constrainedSize
+{
   return [ASLayout layoutWithLayoutElement:self size:constrainedSize.min];
 }
 
 #pragma mark - Child
 
-- (void)setChild:(id<ASLayoutElement>)child {
+- (void)setChild:(id<ASLayoutElement>)child
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
   ASDisplayNodeAssert(
       _childrenArray.count < 2,
@@ -94,7 +102,8 @@ ASLayoutElementLayoutCalculationDefaults
   }
 }
 
-- (id<ASLayoutElement>)child {
+- (id<ASLayoutElement>)child
+{
   ASDisplayNodeAssert(
       _childrenArray.count < 2,
       @"This layout spec does not support more than one child. Use the setChildren: or the setChild:AtIndex: API");
@@ -104,23 +113,28 @@ ASLayoutElementLayoutCalculationDefaults
 
 #pragma mark - Children
 
-- (void)setChildren:(NSArray<id<ASLayoutElement>> *)children {
+- (void)setChildren:(NSArray<id<ASLayoutElement>> *)children
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
 
 #if ASDISPLAYNODE_ASSERTIONS_ENABLED
   for (id<ASLayoutElement> child in children) {
     ASDisplayNodeAssert([child conformsToProtocol:NSProtocolFromString(@"ASLayoutElement")],
-                        @"Child %@ of spec %@ is not an ASLayoutElement!", child, self);
+                        @"Child %@ of spec %@ is not an ASLayoutElement!",
+                        child,
+                        self);
   }
 #endif
   [_childrenArray setArray:children];
 }
 
-- (nullable NSArray<id<ASLayoutElement>> *)children {
+- (nullable NSArray<id<ASLayoutElement>> *)children
+{
   return [_childrenArray copy];
 }
 
-- (NSArray<id<ASLayoutElement>> *)sublayoutElements {
+- (NSArray<id<ASLayoutElement>> *)sublayoutElements
+{
   return [_childrenArray copy];
 }
 
@@ -128,13 +142,15 @@ ASLayoutElementLayoutCalculationDefaults
 
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
                                   objects:(id __unsafe_unretained _Nullable[_Nonnull])buffer
-                                    count:(NSUInteger)len {
+                                    count:(NSUInteger)len
+{
   return [_childrenArray countByEnumeratingWithState:state objects:buffer count:len];
 }
 
 #pragma mark - ASTraitEnvironment
 
-- (ASTraitCollection *)asyncTraitCollection {
+- (ASTraitCollection *)asyncTraitCollection
+{
   AS::MutexLocker l(__instanceLock__);
   return [ASTraitCollection traitCollectionWithASPrimitiveTraitCollection:self.primitiveTraitCollection];
 }
@@ -146,7 +162,8 @@ ASPrimitiveTraitCollectionDefaults
 
 #pragma mark - ASDescriptionProvider
 
-    - (NSMutableArray<NSDictionary *> *)propertiesForDescription {
+    - (NSMutableArray<NSDictionary *> *)propertiesForDescription
+{
   const auto result = [NSMutableArray<NSDictionary *> array];
   if (NSArray *children = self.children) {
     // Use tiny descriptions because these trees can get nested very deep.
@@ -156,14 +173,16 @@ ASPrimitiveTraitCollectionDefaults
   return result;
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
   return ASObjectDescriptionMake(self, [self propertiesForDescription]);
 }
 
 #pragma mark - Framework Private
 
 #if AS_DEDUPE_LAYOUT_SPEC_TREE
-- (nullable NSHashTable<id<ASLayoutElement>> *)findDuplicatedElementsInSubtree {
+- (nullable NSHashTable<id<ASLayoutElement>> *)findDuplicatedElementsInSubtree
+{
   NSHashTable *result = nil;
   NSUInteger count = 0;
   [self _findDuplicatedElementsInSubtreeWithWorkingSet:[NSHashTable
@@ -183,7 +202,8 @@ ASPrimitiveTraitCollectionDefaults
  */
 - (void)_findDuplicatedElementsInSubtreeWithWorkingSet:(NSHashTable<id<ASLayoutElement>> *)workingSet
                                           workingCount:(NSUInteger *)workingCount
-                                                result:(NSHashTable<id<ASLayoutElement>> *_Nullable *)result {
+                                                result:(NSHashTable<id<ASLayoutElement>> *_Nullable *)result
+{
   Class layoutSpecClass = [ASLayoutSpec class];
 
   for (id<ASLayoutElement> child in self) {
@@ -215,12 +235,14 @@ ASPrimitiveTraitCollectionDefaults
 
 #pragma mark - Debugging
 
-- (NSString *)debugName {
+- (NSString *)debugName
+{
   AS::MutexLocker l(__instanceLock__);
   return _debugName;
 }
 
-- (void)setDebugName:(NSString *)debugName {
+- (void)setDebugName:(NSString *)debugName
+{
   AS::MutexLocker l(__instanceLock__);
   if (!ASObjectIsEqual(_debugName, debugName)) {
     _debugName = [debugName copy];
@@ -229,12 +251,14 @@ ASPrimitiveTraitCollectionDefaults
 
 #pragma mark - ASLayoutElementAsciiArtProtocol
 
-- (NSString *)asciiArtString {
+- (NSString *)asciiArtString
+{
   NSArray *children = self.children.count < 2 && self.child ? @[ self.child ] : self.children;
   return [ASLayoutSpec asciiArtStringForChildren:children parentName:[self asciiArtName]];
 }
 
-- (NSString *)asciiArtName {
+- (NSString *)asciiArtName
+{
   NSMutableString *result = [NSMutableString stringWithCString:object_getClassName(self)
                                                       encoding:NSASCIIStringEncoding];
   if (_debugName) {
@@ -251,11 +275,13 @@ ASSynthesizeLockingMethodsWithMutex(__instanceLock__)
 
 @implementation ASWrapperLayoutSpec
 
-+ (instancetype)wrapperWithLayoutElement:(id<ASLayoutElement>)layoutElement NS_RETURNS_RETAINED {
++ (instancetype)wrapperWithLayoutElement:(id<ASLayoutElement>)layoutElement NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithLayoutElement:layoutElement];
 }
 
-- (instancetype)initWithLayoutElement:(id<ASLayoutElement>)layoutElement {
+- (instancetype)initWithLayoutElement:(id<ASLayoutElement>)layoutElement
+{
   self = [super init];
   if (self) {
     self.child = layoutElement;
@@ -263,11 +289,13 @@ ASSynthesizeLockingMethodsWithMutex(__instanceLock__)
   return self;
 }
 
-+ (instancetype)wrapperWithLayoutElements:(NSArray<id<ASLayoutElement>> *)layoutElements NS_RETURNS_RETAINED {
++ (instancetype)wrapperWithLayoutElements:(NSArray<id<ASLayoutElement>> *)layoutElements NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithLayoutElements:layoutElements];
 }
 
-- (instancetype)initWithLayoutElements:(NSArray<id<ASLayoutElement>> *)layoutElements {
+- (instancetype)initWithLayoutElements:(NSArray<id<ASLayoutElement>> *)layoutElements
+{
   self = [super init];
   if (self) {
     self.children = layoutElements;
@@ -275,7 +303,8 @@ ASSynthesizeLockingMethodsWithMutex(__instanceLock__)
   return self;
 }
 
-- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize {
+- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize
+{
   NSArray *children = self.children;
   const auto count = children.count;
   ASLayout *rawSublayouts[count];
@@ -305,7 +334,8 @@ ASSynthesizeLockingMethodsWithMutex(__instanceLock__)
 
 + (NSString *)asciiArtStringForChildren:(NSArray *)children
                              parentName:(NSString *)parentName
-                              direction:(ASStackLayoutDirection)direction {
+                              direction:(ASStackLayoutDirection)direction
+{
   NSMutableArray *childStrings = [NSMutableArray array];
   for (id<ASLayoutElementAsciiArtProtocol> layoutChild in children) {
     NSString *childString = [layoutChild asciiArtString];
@@ -319,7 +349,8 @@ ASSynthesizeLockingMethodsWithMutex(__instanceLock__)
   return [ASAsciiArtBoxCreator verticalBoxStringForChildren:childStrings parent:parentName];
 }
 
-+ (NSString *)asciiArtStringForChildren:(NSArray *)children parentName:(NSString *)parentName {
++ (NSString *)asciiArtStringForChildren:(NSArray *)children parentName:(NSString *)parentName
+{
   return [self asciiArtStringForChildren:children parentName:parentName direction:ASStackLayoutDirectionHorizontal];
 }
 

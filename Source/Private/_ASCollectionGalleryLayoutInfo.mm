@@ -14,7 +14,8 @@
 - (instancetype)initWithItemSize:(CGSize)itemSize
               minimumLineSpacing:(CGFloat)minimumLineSpacing
          minimumInteritemSpacing:(CGFloat)minimumInteritemSpacing
-                    sectionInset:(UIEdgeInsets)sectionInset {
+                    sectionInset:(UIEdgeInsets)sectionInset
+{
   self = [super init];
   if (self) {
     _itemSize = itemSize;
@@ -25,7 +26,8 @@
   return self;
 }
 
-- (BOOL)isEqualToInfo:(_ASCollectionGalleryLayoutInfo *)info {
+- (BOOL)isEqualToInfo:(_ASCollectionGalleryLayoutInfo *)info
+{
   if (info == nil) {
     return NO;
   }
@@ -35,7 +37,8 @@
          UIEdgeInsetsEqualToEdgeInsets(_sectionInset, info.sectionInset);
 }
 
-- (BOOL)isEqual:(id)other {
+- (BOOL)isEqual:(id)other
+{
   if (self == other) {
     return YES;
   }
@@ -45,7 +48,8 @@
   return [self isEqualToInfo:other];
 }
 
-- (NSUInteger)hash {
+- (NSUInteger)hash
+{
   struct {
     CGSize itemSize;
     CGFloat minimumLineSpacing;

@@ -49,8 +49,10 @@
   return self;
 }
 
-+ (void)adjustFontSizeForAttributeString:(NSMutableAttributedString *)attrString withScaleFactor:(CGFloat)scaleFactor {
-  if (scaleFactor == 1.0) return;
++ (void)adjustFontSizeForAttributeString:(NSMutableAttributedString *)attrString withScaleFactor:(CGFloat)scaleFactor
+{
+  if (scaleFactor == 1.0)
+    return;
 
   [attrString beginEditing];
 
@@ -92,7 +94,8 @@
   [attrString endEditing];
 }
 
-- (NSUInteger)lineCountForString:(NSAttributedString *)attributedString {
+- (NSUInteger)lineCountForString:(NSAttributedString *)attributedString
+{
   NSUInteger lineCount = 0;
 
   NSLayoutManager *sizingLayoutManager = [self sizingLayoutManager];
@@ -112,7 +115,8 @@
   return lineCount;
 }
 
-- (CGSize)boundingBoxForString:(NSAttributedString *)attributedString {
+- (CGSize)boundingBoxForString:(NSAttributedString *)attributedString
+{
   NSLayoutManager *sizingLayoutManager = [self sizingLayoutManager];
   NSTextContainer *sizingTextContainer = [self sizingTextContainer];
 
@@ -126,7 +130,8 @@
   return textRect.size;
 }
 
-- (NSLayoutManager *)sizingLayoutManager {
+- (NSLayoutManager *)sizingLayoutManager
+{
   AS::MutexLocker l(__instanceLock__);
   if (_sizingLayoutManager == nil) {
     _sizingLayoutManager = [[ASLayoutManager alloc] init];
@@ -150,7 +155,8 @@
   return _sizingLayoutManager;
 }
 
-- (CGFloat)scaleFactor {
+- (CGFloat)scaleFactor
+{
   if (_measured) {
     return _scaleFactor;
   }
@@ -168,8 +174,8 @@
   // factors.
   NSArray *scaleFactors = [@[ @(1) ] arrayByAddingObjectsFromArray:_attributes.pointSizeScaleFactors];
 
-  [_context performBlockWithLockedTextKitComponents:^(NSLayoutManager *layoutManager, NSTextStorage *textStorage,
-                                                      NSTextContainer *textContainer) {
+  [_context performBlockWithLockedTextKitComponents:^(
+                NSLayoutManager *layoutManager, NSTextStorage *textStorage, NSTextContainer *textContainer) {
     // Check for two different situations (and correct for both)
     // 1. The longest word in the string fits without being wrapped
     // 2. The entire text fits in the given constrained size.

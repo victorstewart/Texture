@@ -18,7 +18,8 @@
 
 @implementation IGListAdapter (AsyncDisplayKit)
 
-- (void)setASDKCollectionNode:(ASCollectionNode *)collectionNode {
+- (void)setASDKCollectionNode:(ASCollectionNode *)collectionNode
+{
   ASDisplayNodeAssertMainThread();
 
   // Attempt to retrieve previous data source.

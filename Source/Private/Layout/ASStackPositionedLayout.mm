@@ -20,7 +20,8 @@
 static CGFloat crossOffsetForItem(const ASStackLayoutSpecItem &item,
                                   const ASStackLayoutSpecStyle &style,
                                   const CGFloat crossSize,
-                                  const CGFloat baseline) {
+                                  const CGFloat baseline)
+{
   switch (alignment(item.child.style.alignSelf, style.alignItems)) {
     case ASStackLayoutAlignItemsEnd:
       return crossSize - crossDimension(style.direction, item.layout.size);
@@ -40,7 +41,8 @@ static void crossOffsetAndSpacingForEachLine(const std::size_t numOfLines,
                                              const CGFloat crossViolation,
                                              ASStackLayoutAlignContent alignContent,
                                              CGFloat &offset,
-                                             CGFloat &spacing) {
+                                             CGFloat &spacing)
+{
   ASDisplayNodeCAssertTrue(numOfLines > 0);
 
   // Handle edge cases
@@ -83,7 +85,8 @@ static void stackOffsetAndSpacingForEachItem(const std::size_t numOfItems,
                                              const CGFloat stackViolation,
                                              ASStackLayoutJustifyContent justifyContent,
                                              CGFloat &offset,
-                                             CGFloat &spacing) {
+                                             CGFloat &spacing)
+{
   ASDisplayNodeCAssertTrue(numOfItems > 0);
 
   // Handle edge cases
@@ -124,7 +127,8 @@ static void stackOffsetAndSpacingForEachItem(const std::size_t numOfItems,
 static void positionItemsInLine(const ASStackUnpositionedLine &line,
                                 const ASStackLayoutSpecStyle &style,
                                 const CGPoint &startingPoint,
-                                const CGFloat stackSpacing) {
+                                const CGFloat stackSpacing)
+{
   CGPoint p = startingPoint;
   BOOL first = YES;
 
@@ -137,14 +141,15 @@ static void positionItemsInLine(const ASStackUnpositionedLine &line,
     item.layout.position =
         p + directionPoint(style.direction, 0, crossOffsetForItem(item, style, line.crossSize, line.baseline));
 
-    p = p + directionPoint(style.direction,
-                           stackDimension(style.direction, item.layout.size) + item.child.style.spacingAfter, 0);
+    p = p + directionPoint(
+                style.direction, stackDimension(style.direction, item.layout.size) + item.child.style.spacingAfter, 0);
   }
 }
 
 ASStackPositionedLayout ASStackPositionedLayout::compute(const ASStackUnpositionedLayout &layout,
                                                          const ASStackLayoutSpecStyle &style,
-                                                         const ASSizeRange &sizeRange) {
+                                                         const ASSizeRange &sizeRange)
+{
   const auto &lines = layout.lines;
   if (lines.empty()) {
     return {};

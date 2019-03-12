@@ -20,7 +20,8 @@
 
 @implementation ASDisplayNode (ASLayoutSpec)
 
-- (void)setLayoutSpecBlock:(ASLayoutSpecBlock)layoutSpecBlock {
+- (void)setLayoutSpecBlock:(ASLayoutSpecBlock)layoutSpecBlock
+{
   // For now there should never be an override of layoutSpecThatFits: and a layoutSpecBlock together.
   ASDisplayNodeAssert(!(_methodOverrides & ASDisplayNodeMethodOverrideLayoutSpecThatFits),
                       @"Nodes with a .layoutSpecBlock must not also implement -layoutSpecThatFits:");
@@ -28,12 +29,14 @@
   _layoutSpecBlock = layoutSpecBlock;
 }
 
-- (ASLayoutSpecBlock)layoutSpecBlock {
+- (ASLayoutSpecBlock)layoutSpecBlock
+{
   AS::MutexLocker l(__instanceLock__);
   return _layoutSpecBlock;
 }
 
-- (ASLayout *)calculateLayoutLayoutSpec:(ASSizeRange)constrainedSize {
+- (ASLayout *)calculateLayoutLayoutSpec:(ASSizeRange)constrainedSize
+{
   AS::UniqueLock l(__instanceLock__);
 
   // Manual size calculation via calculateSizeThatFits:
@@ -65,7 +68,8 @@
     NSHashTable *duplicateElements = [layoutSpec findDuplicatedElementsInSubtree];
     if (duplicateElements.count > 0) {
       ASDisplayNodeFailAssert(
-          @"Node %@ returned a layout spec that contains the same elements in multiple positions. Elements: %@", self,
+          @"Node %@ returned a layout spec that contains the same elements in multiple positions. Elements: %@",
+          self,
           duplicateElements);
       // Use an empty layout spec to avoid crashes
       layoutSpec = [[ASLayoutSpec alloc] init];
@@ -74,7 +78,8 @@
 
     ASDisplayNodeAssert(
         layoutSpec.isMutable,
-        @"Node %@ returned layout spec %@ that has already been used. Layout specs should always be regenerated.", self,
+        @"Node %@ returned layout spec %@ that has already been used. Layout specs should always be regenerated.",
+        self,
         layoutSpec);
 
     layoutSpec.isMutable = NO;
@@ -117,7 +122,8 @@
   return layout;
 }
 
-- (id<ASLayoutElement>)_locked_layoutElementThatFits:(ASSizeRange)constrainedSize {
+- (id<ASLayoutElement>)_locked_layoutElementThatFits:(ASSizeRange)constrainedSize
+{
   ASAssertLocked(__instanceLock__);
 
   BOOL measureLayoutSpec = _measurementOptions & ASDisplayNodePerformanceMeasurementOptionLayoutSpec;
@@ -136,11 +142,13 @@
   }
 }
 
-- (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
+- (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize
+{
   __ASDisplayNodeCheckForLayoutMethodOverrides;
 
-  ASDisplayNodeAssert(NO, @"-[ASDisplayNode layoutSpecThatFits:] should never return an empty value. One way this is "
-                          @"caused is by calling -[super layoutSpecThatFits:] which is not currently supported.");
+  ASDisplayNodeAssert(NO,
+                      @"-[ASDisplayNode layoutSpecThatFits:] should never return an empty value. One way this is "
+                      @"caused is by calling -[super layoutSpecThatFits:] which is not currently supported.");
   return [[ASLayoutSpec alloc] init];
 }
 

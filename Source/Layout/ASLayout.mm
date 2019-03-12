@@ -25,12 +25,16 @@ NSString *const ASThreadDictMaxConstraintSizeKey = @"kASThreadDictMaxConstraintS
 
 CGPoint const ASPointNull = {NAN, NAN};
 
-BOOL ASPointIsNull(CGPoint point) { return isnan(point.x) && isnan(point.y); }
+BOOL ASPointIsNull(CGPoint point)
+{
+  return isnan(point.x) && isnan(point.y);
+}
 
 /**
  * Creates an defined number of "    |" indent blocks for the recursive description.
  */
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT NSString *descriptionIndents(NSUInteger indents) {
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT NSString *descriptionIndents(NSUInteger indents)
+{
   NSMutableString *description = [NSMutableString string];
   for (NSUInteger i = 0; i < indents; i++) {
     [description appendString:@"    |"];
@@ -41,7 +45,8 @@ ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT NSString *descriptionIndents(NSUInteg
   return description;
 }
 
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASLayoutIsDisplayNodeType(ASLayout *layout) {
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASLayoutIsDisplayNodeType(ASLayout *layout)
+{
   return layout.type == ASLayoutElementTypeDisplayNode;
 }
 
@@ -57,18 +62,21 @@ ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASLayoutIsDisplayNodeType(ASLayo
 
 static std::atomic_bool static_retainsSublayoutLayoutElements = ATOMIC_VAR_INIT(NO);
 
-+ (void)setShouldRetainSublayoutLayoutElements:(BOOL)shouldRetain {
++ (void)setShouldRetainSublayoutLayoutElements:(BOOL)shouldRetain
+{
   static_retainsSublayoutLayoutElements.store(shouldRetain);
 }
 
-+ (BOOL)shouldRetainSublayoutLayoutElements {
++ (BOOL)shouldRetainSublayoutLayoutElements
+{
   return static_retainsSublayoutLayoutElements.load();
 }
 
 - (instancetype)initWithLayoutElement:(id<ASLayoutElement>)layoutElement
                                  size:(CGSize)size
                              position:(CGPoint)position
-                           sublayouts:(nullable NSArray<ASLayout *> *)sublayouts {
+                           sublayouts:(nullable NSArray<ASLayout *> *)sublayouts
+{
   NSParameterAssert(layoutElement);
 
   self = [super init];
@@ -87,7 +95,8 @@ static std::atomic_bool static_retainsSublayoutLayoutElements = ATOMIC_VAR_INIT(
     if (!ASIsCGSizeValidForSize(size)) {
       ASDisplayNodeFailAssert(@"layoutSize is invalid and unsafe to provide to Core Animation! Release configurations "
                               @"will force to 0, 0.  Size = %@, node = %@",
-                              NSStringFromCGSize(size), layoutElement);
+                              NSStringFromCGSize(size),
+                              layoutElement);
       size = CGSizeZero;
     } else {
       size = CGSizeMake(ASCeilPixelValue(size.width), ASCeilPixelValue(size.height));
@@ -115,21 +124,25 @@ static std::atomic_bool static_retainsSublayoutLayoutElements = ATOMIC_VAR_INIT(
 + (instancetype)layoutWithLayoutElement:(id<ASLayoutElement>)layoutElement
                                    size:(CGSize)size
                                position:(CGPoint)position
-                             sublayouts:(nullable NSArray<ASLayout *> *)sublayouts NS_RETURNS_RETAINED {
+                             sublayouts:(nullable NSArray<ASLayout *> *)sublayouts NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithLayoutElement:layoutElement size:size position:position sublayouts:sublayouts];
 }
 
 + (instancetype)layoutWithLayoutElement:(id<ASLayoutElement>)layoutElement
                                    size:(CGSize)size
-                             sublayouts:(nullable NSArray<ASLayout *> *)sublayouts NS_RETURNS_RETAINED {
+                             sublayouts:(nullable NSArray<ASLayout *> *)sublayouts NS_RETURNS_RETAINED
+{
   return [self layoutWithLayoutElement:layoutElement size:size position:ASPointNull sublayouts:sublayouts];
 }
 
-+ (instancetype)layoutWithLayoutElement:(id<ASLayoutElement>)layoutElement size:(CGSize)size NS_RETURNS_RETAINED {
++ (instancetype)layoutWithLayoutElement:(id<ASLayoutElement>)layoutElement size:(CGSize)size NS_RETURNS_RETAINED
+{
   return [self layoutWithLayoutElement:layoutElement size:size position:ASPointNull sublayouts:nil];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
   if (_retainSublayoutElements.load()) {
     for (ASLayout *sublayout in _sublayouts) {
       // We retained this, so there's no risk of it deallocating on us.
@@ -142,7 +155,8 @@ static std::atomic_bool static_retainsSublayoutLayoutElements = ATOMIC_VAR_INIT(
 
 #pragma mark - Sublayout Elements Caching
 
-- (void)retainSublayoutElements {
+- (void)retainSublayoutElements
+{
   if (_retainSublayoutElements.exchange(true)) {
     return;
   }
@@ -155,7 +169,8 @@ static std::atomic_bool static_retainsSublayoutLayoutElements = ATOMIC_VAR_INIT(
 
 #pragma mark - Layout Flattening
 
-- (BOOL)isFlattened {
+- (BOOL)isFlattened
+{
   // A layout is flattened if its position is null, and all of its sublayouts are of type displaynode with no
   // sublayouts.
   if (!ASPointIsNull(_position)) {
@@ -171,7 +186,8 @@ static std::atomic_bool static_retainsSublayoutLayoutElements = ATOMIC_VAR_INIT(
   return YES;
 }
 
-- (ASLayout *)filteredNodeLayoutTree NS_RETURNS_RETAINED {
+- (ASLayout *)filteredNodeLayoutTree NS_RETURNS_RETAINED
+{
   if ([self isFlattened]) {
     // All flattened layouts must retain sublayout elements until they are applied.
     [self retainSublayoutElements];
@@ -234,20 +250,24 @@ static std::atomic_bool static_retainsSublayoutLayoutElements = ATOMIC_VAR_INIT(
 
 #pragma mark - Equality Checking
 
-- (BOOL)isEqual:(id)object {
-  if (self == object) return YES;
+- (BOOL)isEqual:(id)object
+{
+  if (self == object)
+    return YES;
 
   ASLayout *layout = ASDynamicCast(object, ASLayout);
   if (layout == nil) {
     return NO;
   }
 
-  if (!CGSizeEqualToSize(_size, layout.size)) return NO;
+  if (!CGSizeEqualToSize(_size, layout.size))
+    return NO;
 
   if (!((ASPointIsNull(self.position) && ASPointIsNull(layout.position)) ||
         CGPointEqualToPoint(self.position, layout.position)))
     return NO;
-  if (_layoutElement != layout.layoutElement) return NO;
+  if (_layoutElement != layout.layoutElement)
+    return NO;
 
   if (!ASObjectIsEqual(_sublayouts, layout.sublayouts)) {
     return NO;
@@ -258,11 +278,13 @@ static std::atomic_bool static_retainsSublayoutLayoutElements = ATOMIC_VAR_INIT(
 
 #pragma mark - Accessors
 
-- (ASLayoutElementType)type {
+- (ASLayoutElementType)type
+{
   return _layoutElementType;
 }
 
-- (CGRect)frameForElement:(id<ASLayoutElement>)layoutElement {
+- (CGRect)frameForElement:(id<ASLayoutElement>)layoutElement
+{
   for (ASLayout *l in _sublayouts) {
     if (l->_layoutElement == layoutElement) {
       return l.frame;
@@ -271,7 +293,8 @@ static std::atomic_bool static_retainsSublayoutLayoutElements = ATOMIC_VAR_INIT(
   return CGRectNull;
 }
 
-- (CGRect)frame {
+- (CGRect)frame
+{
   CGRect subnodeFrame = CGRectZero;
   CGPoint adjustedOrigin = _position;
   if (isfinite(adjustedOrigin.x) == NO) {
@@ -300,7 +323,8 @@ static std::atomic_bool static_retainsSublayoutLayoutElements = ATOMIC_VAR_INIT(
 
 #pragma mark - Description
 
-- (NSMutableArray<NSDictionary *> *)propertiesForDescription {
+- (NSMutableArray<NSDictionary *> *)propertiesForDescription
+{
   NSMutableArray *result = [NSMutableArray array];
   [result addObject:@{@"size" : [NSValue valueWithCGSize:self.size]}];
 
@@ -315,15 +339,18 @@ static std::atomic_bool static_retainsSublayoutLayoutElements = ATOMIC_VAR_INIT(
   return result;
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
   return ASObjectDescriptionMake(self, [self propertiesForDescription]);
 }
 
-- (NSString *)recursiveDescription {
+- (NSString *)recursiveDescription
+{
   return [self _recursiveDescriptionForLayout:self level:0];
 }
 
-- (NSString *)_recursiveDescriptionForLayout:(ASLayout *)layout level:(NSUInteger)level {
+- (NSString *)_recursiveDescriptionForLayout:(ASLayout *)layout level:(NSUInteger)level
+{
   NSMutableString *description = [NSMutableString string];
   [description appendString:descriptionIndents(level)];
   [description appendString:[layout description]];
@@ -336,13 +363,15 @@ static std::atomic_bool static_retainsSublayoutLayoutElements = ATOMIC_VAR_INIT(
 
 @end
 
-ASLayout *ASCalculateLayout(id<ASLayoutElement> layoutElement, const ASSizeRange sizeRange, const CGSize parentSize) {
+ASLayout *ASCalculateLayout(id<ASLayoutElement> layoutElement, const ASSizeRange sizeRange, const CGSize parentSize)
+{
   NSCParameterAssert(layoutElement != nil);
 
   return [layoutElement layoutThatFits:sizeRange parentSize:parentSize];
 }
 
-ASLayout *ASCalculateRootLayout(id<ASLayoutElement> rootLayoutElement, const ASSizeRange sizeRange) {
+ASLayout *ASCalculateRootLayout(id<ASLayoutElement> rootLayoutElement, const ASSizeRange sizeRange)
+{
   ASLayout *layout = ASCalculateLayout(rootLayoutElement, sizeRange, sizeRange.max);
   // Here could specific verfication happen
   return layout;

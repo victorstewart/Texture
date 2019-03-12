@@ -17,11 +17,13 @@
 
 @implementation ASLayout (IGListKit)
 
-- (id<NSObject>)diffIdentifier {
+- (id<NSObject>)diffIdentifier
+{
   return self->_layoutElement;
 }
 
-- (BOOL)isEqualToDiffableObject:(id<IGListDiffable>)other {
+- (BOOL)isEqualToDiffableObject:(id<IGListDiffable>)other
+{
   return [self isEqual:other];
 }
 @end

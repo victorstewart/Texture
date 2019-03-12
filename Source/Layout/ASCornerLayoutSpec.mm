@@ -14,7 +14,8 @@
 CGPoint as_calculatedCornerOriginIn(CGRect baseFrame,
                                     CGSize cornerSize,
                                     ASCornerLayoutLocation cornerLocation,
-                                    CGPoint offset) {
+                                    CGPoint offset)
+{
   CGPoint cornerOrigin = CGPointZero;
   CGPoint baseOrigin = baseFrame.origin;
   CGSize baseSize = baseFrame.size;
@@ -54,7 +55,8 @@ static NSUInteger const kCornerChildIndex = 1;
 
 - (instancetype)initWithChild:(id<ASLayoutElement>)child
                        corner:(id<ASLayoutElement>)corner
-                     location:(ASCornerLayoutLocation)location {
+                     location:(ASCornerLayoutLocation)location
+{
   self = [super init];
   if (self) {
     self.child = child;
@@ -66,33 +68,39 @@ static NSUInteger const kCornerChildIndex = 1;
 
 + (instancetype)cornerLayoutSpecWithChild:(id<ASLayoutElement>)child
                                    corner:(id<ASLayoutElement>)corner
-                                 location:(ASCornerLayoutLocation)location NS_RETURNS_RETAINED {
+                                 location:(ASCornerLayoutLocation)location NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithChild:child corner:corner location:location];
 }
 
 #pragma mark - Children
 
-- (void)setChild:(id<ASLayoutElement>)child {
+- (void)setChild:(id<ASLayoutElement>)child
+{
   ASDisplayNodeAssertNotNil(child, @"Child shouldn't be nil.");
   [super setChild:child atIndex:kBaseChildIndex];
 }
 
-- (id<ASLayoutElement>)child {
+- (id<ASLayoutElement>)child
+{
   return [super childAtIndex:kBaseChildIndex];
 }
 
-- (void)setCorner:(id<ASLayoutElement>)corner {
+- (void)setCorner:(id<ASLayoutElement>)corner
+{
   ASDisplayNodeAssertNotNil(corner, @"Corner element cannot be nil.");
   [super setChild:corner atIndex:kCornerChildIndex];
 }
 
-- (id<ASLayoutElement>)corner {
+- (id<ASLayoutElement>)corner
+{
   return [super childAtIndex:kCornerChildIndex];
 }
 
 #pragma mark - Calculation
 
-- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize {
+- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize
+{
   CGSize size = {ASPointsValidForSize(constrainedSize.max.width) == NO ? ASLayoutElementParentDimensionUndefined
                                                                        : constrainedSize.max.width,
                  ASPointsValidForSize(constrainedSize.max.height) == NO ? ASLayoutElementParentDimensionUndefined
@@ -148,7 +156,8 @@ static NSUInteger const kCornerChildIndex = 1;
   return [ASLayout layoutWithLayoutElement:self size:frame.size sublayouts:@[ childLayout, cornerLayout ]];
 }
 
-- (void)_validateElement:(id<ASLayoutElement>)element {
+- (void)_validateElement:(id<ASLayoutElement>)element
+{
   // Validate non-nil element
   if (element == nil) {
     ASDisplayNodeAssertNotNil(element, @"[%@]: Must have a non-nil child/corner for layout calculation.", self.class);
@@ -157,7 +166,8 @@ static NSUInteger const kCornerChildIndex = 1;
   CGSize size = element.style.preferredSize;
   if (!CGSizeEqualToSize(size, CGSizeZero) && !ASIsCGSizeValidForSize(size) && (size.width < 0 || (size.height < 0))) {
     ASDisplayNodeFailAssert(
-        @"[%@]: Should give a valid preferredSize value for %@ before corner's position calculation.", self.class,
+        @"[%@]: Should give a valid preferredSize value for %@ before corner's position calculation.",
+        self.class,
         element);
   }
 }

@@ -19,7 +19,8 @@
 @implementation ASIGListSectionControllerMethods
 
 + (__kindof UICollectionViewCell *)cellForItemAtIndex:(NSInteger)index
-                                    sectionController:(IGListSectionController *)sectionController {
+                                    sectionController:(IGListSectionController *)sectionController
+{
   // Cast to id for backwards-compatibility until 3.0.0 is officially released – IGListSectionType was removed. This is
   // safe.
   return [sectionController.collectionContext dequeueReusableCellOfClass:[_ASCollectionViewCell class]
@@ -27,7 +28,8 @@
                                                                  atIndex:index];
 }
 
-+ (CGSize)sizeForItemAtIndex:(NSInteger)index {
++ (CGSize)sizeForItemAtIndex:(NSInteger)index
+{
   ASDisplayNodeFailAssert(@"Did not expect %@ to be called.", NSStringFromSelector(_cmd));
   return CGSizeZero;
 }
@@ -38,14 +40,16 @@
 
 + (__kindof UICollectionReusableView *)viewForSupplementaryElementOfKind:(NSString *)elementKind
                                                                  atIndex:(NSInteger)index
-                                                       sectionController:(IGListSectionController *)sectionController {
+                                                       sectionController:(IGListSectionController *)sectionController
+{
   return [sectionController.collectionContext dequeueReusableSupplementaryViewOfKind:elementKind
                                                                 forSectionController:(id)sectionController
                                                                                class:[_ASCollectionReusableView class]
                                                                              atIndex:index];
 }
 
-+ (CGSize)sizeForSupplementaryViewOfKind:(NSString *)elementKind atIndex:(NSInteger)index {
++ (CGSize)sizeForSupplementaryViewOfKind:(NSString *)elementKind atIndex:(NSInteger)index
+{
   ASDisplayNodeFailAssert(@"Did not expect %@ to be called.", NSStringFromSelector(_cmd));
   return CGSizeZero;
 }

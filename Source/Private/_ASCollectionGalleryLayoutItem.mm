@@ -20,7 +20,8 @@
 
 @synthesize style;
 
-- (instancetype)initWithItemSize:(CGSize)itemSize collectionElement:(ASCollectionElement *)collectionElement {
+- (instancetype)initWithItemSize:(CGSize)itemSize collectionElement:(ASCollectionElement *)collectionElement
+{
   self = [super init];
   if (self) {
     ASDisplayNodeAssert(!CGSizeEqualToSize(CGSizeZero, itemSize), @"Item size should not be zero");
@@ -33,40 +34,48 @@
 
 ASLayoutElementStyleExtensibilityForwarding ASPrimitiveTraitCollectionDefaults
 
-    - (ASTraitCollection *)asyncTraitCollection {
+    - (ASTraitCollection *)asyncTraitCollection
+{
   ASDisplayNodeAssertNotSupported();
   return nil;
 }
 
-- (ASLayoutElementType)layoutElementType {
+- (ASLayoutElementType)layoutElementType
+{
   return ASLayoutElementTypeLayoutSpec;
 }
 
-- (NSArray<id<ASLayoutElement>> *)sublayoutElements {
+- (NSArray<id<ASLayoutElement>> *)sublayoutElements
+{
   ASDisplayNodeAssertNotSupported();
   return nil;
 }
 
-- (BOOL)implementsLayoutMethod {
+- (BOOL)implementsLayoutMethod
+{
   return YES;
 }
 
 ASLayoutElementLayoutCalculationDefaults
 
-    - (ASLayout *)calculateLayoutThatFits : (ASSizeRange)constrainedSize {
+    - (ASLayout *)calculateLayoutThatFits : (ASSizeRange)constrainedSize
+{
   ASDisplayNodeAssert(CGSizeEqualToSize(_itemSize, ASSizeRangeClamp(constrainedSize, _itemSize)),
-                      @"Item size %@ can't fit within the bounds of constrained size %@", NSStringFromCGSize(_itemSize),
+                      @"Item size %@ can't fit within the bounds of constrained size %@",
+                      NSStringFromCGSize(_itemSize),
                       NSStringFromASSizeRange(constrainedSize));
   return [ASLayout layoutWithLayoutElement:self size:_itemSize];
 }
 
 #pragma mark - ASLayoutElementAsciiArtProtocol
 
-- (NSString *)asciiArtString {
+- (NSString *)asciiArtString
+{
   return [ASLayoutSpec asciiArtStringForChildren:@[] parentName:[self asciiArtName]];
 }
 
-- (NSString *)asciiArtName {
+- (NSString *)asciiArtName
+{
   return [NSMutableString stringWithCString:object_getClassName(self) encoding:NSASCIIStringEncoding];
 }
 

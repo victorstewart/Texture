@@ -22,7 +22,8 @@
 }
 
 /// Return CFTypeRef to avoid retain/release on this singleton.
-+ (CFTypeRef)sharedInstance {
++ (CFTypeRef)sharedInstance
+{
   static CFTypeRef inst;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -31,14 +32,16 @@
   return inst;
 }
 
-+ (ASConfiguration *)defaultConfiguration NS_RETURNS_RETAINED {
++ (ASConfiguration *)defaultConfiguration NS_RETURNS_RETAINED
+{
   ASConfiguration *config = [[ASConfiguration alloc] init];
   // TODO(wsdwsd0829): Fix #788 before enabling it.
   // config.experimentalFeatures = ASExperimentalInterfaceStateCoalescing;
   return config;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
   if (self = [super init]) {
     _delegateQueue = dispatch_queue_create("org.TextureGroup.Texture.ConfigNotifyQueue", DISPATCH_QUEUE_SERIAL);
     if ([ASConfiguration respondsToSelector:@selector(textureConfiguration)]) {
@@ -50,7 +53,8 @@
   return self;
 }
 
-- (void)frameworkDidInitialize {
+- (void)frameworkDidInitialize
+{
   ASDisplayNodeAssertMainThread();
   if (_frameworkInitialized) {
     ASDisplayNodeFailAssert(@"Framework initialized twice.");
@@ -64,7 +68,8 @@
   }
 }
 
-- (BOOL)activateExperimentalFeature:(ASExperimentalFeatures)requested {
+- (BOOL)activateExperimentalFeature:(ASExperimentalFeatures)requested
+{
   if (_config == nil) {
     return NO;
   }
@@ -89,7 +94,8 @@
 }
 
 // Define this even when !DEBUG, since we may run our tests in release mode.
-+ (void)test_resetWithConfiguration:(ASConfiguration *)configuration {
++ (void)test_resetWithConfiguration:(ASConfiguration *)configuration
+{
   ASConfigurationManager *inst = ASGetSharedConfigMgr();
   inst->_config = configuration ?: [self defaultConfiguration];
   atomic_store(&inst->_activatedExperiments, 0);
@@ -97,8 +103,12 @@
 
 @end
 
-BOOL ASActivateExperimentalFeature(ASExperimentalFeatures feature) {
+BOOL ASActivateExperimentalFeature(ASExperimentalFeatures feature)
+{
   return [ASGetSharedConfigMgr() activateExperimentalFeature:feature];
 }
 
-void ASNotifyInitialized() { [ASGetSharedConfigMgr() frameworkDidInitialize]; }
+void ASNotifyInitialized()
+{
+  [ASGetSharedConfigMgr() frameworkDidInitialize];
+}

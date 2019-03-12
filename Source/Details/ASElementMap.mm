@@ -32,13 +32,15 @@
 
 @implementation ASElementMap
 
-- (instancetype)init {
+- (instancetype)init
+{
   return [self initWithSections:@[] items:@[] supplementaryElements:@{}];
 }
 
 - (instancetype)initWithSections:(NSArray<ASSection *> *)sections
                            items:(ASCollectionElementTwoDimensionalArray *)items
-           supplementaryElements:(ASSupplementaryElementDictionary *)supplementaryElements {
+           supplementaryElements:(ASSupplementaryElementDictionary *)supplementaryElements
+{
   NSCParameterAssert(items.count == sections.count);
 
   if (self = [super init]) {
@@ -62,8 +64,8 @@
     }
     for (NSDictionary *supplementariesForKind in [_supplementaryElements objectEnumerator]) {
       [supplementariesForKind
-          enumerateKeysAndObjectsUsingBlock:^(NSIndexPath *_Nonnull indexPath, ASCollectionElement *_Nonnull element,
-                                              BOOL *_Nonnull stop) {
+          enumerateKeysAndObjectsUsingBlock:^(
+              NSIndexPath *_Nonnull indexPath, ASCollectionElement *_Nonnull element, BOOL *_Nonnull stop) {
             [_elementToIndexPathMap setObject:indexPath forKey:element];
           }];
     }
@@ -71,27 +73,33 @@
   return self;
 }
 
-- (NSUInteger)count {
+- (NSUInteger)count
+{
   return _elementToIndexPathMap.count;
 }
 
-- (NSArray<NSIndexPath *> *)itemIndexPaths {
+- (NSArray<NSIndexPath *> *)itemIndexPaths
+{
   return ASIndexPathsForTwoDimensionalArray(_sectionsOfItems);
 }
 
-- (NSArray<ASCollectionElement *> *)itemElements {
+- (NSArray<ASCollectionElement *> *)itemElements
+{
   return ASElementsInTwoDimensionalArray(_sectionsOfItems);
 }
 
-- (NSInteger)numberOfSections {
+- (NSInteger)numberOfSections
+{
   return _sectionsOfItems.count;
 }
 
-- (NSArray<NSString *> *)supplementaryElementKinds {
+- (NSArray<NSString *> *)supplementaryElementKinds
+{
   return _supplementaryElements.allKeys;
 }
 
-- (NSInteger)numberOfItemsInSection:(NSInteger)section {
+- (NSInteger)numberOfItemsInSection:(NSInteger)section
+{
   if (![self sectionIndexIsValid:section assert:YES]) {
     return 0;
   }
@@ -99,7 +107,8 @@
   return _sectionsOfItems[section].count;
 }
 
-- (id<ASSectionContext>)contextForSection:(NSInteger)section {
+- (id<ASSectionContext>)contextForSection:(NSInteger)section
+{
   if (![self sectionIndexIsValid:section assert:NO]) {
     return nil;
   }
@@ -107,11 +116,13 @@
   return _sections[section].context;
 }
 
-- (nullable NSIndexPath *)indexPathForElement:(ASCollectionElement *)element {
+- (nullable NSIndexPath *)indexPathForElement:(ASCollectionElement *)element
+{
   return element ? [_elementToIndexPathMap objectForKey:element] : nil;
 }
 
-- (nullable NSIndexPath *)indexPathForElementIfCell:(ASCollectionElement *)element {
+- (nullable NSIndexPath *)indexPathForElementIfCell:(ASCollectionElement *)element
+{
   if (element.supplementaryElementKind == nil) {
     return [self indexPathForElement:element];
   } else {
@@ -119,7 +130,8 @@
   }
 }
 
-- (nullable ASCollectionElement *)elementForItemAtIndexPath:(NSIndexPath *)indexPath {
+- (nullable ASCollectionElement *)elementForItemAtIndexPath:(NSIndexPath *)indexPath
+{
   NSInteger section, item;
   if (![self itemIndexPathIsValid:indexPath assert:NO item:&item section:&section]) {
     return nil;
@@ -129,11 +141,13 @@
 }
 
 - (nullable ASCollectionElement *)supplementaryElementOfKind:(NSString *)supplementaryElementKind
-                                                 atIndexPath:(NSIndexPath *)indexPath {
+                                                 atIndexPath:(NSIndexPath *)indexPath
+{
   return _supplementaryElements[supplementaryElementKind][indexPath];
 }
 
-- (ASCollectionElement *)elementForLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes {
+- (ASCollectionElement *)elementForLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes
+{
   switch (layoutAttributes.representedElementCategory) {
     case UICollectionElementCategoryCell:
       // Cell
@@ -148,7 +162,8 @@
   }
 }
 
-- (NSIndexPath *)convertIndexPath:(NSIndexPath *)indexPath fromMap:(ASElementMap *)map {
+- (NSIndexPath *)convertIndexPath:(NSIndexPath *)indexPath fromMap:(ASElementMap *)map
+{
   if (indexPath.item == NSNotFound) {
     // Section index path
     NSInteger result = [self convertSection:indexPath.section fromMap:map];
@@ -160,7 +175,8 @@
   }
 }
 
-- (NSInteger)convertSection:(NSInteger)sectionIndex fromMap:(ASElementMap *)map {
+- (NSInteger)convertSection:(NSInteger)sectionIndex fromMap:(ASElementMap *)map
+{
   if (![map sectionIndexIsValid:sectionIndex assert:YES]) {
     return NSNotFound;
   }
@@ -171,7 +187,8 @@
 
 #pragma mark - NSCopying
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
   return self;
 }
 
@@ -179,7 +196,8 @@
 // bother with it.
 #pragma mark - NSMutableCopying
 
-- (id)mutableCopyWithZone:(NSZone *)zone {
+- (id)mutableCopyWithZone:(NSZone *)zone
+{
   return [[ASMutableElementMap alloc] initWithSections:_sections
                                                  items:_sectionsOfItems
                                  supplementaryElements:_supplementaryElements];
@@ -189,11 +207,13 @@
 
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
                                   objects:(id _Nullable __unsafe_unretained[])buffer
-                                    count:(NSUInteger)len {
+                                    count:(NSUInteger)len
+{
   return [_elementToIndexPathMap countByEnumeratingWithState:state objects:buffer count:len];
 }
 
-- (NSString *)smallDescription {
+- (NSString *)smallDescription
+{
   NSMutableArray *sectionDescriptions = [NSMutableArray array];
 
   NSUInteger i = 0;
@@ -206,11 +226,13 @@
 
 #pragma mark - ASDescriptionProvider
 
-- (NSString *)description {
+- (NSString *)description
+{
   return ASObjectDescriptionMake(self, [self propertiesForDescription]);
 }
 
-- (NSMutableArray<NSDictionary *> *)propertiesForDescription {
+- (NSMutableArray<NSDictionary *> *)propertiesForDescription
+{
   NSMutableArray *result = [NSMutableArray array];
   [result addObject:@{@"items" : _sectionsOfItems}];
   [result addObject:@{@"supplementaryElements" : _supplementaryElements}];
@@ -222,12 +244,13 @@
 /**
  * Fails assert + return NO if section is out of bounds.
  */
-- (BOOL)sectionIndexIsValid:(NSInteger)section assert:(BOOL)assert {
+- (BOOL)sectionIndexIsValid:(NSInteger)section assert:(BOOL)assert
+{
   NSInteger sectionCount = _sectionsOfItems.count;
   if (section >= sectionCount || section < 0) {
     if (assert) {
-      ASDisplayNodeFailAssert(@"Invalid section index %ld when there are only %ld sections!", (long)section,
-                              (long)sectionCount);
+      ASDisplayNodeFailAssert(
+          @"Invalid section index %ld when there are only %ld sections!", (long)section, (long)sectionCount);
     }
     return NO;
   } else {
@@ -243,7 +266,8 @@
 - (BOOL)itemIndexPathIsValid:(NSIndexPath *)indexPath
                       assert:(BOOL)assert
                         item:(out NSInteger *)outItem
-                     section:(out NSInteger *)outSection {
+                     section:(out NSInteger *)outSection
+{
   if (indexPath == nil) {
     return NO;
   }
@@ -257,8 +281,10 @@
   NSInteger item = indexPath.item;
   if (item >= itemCount || item < 0) {
     if (assert) {
-      ASDisplayNodeFailAssert(@"Invalid item index %ld in section %ld which only has %ld items!", (long)item,
-                              (long)section, (long)itemCount);
+      ASDisplayNodeFailAssert(@"Invalid item index %ld in section %ld which only has %ld items!",
+                              (long)item,
+                              (long)section,
+                              (long)itemCount);
     }
     return NO;
   }

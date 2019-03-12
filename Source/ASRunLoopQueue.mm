@@ -24,7 +24,8 @@
 
 using AS::MutexLocker;
 
-static void runLoopSourceCallback(void *info) {
+static void runLoopSourceCallback(void *info)
+{
   // No-op
 #if ASRunLoopQueueVerboseLoggingEnabled
   NSLog(@"<%@> - Called runLoopSourceCallback", info);
@@ -38,7 +39,8 @@ static void runLoopSourceCallback(void *info) {
   AS::Mutex _lock;
 }
 
-+ (ASDeallocQueue *)sharedDeallocationQueue NS_RETURNS_RETAINED {
++ (ASDeallocQueue *)sharedDeallocationQueue NS_RETURNS_RETAINED
+{
   static ASDeallocQueue *deallocQueue = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -47,11 +49,13 @@ static void runLoopSourceCallback(void *info) {
   return deallocQueue;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
   ASDisplayNodeFailAssert(@"Singleton should not dealloc.");
 }
 
-- (void)releaseObjectInBackground:(id _Nullable __strong *)objectPtr {
+- (void)releaseObjectInBackground:(id _Nullable __strong *)objectPtr
+{
   NSParameterAssert(objectPtr != NULL);
 
   // Cast to CFType so we can manipulate retain count manually.
@@ -71,13 +75,15 @@ static void runLoopSourceCallback(void *info) {
 
   if (isFirstEntry) {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.100 * NSEC_PER_SEC)),
-                   dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
+                   dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0),
+                   ^{
                      [self drain];
                    });
   }
 }
 
-- (void)drain {
+- (void)drain
+{
   _lock.lock();
   const auto q = std::move(_queue);
   _lock.unlock();
@@ -91,7 +97,8 @@ static void runLoopSourceCallback(void *info) {
 
 @implementation ASAbstractRunLoopQueue
 
-- (instancetype)init {
+- (instancetype)init
+{
   self = [super init];
   if (self == nil) {
     return nil;
@@ -128,7 +135,8 @@ static void runLoopSourceCallback(void *info) {
 
 - (instancetype)initWithRunLoop:(CFRunLoopRef)runloop
                   retainObjects:(BOOL)retainsObjects
-                        handler:(void (^)(id _Nullable, BOOL))handlerBlock {
+                        handler:(void (^)(id _Nullable, BOOL))handlerBlock
+{
   if (self = [super init]) {
     _runLoop = runloop;
     NSPointerFunctionsOptions options = retainsObjects ? NSPointerFunctionsStrongMemory : NSPointerFunctionsWeakMemory;
@@ -178,7 +186,8 @@ static void runLoopSourceCallback(void *info) {
   return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
   if (CFRunLoopContainsSource(_runLoop, _runLoopSource, kCFRunLoopCommonModes)) {
     CFRunLoopRemoveSource(_runLoop, _runLoopSource, kCFRunLoopCommonModes);
   }
@@ -193,12 +202,14 @@ static void runLoopSourceCallback(void *info) {
 }
 
 #if ASRunLoopQueueLoggingEnabled
-- (void)checkRunLoop {
+- (void)checkRunLoop
+{
   NSLog(@"<%@> - Jobs: %ld", self, _internalQueue.count);
 }
 #endif
 
-- (void)processQueue {
+- (void)processQueue
+{
   BOOL hasExecutionBlock = (_queueConsumer != nil);
 
   // If we have an execution block, this vector will be populated, otherwise remains empty.
@@ -282,7 +293,8 @@ static void runLoopSourceCallback(void *info) {
   ASSignpostEnd(ASSignpostRunLoopQueueBatch);
 }
 
-- (void)enqueue:(id)object {
+- (void)enqueue:(id)object
+{
   if (!object) {
     return;
   }
@@ -310,7 +322,8 @@ static void runLoopSourceCallback(void *info) {
   }
 }
 
-- (BOOL)isEmpty {
+- (BOOL)isEmpty
+{
   MutexLocker l(_internalQueueLock);
   return _internalQueue.count == 0;
 }
@@ -353,7 +366,8 @@ ASSynthesizeLockingMethodsWithMutex(_internalQueueLock)
 // but after most other scheduled work on the runloop has processed.
 static int const kASASCATransactionQueueOrder = 1000000;
 
-- (instancetype)init {
+- (instancetype)init
+{
   if (self = [super init]) {
     _internalQueueHashSet = CFSetCreateMutable(NULL, 0, NULL);
 
@@ -376,7 +390,10 @@ static int const kASASCATransactionQueueOrder = 1000000;
     // __unsafe_unretained allows us to avoid flagging the memory cycle detector.
     __unsafe_unretained __typeof__(self) weakSelf = self;
     _preTransactionObserver =
-        CFRunLoopObserverCreateWithHandler(NULL, kCFRunLoopBeforeWaiting, true, kASASCATransactionQueueOrder,
+        CFRunLoopObserverCreateWithHandler(NULL,
+                                           kCFRunLoopBeforeWaiting,
+                                           true,
+                                           kASASCATransactionQueueOrder,
                                            ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
                                              while (!weakSelf->_internalQueue.empty()) {
                                                [weakSelf processQueue];
@@ -407,7 +424,8 @@ static int const kASASCATransactionQueueOrder = 1000000;
   return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
   ASDisplayNodeAssertMainThread();
 
   CFRelease(_internalQueueHashSet);
@@ -423,12 +441,14 @@ static int const kASASCATransactionQueueOrder = 1000000;
 }
 
 #if ASRunLoopQueueLoggingEnabled
-- (void)checkRunLoop {
+- (void)checkRunLoop
+{
   NSLog(@"<%@> - Jobs: %ld", self, _internalQueue.count);
 }
 #endif
 
-- (void)processQueue {
+- (void)processQueue
+{
   ASDisplayNodeAssertMainThread();
 
   AS::UniqueLock l(_internalQueueLock);
@@ -457,7 +477,8 @@ static int const kASASCATransactionQueueOrder = 1000000;
   ASSignpostEnd(ASSignpostRunLoopQueueBatch);
 }
 
-- (void)enqueue:(id<ASCATransactionQueueObserving>)object {
+- (void)enqueue:(id<ASCATransactionQueueObserving>)object
+{
   if (!object) {
     return;
   }
@@ -479,12 +500,14 @@ static int const kASASCATransactionQueueOrder = 1000000;
   }
 }
 
-- (BOOL)isEmpty {
+- (BOOL)isEmpty
+{
   MutexLocker l(_internalQueueLock);
   return _internalQueue.empty();
 }
 
-- (BOOL)isEnabled {
+- (BOOL)isEnabled
+{
   return ASActivateExperimentalFeature(ASExperimentalInterfaceStateCoalescing);
 }
 

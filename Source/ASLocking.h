@@ -76,7 +76,8 @@ typedef BOOL (^ASLockSequenceBlock)(NS_NOESCAPE ASAddLockBlock addLock);
 /**
  * Unlock and release all of the locks in this lock set.
  */
-NS_INLINE void ASUnlockSet(ASLockSet *lockSet) {
+NS_INLINE void ASUnlockSet(ASLockSet *lockSet)
+{
   for (unsigned i = 0; i < lockSet->count; i++) {
     CFTypeRef lock = lockSet->locks[i];
     [(__bridge id<ASLocking>)lock unlock];
@@ -101,7 +102,8 @@ NS_INLINE void ASUnlockSet(ASLockSet *lockSet) {
  * one of the locks is already locked (recursive.) Only locks taken
  * inside this function are guaranteed not to cause a deadlock.
  */
-NS_INLINE ASLockSet ASLockSequence(NS_NOESCAPE ASLockSequenceBlock body) {
+NS_INLINE ASLockSet ASLockSequence(NS_NOESCAPE ASLockSequenceBlock body)
+{
   __block ASLockSet locks = (ASLockSet){0, {}};
   BOOL (^addLock)(id<ASLocking>) = ^(id<ASLocking> obj) {
     // nil lock = ignore.

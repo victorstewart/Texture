@@ -18,7 +18,10 @@
 #import <AsyncDisplayKit/ASConfigurationInternal.h>
 #import <AsyncDisplayKit/ASRecursiveUnfairLock.h>
 
-ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASDisplayNodeThreadIsMain() { return 0 != pthread_main_np(); }
+ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASDisplayNodeThreadIsMain()
+{
+  return 0 != pthread_main_np();
+}
 
 /**
  * Adds the lock to the current scope.
@@ -38,9 +41,13 @@ ASDISPLAYNODE_INLINE AS_WARN_UNUSED_RESULT BOOL ASDisplayNodeThreadIsMain() { re
   __unsafe_unretained id<NSLocking> __lockToken __attribute__((cleanup(_ASLockScopeUnownedCleanup))) = nsLocking; \
   [__lockToken lock];
 
-ASDISPLAYNODE_INLINE void _ASLockScopeCleanup(id<NSLocking> __strong *const lockPtr) { [*lockPtr unlock]; }
+ASDISPLAYNODE_INLINE void _ASLockScopeCleanup(id<NSLocking> __strong *const lockPtr)
+{
+  [*lockPtr unlock];
+}
 
-ASDISPLAYNODE_INLINE void _ASLockScopeUnownedCleanup(id<NSLocking> __unsafe_unretained *const lockPtr) {
+ASDISPLAYNODE_INLINE void _ASLockScopeUnownedCleanup(id<NSLocking> __unsafe_unretained *const lockPtr)
+{
   [*lockPtr unlock];
 }
 
@@ -77,28 +84,37 @@ ASDISPLAYNODE_INLINE void _ASLockScopeUnownedCleanup(id<NSLocking> __unsafe_unre
   [__lockToken unlock];
 
 #define ASSynthesizeLockingMethodsWithMutex(mutex) \
-  -(void)lock {                                    \
+  -(void)lock                                      \
+  {                                                \
     mutex.lock();                                  \
   }                                                \
-  -(void)unlock {                                  \
+  -(void)unlock                                    \
+  {                                                \
     mutex.unlock();                                \
   }                                                \
-  -(BOOL)tryLock {                                 \
+  -(BOOL)tryLock                                   \
+  {                                                \
     return (BOOL)mutex.try_lock();                 \
   }
 
 #define ASSynthesizeLockingMethodsWithObject(object) \
-  -(void)lock {                                      \
+  -(void)lock                                        \
+  {                                                  \
     [object lock];                                   \
   }                                                  \
-  -(void)unlock {                                    \
+  -(void)unlock                                      \
+  {                                                  \
     [object unlock];                                 \
   }                                                  \
-  -(BOOL)tryLock {                                   \
+  -(BOOL)tryLock                                     \
+  {                                                  \
     return [object tryLock];                         \
   }
 
-ASDISPLAYNODE_INLINE void _ASUnlockScopeCleanup(id<NSLocking> __strong *lockPtr) { [*lockPtr lock]; }
+ASDISPLAYNODE_INLINE void _ASUnlockScopeCleanup(id<NSLocking> __strong *lockPtr)
+{
+  [*lockPtr lock];
+}
 
 #ifdef __cplusplus
 
@@ -111,8 +127,8 @@ ASDISPLAYNODE_INLINE void _ASUnlockScopeCleanup(id<NSLocking> __strong *lockPtr)
 #define ASAssertLocked(m) m.AssertHeld()
 #define ASAssertUnlocked(m) m.AssertNotHeld()
 
-namespace AS {
-
+namespace AS
+{
 // Set once in Mutex constructor. Linker fails if this is a member variable. ??
 static bool gMutex_unfair;
 
@@ -121,12 +137,14 @@ static bool gMutex_unfair;
 // and not again.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability"
-class Mutex {
+class Mutex
+{
  public:
   /// Constructs a plain mutex (the default).
   Mutex() : Mutex(false) {}
 
-  ~Mutex() {
+  ~Mutex()
+  {
     // Manually destroy since unions can't do it.
     switch (_type) {
       case Plain:
@@ -147,7 +165,8 @@ class Mutex {
   Mutex(const Mutex &) = delete;
   Mutex &operator=(const Mutex &) = delete;
 
-  bool try_lock() {
+  bool try_lock()
+  {
     bool success = false;
     switch (_type) {
       case Plain:
@@ -169,7 +188,8 @@ class Mutex {
     return success;
   }
 
-  void lock() {
+  void lock()
+  {
     switch (_type) {
       case Plain:
         _plain.lock();
@@ -187,7 +207,8 @@ class Mutex {
     DidLock();
   }
 
-  void unlock() {
+  void unlock()
+  {
     WillUnlock();
     switch (_type) {
       case Plain:
@@ -205,11 +226,18 @@ class Mutex {
     }
   }
 
-  void AssertHeld() { ASDisplayNodeCAssert(_owner == std::this_thread::get_id(), @"Thread should hold lock"); }
+  void AssertHeld()
+  {
+    ASDisplayNodeCAssert(_owner == std::this_thread::get_id(), @"Thread should hold lock");
+  }
 
-  void AssertNotHeld() { ASDisplayNodeCAssert(_owner != std::this_thread::get_id(), @"Thread should not hold lock"); }
+  void AssertNotHeld()
+  {
+    ASDisplayNodeCAssert(_owner != std::this_thread::get_id(), @"Thread should not hold lock");
+  }
 
-  explicit Mutex(bool recursive) {
+  explicit Mutex(bool recursive)
+  {
     // Check if we can use unfair lock and store in static var.
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -240,7 +268,8 @@ class Mutex {
  private:
   enum Type { Plain, Recursive, Unfair, RecursiveUnfair };
 
-  void WillUnlock() {
+  void WillUnlock()
+  {
 #if ASDISPLAYNODE_ASSERTIONS_ENABLED
     if (--_count == 0) {
       _owner = std::thread::id();
@@ -248,7 +277,8 @@ class Mutex {
 #endif
   }
 
-  void DidLock() {
+  void DidLock()
+  {
 #if ASDISPLAYNODE_ASSERTIONS_ENABLED
     if (++_count == 1) {
       // New owner.
@@ -258,7 +288,8 @@ class Mutex {
   }
 
   Type _type;
-  union {
+  union
+  {
     os_unfair_lock _unfair;
     ASRecursiveUnfairLock _runfair;
     std::mutex _plain;
@@ -280,7 +311,8 @@ class Mutex {
  http://www.zaval.org/resources/library/butenhof1.html
  http://www.fieryrobot.com/blog/2008/10/14/recursive-locks-will-kill-you/
  */
-class RecursiveMutex : public Mutex {
+class RecursiveMutex : public Mutex
+{
  public:
   RecursiveMutex() : Mutex(true) {}
 };

@@ -24,7 +24,8 @@
 
 @implementation ASStackLayoutSpec
 
-- (instancetype)init {
+- (instancetype)init
+{
   return [self initWithDirection:ASStackLayoutDirectionHorizontal
                          spacing:0.0
                   justifyContent:ASStackLayoutJustifyContentStart
@@ -39,7 +40,8 @@
                                      spacing:(CGFloat)spacing
                               justifyContent:(ASStackLayoutJustifyContent)justifyContent
                                   alignItems:(ASStackLayoutAlignItems)alignItems
-                                    children:(NSArray *)children NS_RETURNS_RETAINED {
+                                    children:(NSArray *)children NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithDirection:direction
                                  spacing:spacing
                           justifyContent:justifyContent
@@ -56,7 +58,8 @@
                                   alignItems:(ASStackLayoutAlignItems)alignItems
                                     flexWrap:(ASStackLayoutFlexWrap)flexWrap
                                 alignContent:(ASStackLayoutAlignContent)alignContent
-                                    children:(NSArray<id<ASLayoutElement>> *)children NS_RETURNS_RETAINED {
+                                    children:(NSArray<id<ASLayoutElement>> *)children NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithDirection:direction
                                  spacing:spacing
                           justifyContent:justifyContent
@@ -74,7 +77,8 @@
                                     flexWrap:(ASStackLayoutFlexWrap)flexWrap
                                 alignContent:(ASStackLayoutAlignContent)alignContent
                                  lineSpacing:(CGFloat)lineSpacing
-                                    children:(NSArray<id<ASLayoutElement>> *)children NS_RETURNS_RETAINED {
+                                    children:(NSArray<id<ASLayoutElement>> *)children NS_RETURNS_RETAINED
+{
   return [[self alloc] initWithDirection:direction
                                  spacing:spacing
                           justifyContent:justifyContent
@@ -85,13 +89,15 @@
                                 children:children];
 }
 
-+ (instancetype)verticalStackLayoutSpec NS_RETURNS_RETAINED {
++ (instancetype)verticalStackLayoutSpec NS_RETURNS_RETAINED
+{
   ASStackLayoutSpec *stackLayoutSpec = [[self alloc] init];
   stackLayoutSpec.direction = ASStackLayoutDirectionVertical;
   return stackLayoutSpec;
 }
 
-+ (instancetype)horizontalStackLayoutSpec NS_RETURNS_RETAINED {
++ (instancetype)horizontalStackLayoutSpec NS_RETURNS_RETAINED
+{
   ASStackLayoutSpec *stackLayoutSpec = [[self alloc] init];
   stackLayoutSpec.direction = ASStackLayoutDirectionHorizontal;
   return stackLayoutSpec;
@@ -104,7 +110,8 @@
                          flexWrap:(ASStackLayoutFlexWrap)flexWrap
                      alignContent:(ASStackLayoutAlignContent)alignContent
                       lineSpacing:(CGFloat)lineSpacing
-                         children:(NSArray *)children {
+                         children:(NSArray *)children
+{
   if (!(self = [super init])) {
     return nil;
   }
@@ -122,7 +129,8 @@
   return self;
 }
 
-- (void)setDirection:(ASStackLayoutDirection)direction {
+- (void)setDirection:(ASStackLayoutDirection)direction
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
   if (_direction != direction) {
     _direction = direction;
@@ -131,7 +139,8 @@
   }
 }
 
-- (void)setHorizontalAlignment:(ASHorizontalAlignment)horizontalAlignment {
+- (void)setHorizontalAlignment:(ASHorizontalAlignment)horizontalAlignment
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
   if (_horizontalAlignment != horizontalAlignment) {
     _horizontalAlignment = horizontalAlignment;
@@ -139,7 +148,8 @@
   }
 }
 
-- (void)setVerticalAlignment:(ASVerticalAlignment)verticalAlignment {
+- (void)setVerticalAlignment:(ASVerticalAlignment)verticalAlignment
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
   if (_verticalAlignment != verticalAlignment) {
     _verticalAlignment = verticalAlignment;
@@ -147,7 +157,8 @@
   }
 }
 
-- (void)setAlignItems:(ASStackLayoutAlignItems)alignItems {
+- (void)setAlignItems:(ASStackLayoutAlignItems)alignItems
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
   ASDisplayNodeAssert(_horizontalAlignment == ASHorizontalAlignmentNone,
                       @"Cannot set this property directly because horizontalAlignment is being used");
@@ -156,7 +167,8 @@
   _alignItems = alignItems;
 }
 
-- (void)setJustifyContent:(ASStackLayoutJustifyContent)justifyContent {
+- (void)setJustifyContent:(ASStackLayoutJustifyContent)justifyContent
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
   ASDisplayNodeAssert(_horizontalAlignment == ASHorizontalAlignmentNone,
                       @"Cannot set this property directly because horizontalAlignment is being used");
@@ -165,12 +177,14 @@
   _justifyContent = justifyContent;
 }
 
-- (void)setSpacing:(CGFloat)spacing {
+- (void)setSpacing:(CGFloat)spacing
+{
   ASDisplayNodeAssert(self.isMutable, @"Cannot set properties when layout spec is not mutable");
   _spacing = spacing;
 }
 
-- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize {
+- (ASLayout *)calculateLayoutThatFits:(ASSizeRange)constrainedSize
+{
   NSArray *children = self.children;
   if (children.count == 0) {
     return [ASLayout layoutWithLayoutElement:self size:constrainedSize.min];
@@ -213,7 +227,8 @@
   return [ASLayout layoutWithLayoutElement:self size:positionedLayout.size sublayouts:sublayouts];
 }
 
-- (void)resolveHorizontalAlignment {
+- (void)resolveHorizontalAlignment
+{
   if (_direction == ASStackLayoutDirectionHorizontal) {
     _justifyContent = justifyContent(_horizontalAlignment, _justifyContent);
   } else {
@@ -221,7 +236,8 @@
   }
 }
 
-- (void)resolveVerticalAlignment {
+- (void)resolveVerticalAlignment
+{
   if (_direction == ASStackLayoutDirectionHorizontal) {
     _alignItems = alignment(_verticalAlignment, _alignItems);
   } else {
@@ -229,7 +245,8 @@
   }
 }
 
-- (NSMutableArray<NSDictionary *> *)propertiesForDescription {
+- (NSMutableArray<NSDictionary *> *)propertiesForDescription
+{
   auto result = [super propertiesForDescription];
 
   // Add our direction
@@ -251,7 +268,8 @@
 
 #pragma mark - ASLayoutElementAsciiArtProtocol
 
-- (NSString *)asciiArtString {
+- (NSString *)asciiArtString
+{
   return [ASLayoutSpec asciiArtStringForChildren:self.children parentName:[self asciiArtName] direction:self.direction];
 }
 

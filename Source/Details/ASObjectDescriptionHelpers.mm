@@ -13,7 +13,8 @@
 
 #import <AsyncDisplayKit/NSIndexSet+ASHelpers.h>
 
-NSString *ASGetDescriptionValueString(id object) {
+NSString *ASGetDescriptionValueString(id object)
+{
   if ([object isKindOfClass:[NSValue class]]) {
     // Use shortened NSValue descriptions
     NSValue *value = object;
@@ -46,7 +47,8 @@ NSString *ASGetDescriptionValueString(id object) {
   return [object description];
 }
 
-NSString *_ASObjectDescriptionMakePropertyList(NSArray<NSDictionary *> *_Nullable propertyGroups) {
+NSString *_ASObjectDescriptionMakePropertyList(NSArray<NSDictionary *> *_Nullable propertyGroups)
+{
   NSMutableArray *components = [NSMutableArray array];
   for (NSDictionary *properties in propertyGroups) {
     [properties enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key, id _Nonnull obj, BOOL *_Nonnull stop) {
@@ -62,11 +64,13 @@ NSString *_ASObjectDescriptionMakePropertyList(NSArray<NSDictionary *> *_Nullabl
   return [components componentsJoinedByString:@"; "];
 }
 
-NSString *ASObjectDescriptionMakeWithoutObject(NSArray<NSDictionary *> *_Nullable propertyGroups) {
+NSString *ASObjectDescriptionMakeWithoutObject(NSArray<NSDictionary *> *_Nullable propertyGroups)
+{
   return [NSString stringWithFormat:@"{ %@ }", _ASObjectDescriptionMakePropertyList(propertyGroups)];
 }
 
-NSString *ASObjectDescriptionMake(__autoreleasing id object, NSArray<NSDictionary *> *propertyGroups) {
+NSString *ASObjectDescriptionMake(__autoreleasing id object, NSArray<NSDictionary *> *propertyGroups)
+{
   if (object == nil) {
     return @"(null)";
   }
@@ -81,9 +85,13 @@ NSString *ASObjectDescriptionMake(__autoreleasing id object, NSArray<NSDictionar
   return str;
 }
 
-NSString *ASObjectDescriptionMakeTiny(__autoreleasing id object) { return ASObjectDescriptionMake(object, nil); }
+NSString *ASObjectDescriptionMakeTiny(__autoreleasing id object)
+{
+  return ASObjectDescriptionMake(object, nil);
+}
 
-NSString *ASStringWithQuotesIfMultiword(NSString *string) {
+NSString *ASStringWithQuotesIfMultiword(NSString *string)
+{
   if (string == nil) {
     return nil;
   }

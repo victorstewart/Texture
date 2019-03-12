@@ -28,7 +28,8 @@
 
 - (instancetype)initWithType:(NSTextCheckingType)type
              entityAttribute:(ASTextKitEntityAttribute *)entityAttribute
-                       range:(NSRange)range {
+                       range:(NSRange)range
+{
   if ((self = [super init])) {
     _resultTypeOverride = type;
     _rangeOverride = range;
@@ -37,11 +38,13 @@
   return self;
 }
 
-- (NSTextCheckingType)resultType {
+- (NSTextCheckingType)resultType
+{
   return _resultTypeOverride;
 }
 
-- (NSRange)range {
+- (NSRange)range
+{
   return _rangeOverride;
 }
 
@@ -49,7 +52,8 @@
 
 @implementation ASTextKitRenderer (TextChecking)
 
-- (NSTextCheckingResult *)textCheckingResultAtPoint:(CGPoint)point {
+- (NSTextCheckingResult *)textCheckingResultAtPoint:(CGPoint)point
+{
   __block NSTextCheckingResult *result = nil;
   NSAttributedString *attributedString = self.attributes.attributedString;
   NSAttributedString *truncationAttributedString = self.attributes.truncationAttributedString;

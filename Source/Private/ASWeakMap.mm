@@ -16,7 +16,8 @@
 
 @implementation ASWeakMapEntry
 
-- (instancetype)initWithKey:(id)key value:(id)value {
+- (instancetype)initWithKey:(id)key value:(id)value
+{
   self = [super init];
   if (self) {
     _key = key;
@@ -46,7 +47,8 @@
  */
 @implementation ASWeakMap
 
-- (instancetype)init {
+- (instancetype)init
+{
   self = [super init];
   if (self) {
     _hashTable = [NSMapTable weakToWeakObjectsMapTable];
@@ -54,11 +56,13 @@
   return self;
 }
 
-- (ASWeakMapEntry *)entryForKey:(id)key {
+- (ASWeakMapEntry *)entryForKey:(id)key
+{
   return [self.hashTable objectForKey:key];
 }
 
-- (ASWeakMapEntry *)setObject:(id)value forKey:(id)key {
+- (ASWeakMapEntry *)setObject:(id)value forKey:(id)key
+{
   ASWeakMapEntry *entry = [self.hashTable objectForKey:key];
   if (entry != nil) {
     // Update the value in the existing entry.

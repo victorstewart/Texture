@@ -12,26 +12,30 @@
 
 @implementation ASDisplayNode (YogaHelpers)
 
-+ (ASDisplayNode *)yogaNode {
++ (ASDisplayNode *)yogaNode
+{
   ASDisplayNode *node = [[ASDisplayNode alloc] init];
   node.automaticallyManagesSubnodes = YES;
   [node.style yogaNodeCreateIfNeeded];
   return node;
 }
 
-+ (ASDisplayNode *)yogaSpacerNode {
++ (ASDisplayNode *)yogaSpacerNode
+{
   ASDisplayNode *node = [ASDisplayNode yogaNode];
   node.style.flexGrow = 1.0f;
   return node;
 }
 
-+ (ASDisplayNode *)yogaVerticalStack {
++ (ASDisplayNode *)yogaVerticalStack
+{
   ASDisplayNode *node = [self yogaNode];
   node.style.flexDirection = ASStackLayoutDirectionVertical;
   return node;
 }
 
-+ (ASDisplayNode *)yogaHorizontalStack {
++ (ASDisplayNode *)yogaHorizontalStack
+{
   ASDisplayNode *node = [self yogaNode];
   node.style.flexDirection = ASStackLayoutDirectionHorizontal;
   return node;
@@ -39,7 +43,8 @@
 
 @end
 
-void ASDisplayNodePerformBlockOnEveryYogaChild(ASDisplayNode *node, void (^block)(ASDisplayNode *node)) {
+void ASDisplayNodePerformBlockOnEveryYogaChild(ASDisplayNode *node, void (^block)(ASDisplayNode *node))
+{
   if (node == nil) {
     return;
   }
@@ -53,7 +58,8 @@ void ASDisplayNodePerformBlockOnEveryYogaChild(ASDisplayNode *node, void (^block
 
 #pragma mark - Yoga Type Conversion Helpers
 
-YGAlign yogaAlignItems(ASStackLayoutAlignItems alignItems) {
+YGAlign yogaAlignItems(ASStackLayoutAlignItems alignItems)
+{
   switch (alignItems) {
     case ASStackLayoutAlignItemsNotSet:
       return YGAlignAuto;
@@ -73,7 +79,8 @@ YGAlign yogaAlignItems(ASStackLayoutAlignItems alignItems) {
   }
 }
 
-YGJustify yogaJustifyContent(ASStackLayoutJustifyContent justifyContent) {
+YGJustify yogaJustifyContent(ASStackLayoutJustifyContent justifyContent)
+{
   switch (justifyContent) {
     case ASStackLayoutJustifyContentStart:
       return YGJustifyFlexStart;
@@ -88,7 +95,8 @@ YGJustify yogaJustifyContent(ASStackLayoutJustifyContent justifyContent) {
   }
 }
 
-YGAlign yogaAlignSelf(ASStackLayoutAlignSelf alignSelf) {
+YGAlign yogaAlignSelf(ASStackLayoutAlignSelf alignSelf)
+{
   switch (alignSelf) {
     case ASStackLayoutAlignSelfStart:
       return YGAlignFlexStart;
@@ -103,11 +111,13 @@ YGAlign yogaAlignSelf(ASStackLayoutAlignSelf alignSelf) {
   }
 }
 
-YGFlexDirection yogaFlexDirection(ASStackLayoutDirection direction) {
+YGFlexDirection yogaFlexDirection(ASStackLayoutDirection direction)
+{
   return direction == ASStackLayoutDirectionVertical ? YGFlexDirectionColumn : YGFlexDirectionRow;
 }
 
-float yogaFloatForCGFloat(CGFloat value) {
+float yogaFloatForCGFloat(CGFloat value)
+{
   if (value < CGFLOAT_MAX / 2) {
     return value;
   } else {
@@ -115,21 +125,29 @@ float yogaFloatForCGFloat(CGFloat value) {
   }
 }
 
-float cgFloatForYogaFloat(float yogaFloat) { return (yogaFloat == YGUndefined) ? CGFLOAT_MAX : yogaFloat; }
+float cgFloatForYogaFloat(float yogaFloat)
+{
+  return (yogaFloat == YGUndefined) ? CGFLOAT_MAX : yogaFloat;
+}
 
-float yogaDimensionToPoints(ASDimension dimension) {
+float yogaDimensionToPoints(ASDimension dimension)
+{
   ASDisplayNodeCAssert(dimension.unit == ASDimensionUnitPoints,
-                       @"Dimensions should not be type Fraction for this method: %f", dimension.value);
+                       @"Dimensions should not be type Fraction for this method: %f",
+                       dimension.value);
   return yogaFloatForCGFloat(dimension.value);
 }
 
-float yogaDimensionToPercent(ASDimension dimension) {
+float yogaDimensionToPercent(ASDimension dimension)
+{
   ASDisplayNodeCAssert(dimension.unit == ASDimensionUnitFraction,
-                       @"Dimensions should not be type Points for this method: %f", dimension.value);
+                       @"Dimensions should not be type Points for this method: %f",
+                       dimension.value);
   return 100.0 * yogaFloatForCGFloat(dimension.value);
 }
 
-ASDimension dimensionForEdgeWithEdgeInsets(YGEdge edge, ASEdgeInsets insets) {
+ASDimension dimensionForEdgeWithEdgeInsets(YGEdge edge, ASEdgeInsets insets)
+{
   switch (edge) {
     case YGEdgeLeft:
       return insets.left;
@@ -155,7 +173,8 @@ ASDimension dimensionForEdgeWithEdgeInsets(YGEdge edge, ASEdgeInsets insets) {
   }
 }
 
-void ASLayoutElementYogaUpdateMeasureFunc(YGNodeRef yogaNode, id<ASLayoutElement> layoutElement) {
+void ASLayoutElementYogaUpdateMeasureFunc(YGNodeRef yogaNode, id<ASLayoutElement> layoutElement)
+{
   if (yogaNode == NULL) {
     return;
   }
@@ -177,7 +196,8 @@ void ASLayoutElementYogaUpdateMeasureFunc(YGNodeRef yogaNode, id<ASLayoutElement
       YGNodeSetBaselineFunc(yogaNode, &ASLayoutElementYogaBaselineFunc);
     }
     ASDisplayNodeCAssert(YGNodeGetContext(yogaNode) == (__bridge void *)layoutElement,
-                         @"Yoga node context should contain layoutElement: %@", layoutElement);
+                         @"Yoga node context should contain layoutElement: %@",
+                         layoutElement);
   } else {
     // If we lack any of the conditions above, and currently have a measureFn/baselineFn/context,
     // get rid of it.
@@ -189,7 +209,8 @@ void ASLayoutElementYogaUpdateMeasureFunc(YGNodeRef yogaNode, id<ASLayoutElement
   }
 }
 
-float ASLayoutElementYogaBaselineFunc(YGNodeRef yogaNode, const float width, const float height) {
+float ASLayoutElementYogaBaselineFunc(YGNodeRef yogaNode, const float width, const float height)
+{
   id<ASLayoutElement> layoutElement = (__bridge id<ASLayoutElement>)YGNodeGetContext(yogaNode);
   ASDisplayNodeCAssert([layoutElement conformsToProtocol:@protocol(ASLayoutElement)],
                        @"Yoga context must be <ASLayoutElement>");
@@ -207,7 +228,8 @@ float ASLayoutElementYogaBaselineFunc(YGNodeRef yogaNode, const float width, con
 }
 
 YGSize ASLayoutElementYogaMeasureFunc(
-    YGNodeRef yogaNode, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode) {
+    YGNodeRef yogaNode, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
+{
   id<ASLayoutElement> layoutElement = (__bridge id<ASLayoutElement>)YGNodeGetContext(yogaNode);
   ASDisplayNodeCAssert([layoutElement conformsToProtocol:@protocol(ASLayoutElement)],
                        @"Yoga context must be <ASLayoutElement>");

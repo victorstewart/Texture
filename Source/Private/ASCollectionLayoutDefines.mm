@@ -9,7 +9,8 @@
 #import <AsyncDisplayKit/ASCollectionLayoutDefines.h>
 
 ASSizeRange ASSizeRangeForCollectionLayoutThatFitsViewportSize(CGSize viewportSize,
-                                                               ASScrollDirection scrollableDirections) {
+                                                               ASScrollDirection scrollableDirections)
+{
   ASSizeRange sizeRange = ASSizeRangeUnconstrained;
   if (ASScrollDirectionContainsVerticalDirection(scrollableDirections) == NO) {
     sizeRange.min.height = viewportSize.height;
