@@ -34,7 +34,7 @@ BOOL ASDisplayNodeSubclassOverridesSelector(Class subclass, SEL selector);
 BOOL ASDisplayNodeNeedsSpecialPropertiesHandling(BOOL isSynchronous, BOOL isLayerBacked);
 
 /// Get the pending view state for the node, creating one if needed.
-id<_ASPendingState> ASDisplayNodeGetPendingState(ASDisplayNode * node);
+NSObject<_ASPendingState>* ASDisplayNodeGetPendingState(ASDisplayNode * node);
 
 typedef NS_OPTIONS(NSUInteger, ASDisplayNodeMethodOverrides)
 {
@@ -82,7 +82,7 @@ AS_EXTERN NSString * const ASRenderingEngineDidDisplayNodesScheduledBeforeTimest
 @package
   AS::RecursiveMutex __instanceLock__;
 
-  _ASPendingState *_pendingViewState;
+  NSObject<_ASPendingState> *_pendingViewState;
   ASInterfaceState _pendingInterfaceState;
   ASInterfaceState _preExitingInterfaceState;
   
