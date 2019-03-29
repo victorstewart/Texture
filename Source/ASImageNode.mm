@@ -202,7 +202,7 @@ typedef void (^ASImageNodeDrawParametersBlock)(ASWeakMapEntry *entry);
     return nil;
   }
   
-  return ASGraphicsCreateImageWithOptions(size, NO, 1, ^{
+  return ASGraphicsCreateImageWithOptions(size, NO, 1, nil, ^{
     AS::MutexLocker l(__instanceLock__);
     [_placeholderColor setFill];
     UIRectFill(CGRectMake(0, 0, size.width, size.height));
@@ -480,7 +480,7 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
 
   // Use contentsScale of 1.0 and do the contentsScale handling in boundsSizeInPixels so ASCroppedImageBackingSizeAndDrawRectInBounds
   // will do its rounding on pixel instead of point boundaries
-  UIImage *result = ASGraphicsCreateImageWithOptions(key.backingSize, key.isOpaque, 1.0, ^{
+  UIImage *result = ASGraphicsCreateImageWithOptions(key.backingSize, key.isOpaque, 1.0, image, ^{
     BOOL contextIsClean = YES;
 
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -730,7 +730,7 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
 asimagenode_modification_block_t ASImageNodeRoundBorderModificationBlock(CGFloat borderWidth, UIColor *borderColor)
 {
   return ^(UIImage *originalImage) {
-    return ASGraphicsCreateImageWithOptions(originalImage.size, NO, originalImage.scale, ^{
+    return ASGraphicsCreateImageWithOptions(originalImage.size, NO, originalImage.scale, originalImage, ^{
       UIBezierPath *roundOutline = [UIBezierPath bezierPathWithOvalInRect:(CGRect){CGPointZero, originalImage.size}];
 
       // Make the image round
@@ -752,7 +752,7 @@ asimagenode_modification_block_t ASImageNodeRoundBorderModificationBlock(CGFloat
 asimagenode_modification_block_t ASImageNodeTintColorModificationBlock(UIColor *color)
 {
   return ^(UIImage *originalImage) {
-    UIImage *modifiedImage = ASGraphicsCreateImageWithOptions(originalImage.size, NO, originalImage.scale, ^{
+    UIImage *modifiedImage = ASGraphicsCreateImageWithOptions(originalImage.size, NO, originalImage.scale, originalImage, ^{
       // Set color and render template
       [color setFill];
       UIImage *templateImage = [originalImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

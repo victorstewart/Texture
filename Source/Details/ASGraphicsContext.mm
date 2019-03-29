@@ -23,7 +23,7 @@ NS_INLINE void ASConfigureExtendedRange(UIGraphicsImageRendererFormat *format)
   }
 }
 
-UIImage *ASGraphicsCreateImageWithOptions(CGSize size, BOOL opaque, CGFloat scale, void (^NS_NOESCAPE work)())
+UIImage *ASGraphicsCreateImageWithOptions(CGSize size, BOOL opaque, CGFloat scale, UIImage *sourceImage, void (^NS_NOESCAPE work)())
 {
   if (AS_AVAILABLE_IOS(10)) {
     if (ASActivateExperimentalFeature(ASExperimentalDrawing)) {
@@ -40,7 +40,13 @@ UIImage *ASGraphicsCreateImageWithOptions(CGSize size, BOOL opaque, CGFloat scal
       });
 
       UIGraphicsImageRendererFormat *format;
-      if (scale == 0 || scale == ASScreenScale()) {
+      if (sourceImage) {
+        format = sourceImage.imageRendererFormat;
+        // We only want the private bits (color space and bits per component) from the image.
+        // We have our own ideas about opacity and scale.
+        format.opaque = opaque;
+        format.scale = scale;
+      } else if (scale == 0 || scale == ASScreenScale()) {
         format = opaque ? opaqueFormat : defaultFormat;
       } else {
         format = [[UIGraphicsImageRendererFormat alloc] init];

@@ -131,7 +131,7 @@ UIImage *cachedImageNamed(NSString *imageName, UITraitCollection *traitCollectio
   
   // We should probably check if the background color has any alpha component but that
   // might be expensive due to needing to check mulitple color spaces.
-  UIImage *result = ASGraphicsCreateImageWithOptions(bounds.size, cornerColor != nil, scale, ^{
+  UIImage *result = ASGraphicsCreateImageWithOptions(bounds.size, cornerColor != nil, scale, nil, ^{
     BOOL contextIsClean = YES;
     if (cornerColor) {
       contextIsClean = NO;

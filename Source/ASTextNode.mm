@@ -545,7 +545,7 @@ static NSArray *DefaultLinkAttributeNames() {
   UIColor *backgroundColor = drawParameter->_backgroundColor;
   UIEdgeInsets textContainerInsets = drawParameter ? drawParameter->_textContainerInsets : UIEdgeInsetsZero;
   ASTextKitRenderer *renderer = [drawParameter rendererForBounds:drawParameter->_bounds];
-  return ASGraphicsCreateImageWithOptions(drawParameter->_bounds.size, drawParameter->_opaque, drawParameter->_contentScale, ^{
+  return ASGraphicsCreateImageWithOptions(drawParameter->_bounds.size, drawParameter->_opaque, drawParameter->_contentScale, nil, ^{
     CGContextRef context = UIGraphicsGetCurrentContext();
     ASDisplayNodeAssert(context, @"This is no good without a context.");
 
@@ -946,7 +946,7 @@ static CGRect ASTextNodeAdjustRenderRectForShadowPadding(CGRect rendererRect, UI
     return nil;
   }
 
-  return ASGraphicsCreateImageWithOptions(size, NO, 1.0, ^{
+  return ASGraphicsCreateImageWithOptions(size, NO, 1.0, nil, ^{
     ASLockScopeSelf();
     [self.placeholderColor setFill];
 
