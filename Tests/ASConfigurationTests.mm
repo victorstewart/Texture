@@ -30,7 +30,7 @@ static ASExperimentalFeatures features[] = {
   ASExperimentalDisableAccessibilityCache,
   ASExperimentalDispatchApply,
   ASExperimentalImageDownloaderPriority,
-  ASExperimentalTextDrawing,
+  ASExperimentalDrawing,
   ASExperimentalFixRangeController,
   ASExperimentalOOMBackgroundDeallocDisable
 };

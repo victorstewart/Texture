@@ -538,64 +538,30 @@ static NSArray *DefaultLinkAttributeNames() {
 {
   ASTextNodeDrawParameter *drawParameter = (ASTextNodeDrawParameter *)parameters;
   
-  if (drawParameter->_bounds.size.width <= 0 || drawParameter->_bounds.size.height <= 0) {
+  if (CGRectIsEmpty(drawParameter->_bounds)) {
     return nil;
   }
-    
-  UIImage *result = nil;
+
   UIColor *backgroundColor = drawParameter->_backgroundColor;
   UIEdgeInsets textContainerInsets = drawParameter ? drawParameter->_textContainerInsets : UIEdgeInsetsZero;
   ASTextKitRenderer *renderer = [drawParameter rendererForBounds:drawParameter->_bounds];
-  BOOL renderedWithGraphicsRenderer = NO;
-  
-  if (AS_AVAILABLE_IOS_TVOS(10, 10)) {
-    if (ASActivateExperimentalFeature(ASExperimentalTextDrawing)) {
-      renderedWithGraphicsRenderer = YES;
-      UIGraphicsImageRenderer *graphicsRenderer = [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(drawParameter->_bounds.size.width, drawParameter->_bounds.size.height)];
-      result = [graphicsRenderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
-        CGContextRef context = rendererContext.CGContext;
-        ASDisplayNodeAssert(context, @"This is no good without a context.");
-        
-        CGContextSaveGState(context);
-        CGContextTranslateCTM(context, textContainerInsets.left, textContainerInsets.top);
-        
-        // Fill background
-        if (backgroundColor != nil) {
-          [backgroundColor setFill];
-          UIRectFillUsingBlendMode(CGContextGetClipBoundingBox(context), kCGBlendModeCopy);
-        }
-        
-        // Draw text
-        [renderer drawInContext:context bounds:drawParameter->_bounds];
-        CGContextRestoreGState(context);
-      }];
-    }
-  }
-  
-  if (!renderedWithGraphicsRenderer) {
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(drawParameter->_bounds.size.width, drawParameter->_bounds.size.height), drawParameter->_opaque, drawParameter->_contentScale);
-      
+  return ASGraphicsCreateImageWithOptions(drawParameter->_bounds.size, drawParameter->_opaque, drawParameter->_contentScale, ^{
     CGContextRef context = UIGraphicsGetCurrentContext();
     ASDisplayNodeAssert(context, @"This is no good without a context.");
-    
+
     CGContextSaveGState(context);
     CGContextTranslateCTM(context, textContainerInsets.left, textContainerInsets.top);
-    
+
     // Fill background
     if (backgroundColor != nil) {
       [backgroundColor setFill];
       UIRectFillUsingBlendMode(CGContextGetClipBoundingBox(context), kCGBlendModeCopy);
     }
-    
+
     // Draw text
     [renderer drawInContext:context bounds:drawParameter->_bounds];
     CGContextRestoreGState(context);
-    
-    result = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-  }
-
-  return result;
+  });
 }
 
 #pragma mark - Attributes
@@ -979,30 +945,27 @@ static CGRect ASTextNodeAdjustRenderRectForShadowPadding(CGRect rendererRect, UI
   if ((size.width * size.height) < CGFLOAT_EPSILON) {
     return nil;
   }
-  
-  ASLockScopeSelf();
-  
-  ASGraphicsBeginImageContextWithOptions(size, NO, 1.0);
-  [self.placeholderColor setFill];
 
-  ASTextKitRenderer *renderer = [self _locked_renderer];
-  NSRange visibleRange = renderer.firstVisibleRange;
+  return ASGraphicsCreateImageWithOptions(size, NO, 1.0, ^{
+    ASLockScopeSelf();
+    [self.placeholderColor setFill];
 
-  // cap height is both faster and creates less subpixel blending
-  NSArray *lineRects = [self _rectsForTextRange:visibleRange measureOption:ASTextKitRendererMeasureOptionLineHeight];
+    ASTextKitRenderer *renderer = [self _locked_renderer];
+    NSRange visibleRange = renderer.firstVisibleRange;
 
-  // fill each line with the placeholder color
-  for (NSValue *rectValue in lineRects) {
-    CGRect lineRect = [rectValue CGRectValue];
-    CGRect fillBounds = CGRectIntegral(UIEdgeInsetsInsetRect(lineRect, self.placeholderInsets));
+    // cap height is both faster and creates less subpixel blending
+    NSArray *lineRects = [self _rectsForTextRange:visibleRange measureOption:ASTextKitRendererMeasureOptionLineHeight];
 
-    if (fillBounds.size.width > 0.0 && fillBounds.size.height > 0.0) {
-      UIRectFill(fillBounds);
+    // fill each line with the placeholder color
+    for (NSValue *rectValue in lineRects) {
+      CGRect lineRect = [rectValue CGRectValue];
+      CGRect fillBounds = CGRectIntegral(UIEdgeInsetsInsetRect(lineRect, self.placeholderInsets));
+
+      if (fillBounds.size.width > 0.0 && fillBounds.size.height > 0.0) {
+        UIRectFill(fillBounds);
+      }
     }
-  }
-
-  UIImage *image = ASGraphicsGetImageAndEndCurrentContext();
-  return image;
+  });
 }
 
 #pragma mark - Touch Handling
