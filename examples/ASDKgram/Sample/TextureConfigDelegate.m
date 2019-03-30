@@ -17,7 +17,7 @@
 + (ASConfiguration *)textureConfiguration
 {
   ASConfiguration *config = [[ASConfiguration alloc] init];
-  config.experimentalFeatures = ASExperimentalGraphicsContexts | ASExperimentalTextNode;
+  config.experimentalFeatures = ASExperimentalDrawing | ASExperimentalTextNode;
   config.delegate = [[TextureConfigDelegate alloc] init];
   return config;
 }
@@ -28,8 +28,8 @@
 
 - (void)textureDidActivateExperimentalFeatures:(ASExperimentalFeatures)features
 {
-  if (features & ASExperimentalGraphicsContexts) {
-    NSLog(@"Texture activated experimental graphics contexts.");
+  if (features & ASExperimentalDrawing) {
+    NSLog(@"Texture activated experimental drawing.");
   }
 }
 
