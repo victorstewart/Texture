@@ -25,7 +25,8 @@ NSArray<NSString *> *ASExperimentalFeaturesGetNames(ASExperimentalFeatures flags
                                       @"exp_image_downloader_priority",
                                       @"exp_drawing",
                                       @"exp_fix_range_controller",
-                                      @"exp_oom_bg_dealloc_disable"]));
+                                      @"exp_oom_bg_dealloc_disable",
+                                      @"exp_transaction_operation_retain_cycle"]));
   if (flags == ASExperimentalFeatureAll) {
     return allNames;
   }

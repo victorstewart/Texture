@@ -27,11 +27,12 @@ typedef NS_OPTIONS(NSUInteger, ASExperimentalFeatures) {
   ASExperimentalSkipClearData = 1 << 6,                     // exp_skip_clear_data
   ASExperimentalDidEnterPreloadSkipASMLayout = 1 << 7,      // exp_did_enter_preload_skip_asm_layout
   ASExperimentalDisableAccessibilityCache = 1 << 8,         // exp_disable_a11y_cache
-  ASExperimentalDispatchApply = 1 << 9,                    // exp_dispatch_apply
+  ASExperimentalDispatchApply = 1 << 9,                     // exp_dispatch_apply
   ASExperimentalImageDownloaderPriority = 1 << 10,          // exp_image_downloader_priority
   ASExperimentalDrawing = 1 << 11,                          // exp_drawing
   ASExperimentalFixRangeController = 1 << 12,               // exp_fix_range_controller
   ASExperimentalOOMBackgroundDeallocDisable = 1 << 13,      // exp_oom_bg_dealloc_disable
+  ASExperimentalTransactionOperationRetainCycle = 1 << 14,  // exp_transaction_operation_retain_cycle
   ASExperimentalFeatureAll = 0xFFFFFFFF
 };
 
