@@ -99,7 +99,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
     return [[ASCollectionLayoutState alloc] initWithContext:context];
   }
 
-  ASCollectionLayoutState *layout = [context.layoutDelegateClass calculateLayoutWithContext:context];
+  ASCollectionLayoutState *layout = [context.layoutDelegate sneaky_calculateLayoutWithContext:context];
+  
   [context.layoutCache setLayout:layout forContext:context];
 
   // Measure elements in the measure range ahead of time
