@@ -19,13 +19,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) Class<ASCollectionLayoutDelegate> layoutDelegateClass;
 @property (nonatomic, weak, readonly) ASCollectionLayoutCache *layoutCache;
 
+@property (nonatomic, readonly) id<ASCollectionLayoutDelegate> layoutDelegate;
+
 - (instancetype)initWithViewportSize:(CGSize)viewportSize
                 initialContentOffset:(CGPoint)initialContentOffset
                 scrollableDirections:(ASScrollDirection)scrollableDirections
                             elements:(ASElementMap *)elements
                  layoutDelegateClass:(Class<ASCollectionLayoutDelegate>)layoutDelegateClass
+                 layoutDelegate:(id<ASCollectionLayoutDelegate>)layoutDelegate
                          layoutCache:(ASCollectionLayoutCache *)layoutCache
-                      additionalInfo:(nullable id)additionalInfo;
+                      additionalInfo:(id)additionalInfo;
 
 @end
 
