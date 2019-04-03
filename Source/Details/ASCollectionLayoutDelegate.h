@@ -54,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context;
 
+- (ASCollectionLayoutState *)sneaky_calculateLayoutWithContext:(ASCollectionLayoutContext *)context;
+
 @end
 
 NS_ASSUME_NONNULL_END
