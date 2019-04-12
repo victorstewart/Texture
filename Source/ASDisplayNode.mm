@@ -106,7 +106,10 @@ _ASPendingState *ASDisplayNodeGetPendingState(ASDisplayNode *node)
 void StubImplementationWithNoArgs(id receiver, SEL _cmd) {}
 void StubImplementationWithSizeRange(id receiver, SEL _cmd, ASSizeRange sr) {}
 void StubImplementationWithTwoInterfaceStates(id receiver, SEL _cmd, ASInterfaceState s0, ASInterfaceState s1) {}
-id StubLayerActionImplementation(id receiver, SEL _cmd, NSString *key) { return (id)kCFNull; }
+
+/// Returning nil here won't trigger unwanted default actions, because we override
+/// +defaultActionForKey: to return kCFNull.
+id StubLayerActionImplementation(id receiver, SEL _cmd, NSString *key) { return nil; }
 
 /**
  *  Returns ASDisplayNodeFlags for the given class/instance. instance MAY BE NIL.
@@ -2871,6 +2874,12 @@ ASDISPLAYNODE_INLINE BOOL subtreeIsRasterized(ASDisplayNode *node) {
   ASDisplayNodeAssert(!_flags.isExitingHierarchy, @"ASDisplayNode inconsistency. __enterHierarchy and __exitHierarchy are mutually exclusive");
   ASDisplayNodeAssert(_flags.isInHierarchy, @"ASDisplayNode inconsistency. __enterHierarchy and __exitHierarchy are mutually exclusive");
   ASAssertUnlocked(__instanceLock__);
+
+  [self enumerateInterfaceStateDelegates:^(id<ASInterfaceStateDelegate> del) {
+    if ([del respondsToSelector:@selector(didEnterHierarchy)]) {
+      [del didEnterHierarchy];
+    }
+  }];
 }
 
 - (void)didExitHierarchy
@@ -2879,6 +2888,12 @@ ASDISPLAYNODE_INLINE BOOL subtreeIsRasterized(ASDisplayNode *node) {
   ASDisplayNodeAssert(_flags.isExitingHierarchy, @"You should never call -didExitHierarchy directly. Appearance is automatically managed by ASDisplayNode");
   ASDisplayNodeAssert(!_flags.isEnteringHierarchy, @"ASDisplayNode inconsistency. __enterHierarchy and __exitHierarchy are mutually exclusive");
   ASAssertUnlocked(__instanceLock__);
+
+  [self enumerateInterfaceStateDelegates:^(id<ASInterfaceStateDelegate> del) {
+    if ([del respondsToSelector:@selector(didExitHierarchy)]) {
+      [del didExitHierarchy];
+    }
+  }];
 
   // This case is important when tearing down hierarchies.  We must deliver a visibileStateDidChange:NO callback, as part our API guarantee that this method can be used for
   // things like data analytics about user content viewing.  We cannot call the method in the dealloc as any incidental retain operations in client code would fail.
