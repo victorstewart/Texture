@@ -64,17 +64,22 @@
 // That is because contexts can be equal regardless of the content offsets or layout caches.
 - (BOOL)isEqualToContext:(ASCollectionLayoutContext *)context
 {
+   // NSLog(@"isEqualToContext");
+    
   if (context == nil) {
     return NO;
   }
-
+    
+    //NSLog(@"viewportSize, %@ vs %@", NSStringFromCGSize(_viewportSize), NSStringFromCGSize(context.viewportSize));
+  //  NSLog(@"elements, %@");
+    
   // NOTE: ASObjectIsEqual returns YES when both objects are nil.
   // So don't use ASObjectIsEqual on _elements.
   // It is a weak property and 2 layouts generated from different sets of elements
   // should never be considered the same even if they are nil now.
-  return CGSizeEqualToSize(_viewportSize, context.viewportSize)
+    return CGSizeEqualToSize(_viewportSize, context.viewportSize)
   && _scrollableDirections == context.scrollableDirections
-  && [_elements isEqual:context.elements]
+    && [_elements isEqual:context.elements]
   && _layoutDelegateClass == context.layoutDelegateClass
   && ASObjectIsEqual(_additionalInfo, context.additionalInfo);
 }

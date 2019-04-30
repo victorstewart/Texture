@@ -78,6 +78,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
     unsigned int constrainedSizeForSupplementaryNodeOfKindAtIndexPath:1;
     unsigned int contextForSection:1;
   } _dataSourceFlags;
+    
+    bool skipFirstToAvoidRaceCondition;
 }
 
 @property (copy) ASElementMap *pendingMap;
@@ -94,6 +96,8 @@ typedef void (^ASDataControllerSynchronizationBlock)();
     return nil;
   }
   
+    skipFirstToAvoidRaceCondition = true;
+    
   _node = node;
   _dataSource = dataSource;
   
@@ -649,7 +653,13 @@ typedef void (^ASDataControllerSynchronizationBlock)();
 
     // Step 3: Call the layout delegate if possible. Otherwise, allocate and layout all elements
     if (canDelegate) {
-      [layoutDelegateClass calculateLayoutWithContext:layoutContext];
+        
+        if (!skipFirstToAvoidRaceCondition)
+        {
+            skipFirstToAvoidRaceCondition = false;
+            [layoutDelegateClass calculateLayoutWithContext:layoutContext];
+        }
+        
     } else {
       const auto elementsToProcess = [[NSMutableArray<ASCollectionElement *> alloc] init];
       for (ASCollectionElement *element in newMap) {

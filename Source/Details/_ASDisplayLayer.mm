@@ -55,6 +55,10 @@
 
 - (void)setBounds:(CGRect)bounds
 {
+
+    //NSLog(@"_ASDisplayLayer.mm -> setBounds, %p", self);
+    
+    
   BOOL valid = ASDisplayNodeAssertNonFatal(ASIsCGRectValidForLayout(bounds), @"Caught attempt to set invalid bounds %@ on %@.", NSStringFromCGRect(bounds), self);
   if (!valid) {
     return;
@@ -85,6 +89,8 @@
 
 - (void)setNeedsLayout
 {
+  //NSLog(@"_ASDisplayLayer.mm -> setNeedsLayout, %p", self);
+
   ASDisplayNodeAssertMainThread();
   as_log_verbose(ASNodeLog(), "%s on %@", sel_getName(_cmd), self);
   [super setNeedsLayout];
@@ -93,6 +99,8 @@
 
 - (void)layoutSublayers
 {
+  //NSLog(@"_ASDisplayLayer.mm -> layoutSublayers, %p", self);
+
   ASDisplayNodeAssertMainThread();
   [super layoutSublayers];
 
@@ -101,6 +109,8 @@
 
 - (void)setNeedsDisplay
 {
+  //NSLog(@"_ASDisplayLayer.mm -> setNeedsDisplay, %p", self);
+
   ASDisplayNodeAssertMainThread();
   
   // FIXME: Reconsider whether we should cancel a display in progress.

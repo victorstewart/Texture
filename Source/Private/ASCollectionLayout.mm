@@ -97,6 +97,12 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 
 + (ASCollectionLayoutState *)calculateLayoutWithContext:(ASCollectionLayoutContext *)context
 {
+    /*
+    static NSDate *lastCalled = [NSDate dateWithTimeIntervalSinceReferenceDate:50];
+    
+    if (([lastCalled timeIntervalSinceNow] * 1000.0f) < 300) return nil;
+    else lastCalled = [NSDate date];
+    */
   if (context.elements == nil) {
     return [[ASCollectionLayoutState alloc] initWithContext:context];
   }
@@ -126,12 +132,21 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
 
 - (void)prepareLayout
 {
+    //NSLog(@"ASCollectionLayout.mm prepareLayout");
+    
   ASDisplayNodeAssertMainThread();
   [super prepareLayout];
 
   ASCollectionLayoutContext *context = [self layoutContextWithElements:_collectionNode.visibleElements];
+    
+    //NSLog(@"_layout = %@", _layout);
+   // NSLog(@"ASObjectIsEqual(_layout.context, context) = %s", ASObjectIsEqual(_layout.context, context) ? "yes" : "no");
+    
   if (_layout != nil && ASObjectIsEqual(_layout.context, context)) {
     // The existing layout is still valid. No-op
+      
+     // NSLog(@"The existing layout is still valid. No-op");
+      
     return;
   }
 
@@ -139,6 +154,8 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
     _layout = cachedLayout;
   } else {
     // A new layout is needed now. Calculate and apply it immediately
+      
+      //NSLog(@"from ASCollectionLayout prepareLayout, [ASCollectionLayout calculateLayoutWithContext:context]");
     _layout = [ASCollectionLayout calculateLayoutWithContext:context];
   }
 }

@@ -15,7 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-AS_SUBCLASSING_RESTRICTED
+//AS_SUBCLASSING_RESTRICTED
 @interface ASCollectionLayout : UICollectionViewLayout
 
 /**
