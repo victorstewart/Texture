@@ -151,7 +151,7 @@ typedef void (^ASDataControllerSynchronizationBlock)();
     return;
   }
 
-  ASSignpostStart(ASSignpostDataControllerBatch);
+  ASSignpostStart(DataControllerBatch, self, "%@", ASObjectDescriptionMakeTiny(weakDataSource));
 
   {
     as_activity_create_for_scope("Data controller batch");
@@ -183,7 +183,7 @@ typedef void (^ASDataControllerSynchronizationBlock)();
     });
   }
 
-  ASSignpostEndCustom(ASSignpostDataControllerBatch, self, 0, (weakDataSource != nil ? ASSignpostColorDefault : ASSignpostColorRed));
+  ASSignpostEnd(DataControllerBatch, self, "count: %lu", (unsigned long)nodeCount);
 }
 
 /**
