@@ -16,9 +16,13 @@
 #import <AsyncDisplayKit/ASDisplayNodeInternal.h>
 #import <AsyncDisplayKit/ASInternalHelpers.h>
 
-#define __shouldSetNeedsDisplay(layer) (flags.needsDisplay \
+#define __shouldSetNeedsDisplayForView(view) (flags.needsDisplay \
+  || (flags.setOpaque && _flags.opaque != (view).opaque)\
+  || (flags.setBackgroundColor && ![backgroundColor isEqual:(view).backgroundColor]))
+
+#define __shouldSetNeedsDisplayForLayer(layer) (flags.needsDisplay \
   || (flags.setOpaque && _flags.opaque != (layer).opaque)\
-  || (flags.setBackgroundColor && !CGColorEqualToColor(backgroundColor, (layer).backgroundColor)))
+  || (flags.setBackgroundColor && ![backgroundColor isEqual:[UIColor colorWithCGColor:(layer).backgroundColor]]))
 
 typedef struct {
   // Properties
@@ -102,7 +106,7 @@ static constexpr ASPendingStateFlags kZeroFlags = {0};
   unsigned int edgeAntialiasingMask;
   CGRect frame;   // Frame is only to be used for synchronous views wrapped by nodes (see setFrame:)
   CGRect bounds;
-  CGColorRef backgroundColor;
+  UIColor *backgroundColor;
   CGFloat alpha;
   CGFloat cornerRadius;
   UIViewContentMode contentMode;
@@ -225,7 +229,6 @@ ASDISPLAYNODE_INLINE void ASPendingStateApplyMetricsToLayer(_ASPendingState *sta
 @synthesize maskedCorners = maskedCorners;
 
 static CGColorRef blackColorRef = NULL;
-static UIColor *defaultTintColor = nil;
 
 - (instancetype)init
 {
@@ -240,7 +243,6 @@ static UIColor *defaultTintColor = nil;
     blackColorRef = CGColorCreate(colorSpace, (CGFloat[]){0,0,0,1} );
     CFRetain(blackColorRef);
     CGColorSpaceRelease(colorSpace);
-    defaultTintColor = [UIColor colorWithRed:0.0 green:0.478 blue:1.0 alpha:1.0];
   });
 
   // Set defaults, these come from the defaults specified in CALayer and UIView
@@ -249,7 +251,7 @@ static UIColor *defaultTintColor = nil;
   frame = CGRectZero;
   bounds = CGRectZero;
   backgroundColor = nil;
-  tintColor = defaultTintColor;
+  tintColor = nil;
   _flags.hidden = NO;
   _flags.needsDisplayOnBoundsChange = NO;
   _flags.allowsGroupOpacity = ASDefaultAllowsGroupOpacity();
@@ -415,19 +417,17 @@ static UIColor *defaultTintColor = nil;
   _stateToApplyFlags.setBounds = YES;
 }
 
-- (CGColorRef)backgroundColor
+- (UIColor *)backgroundColor
 {
   return backgroundColor;
 }
 
-- (void)setBackgroundColor:(CGColorRef)color
+- (void)setBackgroundColor:(UIColor *)color
 {
-  if (color == backgroundColor) {
+  if ([color isEqual:backgroundColor]) {
     return;
   }
-
-  CGColorRelease(backgroundColor);
-  backgroundColor = CGColorRetain(color);
+  backgroundColor = color;
   _stateToApplyFlags.setBackgroundColor = YES;
 }
 
@@ -926,7 +926,7 @@ static UIColor *defaultTintColor = nil;
 {
   ASPendingStateFlags flags = _stateToApplyFlags;
 
-  if (__shouldSetNeedsDisplay(layer)) {
+  if (__shouldSetNeedsDisplayForLayer(layer)) {
     [layer setNeedsDisplay];
   }
 
@@ -964,7 +964,7 @@ static UIColor *defaultTintColor = nil;
     layer.masksToBounds = _flags.clipsToBounds;
 
   if (flags.setBackgroundColor)
-    layer.backgroundColor = backgroundColor;
+    layer.backgroundColor = backgroundColor.CGColor;
 
   if (flags.setOpaque)
     layer.opaque = _flags.opaque;
@@ -1048,7 +1048,7 @@ static UIColor *defaultTintColor = nil;
   unowned CALayer *layer = view.layer;
 
   ASPendingStateFlags flags = _stateToApplyFlags;
-  if (__shouldSetNeedsDisplay(layer)) {
+  if (__shouldSetNeedsDisplayForView(view)) {
     [view setNeedsDisplay];
   }
 
@@ -1095,20 +1095,17 @@ static UIColor *defaultTintColor = nil;
     view.clipsToBounds = _flags.clipsToBounds;
 
   if (flags.setBackgroundColor) {
-    // We have to make sure certain nodes get the background color call directly set
-    if (specialPropertiesHandling) {
-      view.backgroundColor = [UIColor colorWithCGColor:backgroundColor];
-    } else {
-      // Set the background color to the layer as in the UIView bridge we use this value as background color
-      layer.backgroundColor = backgroundColor;
-    }
+    view.backgroundColor = backgroundColor;
+    layer.backgroundColor = backgroundColor.CGColor;
   }
 
   if (flags.setTintColor)
     view.tintColor = self.tintColor;
 
-  if (flags.setOpaque)
+  if (flags.setOpaque) {
+    view.opaque = _flags.opaque;
     layer.opaque = _flags.opaque;
+  }
 
   if (flags.setHidden)
     view.hidden = _flags.hidden;
@@ -1289,7 +1286,7 @@ static UIColor *defaultTintColor = nil;
   pendingState.contentsScale = layer.contentsScale;
   pendingState.rasterizationScale = layer.rasterizationScale;
   pendingState.clipsToBounds = layer.masksToBounds;
-  pendingState.backgroundColor = layer.backgroundColor;
+  pendingState.backgroundColor = [UIColor colorWithCGColor:layer.backgroundColor];
   pendingState.opaque = layer.opaque;
   pendingState.hidden = layer.hidden;
   pendingState.alpha = layer.opacity;
@@ -1330,7 +1327,7 @@ static UIColor *defaultTintColor = nil;
   pendingState.contentsScale = layer.contentsScale;
   pendingState.rasterizationScale = layer.rasterizationScale;
   pendingState.clipsToBounds = view.clipsToBounds;
-  pendingState.backgroundColor = layer.backgroundColor;
+  pendingState.backgroundColor = [UIColor colorWithCGColor:layer.backgroundColor];
   pendingState.tintColor = view.tintColor;
   pendingState.opaque = layer.opaque;
   pendingState.hidden = view.hidden;
@@ -1407,8 +1404,6 @@ static UIColor *defaultTintColor = nil;
 
 - (void)dealloc
 {
-  CGColorRelease(backgroundColor);
-  
   if (shadowColor != blackColorRef) {
     CGColorRelease(shadowColor);
   }
