@@ -13,7 +13,6 @@
 #import <AsyncDisplayKit/ASInternalHelpers.h>
 #import <AsyncDisplayKit/ASDisplayNodeInternal.h>
 #import <AsyncDisplayKit/ASDisplayNode+Subclasses.h>
-#import <AsyncDisplayKit/ASDisplayNode+FrameworkPrivate.h>
 #import <AsyncDisplayKit/ASPendingStateController.h>
 
 /**
@@ -747,10 +746,10 @@ if (shouldApply) { _layer.layerProperty = (layerValueExpr); } else { ASDisplayNo
      Note: We can no longer rely simply on the layers backgroundColor value if the color is set directly on `_view`
      There is no longer a 1:1 mapping between _view.backgroundColor and _layer.backgroundColor after testing in iOS 13 / Xcode 11 so we should prefer one or the other depending on the backing type for the node (view or layer)
      */
-    if (!_flags.layerBacked) {
-      return _view.backgroundColor;
+    if (_flags.layerBacked) {
+      return _backgroundColor;
     } else {
-      return [UIColor colorWithCGColor:_layer.backgroundColor];
+      return _view.backgroundColor;
     }
   }
   return ASDisplayNodeGetPendingState(self).backgroundColor;
@@ -760,13 +759,11 @@ if (shouldApply) { _layer.layerProperty = (layerValueExpr); } else { ASDisplayNo
 {
   _bridge_prologue_write;
   BOOL shouldApply = ASDisplayNodeShouldApplyBridgedWriteToView(self);
-  CGColorRef newBackgroundCGColor = nil;
   if (shouldApply) {
-    CGColorRef oldBackgroundCGColor = _layer.backgroundColor;
-    
+    UIColor *oldBackgroundColor = _backgroundColor;
+    _backgroundColor = newBackgroundColor;
     if (_flags.layerBacked) {
-      _layer.backgroundColor = newBackgroundColor.CGColor;
-      newBackgroundCGColor = _layer.backgroundColor;
+      _layer.backgroundColor = _backgroundColor.CGColor;
     } else {
       /*
        NOTE: Setting to the view and layer individually is necessary.
@@ -776,35 +773,60 @@ if (shouldApply) { _layer.layerProperty = (layerValueExpr); } else { ASDisplayNo
        Given that UIColor / UIView has dynamic capabilties now, we should set directly to the view and make sure that the layers value is consistent here.
 
        */
-      _view.backgroundColor = newBackgroundColor;
+      _view.backgroundColor = _backgroundColor;
       // Gather the CGColorRef from the view incase there are any changes it might apply to which CGColorRef is returned for dynamic colors
-      newBackgroundCGColor = _view.backgroundColor.CGColor;
-      _layer.backgroundColor = newBackgroundCGColor;
+      _layer.backgroundColor = _view.backgroundColor.CGColor;
     }
 
-    if (!CGColorEqualToColor(oldBackgroundCGColor, newBackgroundCGColor)) {
+    if (![oldBackgroundColor isEqual:newBackgroundColor]) {
       [self setNeedsDisplay];
     }
   } else {
     // NOTE: If we're in the background, we cannot read the current value of bgcolor (if loaded).
     // When the pending state is applied to the view on main, we will call `setNeedsDisplay` if
     // the new background color doesn't match the one on the layer.
+    _backgroundColor = newBackgroundColor;
     ASDisplayNodeGetPendingState(self).backgroundColor = newBackgroundColor;
   }
 }
 
 - (UIColor *)tintColor
 {
-  _bridge_prologue_read;
-  ASDisplayNodeAssert(!_flags.layerBacked, @"Danger: this property is undefined on layer-backed nodes.");
-  return _getFromViewOnly(tintColor);
+  __instanceLock__.lock();
+  UIColor *retVal = nil;
+  BOOL shouldAscend = NO;
+  if (_flags.layerBacked) {
+    retVal = _tintColor;
+    // The first nondefault tint color value in the node’s hierarchy, ascending from and starting with the node itself.
+    shouldAscend = (retVal == nil);
+  } else {
+    ASDisplayNodeAssertThreadAffinity(self);
+    retVal = _getFromViewOnly(tintColor);
+  }
+  __instanceLock__.unlock();
+  return shouldAscend ? self.supernode.tintColor : retVal;
 }
 
 - (void)setTintColor:(UIColor *)color
 {
-  _bridge_prologue_write;
-  ASDisplayNodeAssert(!_flags.layerBacked, @"Danger: this property is undefined on layer-backed nodes.");
-  _setToViewOnly(tintColor, color);
+  // Handle locking manually since we unlock to notify subclasses when tint color changes
+  __instanceLock__.lock();
+  if (_flags.layerBacked) {
+    if (![_tintColor isEqual:color]) {
+      _tintColor = color;
+
+      if (_loaded(self)) {
+        // Tint color has changed. Unlock here before calling subclasses and exit-early
+        __instanceLock__.unlock();
+        [self tintColorDidChange];
+        return;
+      }
+    }
+  } else {
+    _tintColor = color;
+    _setToViewOnly(tintColor, color);
+  }
+  __instanceLock__.unlock();
 }
 
 - (void)tintColorDidChange
@@ -908,13 +930,13 @@ if (shouldApply) { _layer.layerProperty = (layerValueExpr); } else { ASDisplayNo
   _setToLayer(allowsEdgeAntialiasing, allowsEdgeAntialiasing);
 }
 
-- (unsigned int)edgeAntialiasingMask
+- (CAEdgeAntialiasingMask)edgeAntialiasingMask
 {
   _bridge_prologue_read;
   return _getFromLayer(edgeAntialiasingMask);
 }
 
-- (void)setEdgeAntialiasingMask:(unsigned int)edgeAntialiasingMask
+- (void)setEdgeAntialiasingMask:(CAEdgeAntialiasingMask)edgeAntialiasingMask
 {
   _bridge_prologue_write;
   _setToLayer(edgeAntialiasingMask, edgeAntialiasingMask);
