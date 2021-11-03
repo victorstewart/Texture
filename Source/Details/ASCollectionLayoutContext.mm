@@ -18,6 +18,12 @@
 @implementation ASCollectionLayoutContext {
   Class<ASCollectionLayoutDelegate> _layoutDelegateClass;
   __weak ASCollectionLayoutCache *_layoutCache;
+  id<ASCollectionLayoutDelegate> _layoutDelegate;
+}
+
+- (id<ASCollectionLayoutDelegate>)layoutDelegate
+{
+  return _layoutDelegate;
 }
 
 - (instancetype)initWithViewportSize:(CGSize)viewportSize
@@ -25,6 +31,7 @@
                 scrollableDirections:(ASScrollDirection)scrollableDirections
                             elements:(ASElementMap *)elements
                  layoutDelegateClass:(Class<ASCollectionLayoutDelegate>)layoutDelegateClass
+                 layoutDelegate:(id<ASCollectionLayoutDelegate>)layoutDelegate
                          layoutCache:(ASCollectionLayoutCache *)layoutCache
                       additionalInfo:(id)additionalInfo
 {
@@ -34,6 +41,7 @@
     _initialContentOffset = initialContentOffset;
     _scrollableDirections = scrollableDirections;
     _elements = elements;
+    _layoutDelegate = layoutDelegate;
     _layoutDelegateClass = layoutDelegateClass;
     _layoutCache = layoutCache;
     _additionalInfo = additionalInfo;
