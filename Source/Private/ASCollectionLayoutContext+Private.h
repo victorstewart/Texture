@@ -29,14 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
                          layoutCache:(ASCollectionLayoutCache *)layoutCache
                       additionalInfo:(id)additionalInfo;
 
-- (instancetype)initWithViewportSize:(CGSize)viewportSize
-                initialContentOffset:(CGPoint)initialContentOffset
-                scrollableDirections:(ASScrollDirection)scrollableDirections
-                            elements:(ASElementMap *)elements
-                 layoutDelegateClass:(Class<ASCollectionLayoutDelegate>)layoutDelegateClass
-                         layoutCache:(ASCollectionLayoutCache *)layoutCache
-                      additionalInfo:(nullable id)additionalInfo;
-
 @end
 
 NS_ASSUME_NONNULL_END
