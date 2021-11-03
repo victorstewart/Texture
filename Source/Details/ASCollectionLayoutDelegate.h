@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable id)additionalInfoForLayoutWithElements:(ASElementMap *)elements;
 
+- (ASCollectionLayoutState *)sneaky_calculateLayoutWithContext:(ASCollectionLayoutContext *)context;
+
 /**
  * @abstract Prepares and returns a new layout for given context.
  *
