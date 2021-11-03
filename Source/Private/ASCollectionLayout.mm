@@ -71,6 +71,7 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
                                               scrollableDirections:ASScrollDirectionNone
                                                           elements:[[ASElementMap alloc] init]
                                                layoutDelegateClass:layoutDelegateClass
+                                               layoutDelegate:_layoutDelegate
                                                        layoutCache:layoutCache
                                                     additionalInfo:nil];
   }
@@ -89,6 +90,7 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
                                             scrollableDirections:scrollableDirections
                                                         elements:elements
                                              layoutDelegateClass:layoutDelegateClass
+                                                  layoutDelegate:_layoutDelegate
                                                      layoutCache:layoutCache
                                                   additionalInfo:additionalInfo];
 }
