@@ -261,13 +261,22 @@ static const ASScrollDirection kASStaticScrollDirection = (ASScrollDirectionRigh
   }
 
   CGSize result = [ASCollectionLayout _boundsForCollectionNode:collectionNode];
-  // TODO: Consider using adjustedContentInset on iOS 11 and later, to include the safe area of the scroll view
-  UIEdgeInsets contentInset = collectionNode.contentInset;
-  if (ASScrollDirectionContainsHorizontalDirection(scrollableDirections)) {
-    result.height -= (contentInset.top + contentInset.bottom);
-  } else {
-    result.width -= (contentInset.left + contentInset.right);
+    
+  if (CGSizeEqualToSize(result, CGSizeZero))
+  {
+      result = collectionNode.style.preferredSize;
   }
+  else
+  {
+      // TODO: Consider using adjustedContentInset on iOS 11 and later, to include the safe area of the scroll view
+      UIEdgeInsets contentInset = collectionNode.contentInset;
+      if (ASScrollDirectionContainsHorizontalDirection(scrollableDirections)) {
+        result.height -= (contentInset.top + contentInset.bottom);
+      } else {
+        result.width -= (contentInset.left + contentInset.right);
+      }
+  }
+    
   return result;
 }
 
